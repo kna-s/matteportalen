@@ -19,7 +19,8 @@ const GROUPS: { title: string; items: { name: IconName; label: string; emoji: st
       { name: "foraldraportal", label: "Föräldraportal", emoji: "👨‍👩‍👧" },
       { name: "kursplan", label: "Kursplan", emoji: "📚" },
       { name: "abonnemang", label: "Abonnemang", emoji: "💳" },
-      { name: "admin", label: "Administration", emoji: "🛠️" },
+      { name: "admin", label: "Administration (A: kugghjul)", emoji: "🛠️" },
+      { name: "adminReglage", label: "Administration (B: reglage)", emoji: "🛠️" },
     ],
   },
   {

@@ -96,8 +96,23 @@ const ICONS = {
   ),
   admin: (
     <>
-      <path d="M14.5 3.5a4.5 4.5 0 0 0-4.2 6.1L3.8 16a1.9 1.9 0 0 0 2.7 2.7l6.4-6.4a4.5 4.5 0 0 0 6.1-4.2l-2.6 2.6-2.4-.6-.6-2.4z" {...filled(F)} />
-      <circle cx={5.2} cy={17.3} r={0.9} fill={A} />
+      <g transform="translate(12 12)">
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((r) => (
+          <rect key={r} x={-2.2} y={-10} width={4.4} height={5} rx={1.2} transform={`rotate(${r})`} fill={F} stroke={S} strokeWidth={1.6} strokeLinejoin="round" />
+        ))}
+        <circle r={7} fill={F} stroke={S} strokeWidth={1.8} />
+        <circle r={2.8} fill={W} stroke={S} strokeWidth={1.6} />
+        <circle r={1.1} fill={A} />
+      </g>
+    </>
+  ),
+  adminReglage: (
+    <>
+      <rect x={3} y={3} width={18} height={18} rx={4} {...filled(W)} />
+      <path d="M7.5 7v10M12 7v10M16.5 7v10" {...line} strokeOpacity={0.35} />
+      <rect x={5.5} y={12} width={4} height={3} rx={1.5} {...filled(F)} />
+      <rect x={10} y={8} width={4} height={3} rx={1.5} {...filled(A)} />
+      <rect x={14.5} y={13.5} width={4} height={3} rx={1.5} {...filled(F)} />
     </>
   ),
   kursplan: (
