@@ -16,6 +16,8 @@ interface NavItem {
   icon: IconName;
   /** Kort etikett i mobilens bottenmeny (visas bara om satt). */
   short?: string;
+  /** Andra adresser som också gör posten aktiv (t.ex. flikar på samma sida). */
+  match?: string[];
 }
 
 interface NavGroup {
@@ -23,25 +25,21 @@ interface NavGroup {
   items: NavItem[];
 }
 
-/** Eleven: lärandet först. */
+/** Eleven: fem tydliga val. */
 const ELEV_NAV: NavGroup[] = [
   {
     title: "Lära",
     items: [
       { href: "/", label: "Startsida", icon: "hem", short: "Start" },
       { href: "/aventyret", label: BRAND.adventure, icon: "karta", short: BRAND.adventure },
-      { href: "/videolektioner", label: "Videolektioner", icon: "video", short: "Videor" },
-      { href: "/ovningar", label: "Matematikövningar", icon: "ovning", short: "Övningar" },
-      { href: "/quiz", label: "Quiz och utmaningar", icon: "quiz", short: "Quiz" },
+      { href: "/videolektioner", label: "Bibliotek", icon: "kursplan", short: "Bibliotek", match: ["/ovningar", "/quiz"] },
     ],
   },
   {
     title: "Mina framsteg",
     items: [
-      { href: "/marken", label: "Mina märken", icon: "marken" },
-      { href: "/garderob", label: "Sigges garderob", icon: "hatt" },
-      { href: "/screening", label: "Screening", icon: "screening" },
-      { href: "/resultat", label: "Mina resultat", icon: "resultat" },
+      { href: "/resultat", label: "Mina framsteg", icon: "resultat", short: "Framsteg", match: ["/screening"] },
+      { href: "/marken", label: "Märken och Sigge", icon: "marken", short: "Märken", match: ["/garderob"] },
     ],
   },
 ];
@@ -120,7 +118,8 @@ function Logo({ compact = false }: { compact?: boolean }) {
 
 function useIsActive() {
   const pathname = usePathname();
-  return (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  return (href: string, match: string[] = []) =>
+    href === "/" ? pathname === "/" : [href, ...match].some((h) => pathname.startsWith(h));
 }
 
 function TextSizeButton() {
@@ -265,7 +264,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       href={n.href}
                       title={collapsed ? n.label : undefined}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[0.95rem] font-medium transition-colors ${collapsed ? "justify-center" : ""} ${
-                        isActive(n.href) ? "icon-invert bg-navy text-white" : "text-navy hover:bg-gold-light"
+                        isActive(n.href, n.match) ? "icon-invert bg-navy text-white" : "text-navy hover:bg-gold-light"
                       }`}
                     >
                       <Icon name={n.icon} size={24} className="shrink-0" />
@@ -324,7 +323,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         {moreOpen && (
           <div className="border-b border-line p-2">
             {moreItems.map((n) => (
-              <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${isActive(n.href) ? "icon-invert bg-navy text-white" : "text-navy"}`}>
+              <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${isActive(n.href, n.match) ? "icon-invert bg-navy text-white" : "text-navy"}`}>
                 <Icon name={n.icon} size={22} />
                 {n.label}
               </Link>
@@ -337,8 +336,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <ul className="grid grid-cols-5">
           {mobileItems.map((n) => (
             <li key={n.href}>
-              <Link href={n.href} className={`flex flex-col items-center gap-0.5 py-2 text-[0.7rem] font-medium ${isActive(n.href) ? "text-wine" : "text-navy"}`}>
-                <span className={`grid h-8 w-12 place-items-center rounded-full ${isActive(n.href) ? "bg-gold-light" : ""}`}>
+              <Link href={n.href} className={`flex flex-col items-center gap-0.5 py-2 text-[0.7rem] font-medium ${isActive(n.href, n.match) ? "text-wine" : "text-navy"}`}>
+                <span className={`grid h-8 w-12 place-items-center rounded-full ${isActive(n.href, n.match) ? "bg-gold-light" : ""}`}>
                   <Icon name={n.icon} size={24} />
                 </span>
                 {n.short}

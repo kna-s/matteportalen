@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Icon from "@/components/icons/Icon";
 import Mascot from "@/components/Mascot";
-import { RequireLogin } from "@/components/ui";
+import { RequireLogin, SectionTabs } from "@/components/ui";
 import { useTreasure } from "@/components/Treasure";
 import { ACCESSORIES, Outfit, SLOT_LABELS, Slot, isUnlocked, unlockHint } from "@/lib/treasure";
 import { useStore } from "@/lib/store";
@@ -11,6 +11,12 @@ import { useStore } from "@/lib/store";
 export default function WardrobePage() {
   return (
     <RequireLogin roles={["elev"]}>
+      <SectionTabs
+        tabs={[
+          { href: "/marken", label: "Mina märken", icon: "marken" },
+          { href: "/garderob", label: "Sigges garderob", icon: "hatt" },
+        ]}
+      />
       <Wardrobe />
     </RequireLogin>
   );

@@ -9,15 +9,15 @@ import { stepHref } from "@/lib/flow";
 import { gradeOverview, shortComment, trainingPlan } from "@/lib/screening";
 import { emptyProgress, latestQuizPerChapter, useStore } from "@/lib/store";
 import { quizFeedbackLevel } from "@/lib/tiers";
-import { LevelChip, LockedNotice, PageHeader, ProgressBar, RequireLogin, StudentPicker } from "@/components/ui";
+import { LevelChip, LockedNotice, PROGRESS_TABS, PageHeader, ProgressBar, RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
 
 export default function ScreeningPage() {
+  const { state } = useStore();
+  const isStudent = state.session?.role === "elev";
   return (
     <div>
-      <PageHeader
-        icon="screening"
-        title="Screening"
-      />
+      <PageHeader icon={isStudent ? "resultat" : "screening"} title={isStudent ? "Mina framsteg" : "Screening"} />
+      {isStudent && <SectionTabs tabs={PROGRESS_TABS} />}
       <RequireLogin>
         <StudentPicker />
         <ScreeningContent />

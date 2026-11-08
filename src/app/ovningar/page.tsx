@@ -1,13 +1,11 @@
 import StepTypeList from "@/components/StepTypeList";
-import { PageHeader } from "@/components/ui";
+import { LIBRARY_TABS, PageHeader, SectionTabs } from "@/components/ui";
 
 export default function Exercises() {
   return (
     <div>
-      <PageHeader
-        icon="ovning"
-        title="Matematikövningar" intro="Inget rätt eller fel här, bara testa."
-      />
+      <PageHeader icon="kursplan" title="Bibliotek" />
+      <SectionTabs tabs={LIBRARY_TABS} />
       <StepTypeList type="ovning" />
     </div>
   );

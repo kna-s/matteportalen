@@ -3,7 +3,7 @@
 import ResultsView from "@/components/ResultsView";
 import StudentResults from "@/components/StudentResults";
 import { emptyProgress, useStore } from "@/lib/store";
-import { PageHeader, RequireLogin, StudentPicker } from "@/components/ui";
+import { PROGRESS_TABS, PageHeader, RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
 
 export default function ResultsPage() {
   const { state } = useStore();
@@ -12,9 +12,10 @@ export default function ResultsPage() {
     <div>
       <PageHeader
         icon="resultat"
-        title={isStudent ? "Mina resultat" : "Resultat"}
+        title={isStudent ? "Mina framsteg" : "Resultat"}
         intro={isStudent ? undefined : "Hur långt barnet har kommit och hur quizen har gått."}
       />
+      {isStudent && <SectionTabs tabs={PROGRESS_TABS} />}
       <RequireLogin>
         <StudentPicker />
         <Content />

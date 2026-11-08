@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Tier, TIERS } from "@/lib/tiers";
@@ -182,3 +183,35 @@ export function StudentPicker() {
 export function Placeholder({ children }: { children: React.ReactNode }) {
   return <p className="rounded-xl border border-dashed border-line bg-cream p-3 text-sm italic text-muted">{children}</p>;
 }
+
+/** Flikar mellan sidor som hör ihop (t.ex. videor, övningar och quiz). */
+export function SectionTabs({ tabs }: { tabs: { href: string; label: string; icon: IconName }[] }) {
+  const pathname = usePathname();
+  return (
+    <nav className="mb-6 inline-flex flex-wrap gap-1 rounded-2xl bg-paper p-1 shadow-sm ring-1 ring-line" aria-label="Flikar">
+      {tabs.map((t) => {
+        const active = pathname.startsWith(t.href);
+        return (
+          <Link
+            key={t.href}
+            href={t.href}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${active ? "icon-invert bg-navy text-white" : "text-navy hover:bg-cream"}`}
+            aria-current={active ? "page" : undefined}
+          >
+            <Icon name={t.icon} size={18} /> {t.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+export const LIBRARY_TABS: { href: string; label: string; icon: IconName }[] = [
+  { href: "/videolektioner", label: "Videor", icon: "video" },
+  { href: "/ovningar", label: "Övningar", icon: "ovning" },
+  { href: "/quiz", label: "Quiz", icon: "quiz" },
+];
+export const PROGRESS_TABS: { href: string; label: string; icon: IconName }[] = [
+  { href: "/resultat", label: "Resultat", icon: "resultat" },
+  { href: "/screening", label: "Screening", icon: "screening" },
+];

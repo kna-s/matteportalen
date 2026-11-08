@@ -6,12 +6,26 @@ import { BADGES, BadgeCategory, CATEGORY_INFO } from "@/lib/badges";
 import { emptyProgress, useStore } from "@/lib/store";
 import { BadgeDetail, BadgeMedal } from "@/components/Badges";
 import { MascotSays } from "@/components/Mascot";
-import { RequireLogin, StudentPicker } from "@/components/ui";
+import { RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
+
+function BadgeTabs() {
+  const { state } = useStore();
+  if (state.session?.role !== "elev") return null;
+  return (
+    <SectionTabs
+      tabs={[
+          { href: "/marken", label: "Mina märken", icon: "marken" },
+          { href: "/garderob", label: "Sigges garderob", icon: "hatt" },
+        ]}
+    />
+  );
+}
 
 export default function BadgesPage() {
   return (
     <RequireLogin roles={["elev", "foralder"]}>
       <StudentPicker />
+      <BadgeTabs />
       <Content />
     </RequireLogin>
   );
