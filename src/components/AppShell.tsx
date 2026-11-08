@@ -57,17 +57,11 @@ const PARENT_NAV: NavGroup[] = [
     ],
   },
   {
-    title: "Innehåll",
+    title: "Mer",
     items: [
-      { href: "/arskurs", label: "Kursplan", icon: "kursplan" },
-      { href: "/videolektioner", label: "Videolektioner", icon: "video" },
-      { href: "/ovningar", label: "Övningar", icon: "ovning" },
-      { href: "/quiz", label: "Quiz", icon: "quiz" },
+      { href: "/abonnemang", label: "Mitt abonnemang", icon: "abonnemang" },
+      { href: "/arskurs", label: "Kursplanen", icon: "kursplan", match: ["/videolektioner", "/ovningar", "/quiz", "/steg"] },
     ],
-  },
-  {
-    title: "Konto",
-    items: [{ href: "/abonnemang", label: "Mitt abonnemang", icon: "abonnemang" }],
   },
 ];
 
