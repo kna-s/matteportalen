@@ -9,6 +9,15 @@ import { Tier } from "./tiers";
 
 export type Role = "elev" | "foralder" | "admin";
 
+export const PALETTES = [
+  { id: "akademisk", name: "Akademisk", desc: "Marinblå, vinröd och guld" },
+  { id: "skog", name: "Skog & persika", desc: "Djupgrön, korall och solgul" },
+  { id: "korall", name: "Bläck & korall", desc: "Indigo, korall och gul" },
+  { id: "hav", name: "Hav & apelsin", desc: "Petrol, orange och gul" },
+  { id: "plommon", name: "Plommon & hallon", desc: "Plommon, hallon och senap" },
+] as const;
+export type Palette = (typeof PALETTES)[number]["id"];
+
 export interface Student {
   id: string;
   name: string;
@@ -39,6 +48,8 @@ export interface AppState {
   /** Kapitel som föräldern markerat som "Aktuellt", per barn (studentId). */
   aktuellt: Record<string, string[]>;
   textSize: "normal" | "stor";
+  /** Färgpalett som testas (se globals.css). */
+  palette: Palette;
 }
 
 const KEY = "matteportalen-demo-v2";
@@ -87,6 +98,7 @@ export function defaultState(): AppState {
       maja: CHAPTERS.filter((c) => c.grade === 6 && c.areaId === "algebra").slice(2, 3).map((c) => c.id),
     },
     textSize: "normal",
+    palette: "akademisk",
   };
 }
 
@@ -124,6 +136,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(KEY, JSON.stringify(state));
     } catch {}
     document.documentElement.dataset.textsize = state.textSize;
+    document.documentElement.dataset.palette = state.palette;
   }, [state, ready]);
 
   const update = useCallback((fn: (s: AppState) => AppState) => setState(fn), []);
@@ -134,7 +147,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       state,
       ready,
       update,
-      reset: () => setState({ ...defaultState(), session: state.session }),
+      reset: () => setState({ ...defaultState(), session: state.session, palette: state.palette }),
       currentStudent: state.students.find((s) => s.id === sid),
       tier: state.parent.tier,
       login: (role, studentId) =>

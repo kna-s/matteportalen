@@ -10,6 +10,7 @@ import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
+import Mascot from "@/components/Mascot";
 
 export default function StepPage() {
   return (
@@ -53,7 +54,7 @@ function StepView() {
       <Stepper chapter={chapter} current={step} />
 
       {!isStudent && (
-        <p className="rounded-xl bg-gold-light/60 px-4 py-2 text-sm text-[#6b5410]">
+        <p className="rounded-xl bg-gold-light/60 px-4 py-2 text-sm text-gold-ink">
           Du förhandsvisar som {state.session?.role === "admin" ? "admin" : "förälder"}. Framsteg sparas bara när eleven själv gör stegen.
         </p>
       )}
@@ -257,9 +258,7 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
         </button>
       ) : (
         <div className="card border-navy">
-          <p className="text-4xl" aria-hidden>
-            {result.score / result.total >= 0.85 ? "🎉" : result.score / result.total >= 0.6 ? "🌟" : "💪"}
-          </p>
+          <Mascot size={72} mood={result.score / result.total >= 0.6 ? "hurra" : "glad"} />
           <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-wine">
             {result.score / result.total >= 0.85 ? "Superbra!" : result.score / result.total >= 0.6 ? "Bra jobbat!" : "Bra kämpat!"}
           </p>

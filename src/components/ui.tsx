@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { Tier, TIERS } from "@/lib/tiers";
 import { Level, LEVEL_TEXT } from "@/lib/screening";
+import Mascot from "./Mascot";
 
 export function PageHeader({ icon, title, intro }: { icon: string; title: string; intro?: string }) {
   return (
@@ -89,9 +90,7 @@ export function LockedNotice({ need, what }: { need: Tier; what: string }) {
   const isParent = state.session?.role !== "elev";
   return (
     <div className="card border-gold bg-gold-light/40 text-center">
-      <div className="text-4xl" aria-hidden>
-        🔒
-      </div>
+      <div className="flex justify-center">{isParent ? <span className="text-4xl" aria-hidden>🔒</span> : <Mascot mood="tanker" size={64} />}</div>
       <h3 className="mt-2 text-xl font-bold">{what} ingår i {TIERS[need].name}</h3>
       <p className="mx-auto mt-1 max-w-md text-muted">
         {isParent
@@ -112,7 +111,7 @@ export function TierChip({ tier }: { tier: Tier }) {
     gratis: "bg-good/15 text-good",
     start: "bg-navy/10 text-navy",
     plus: "bg-wine/10 text-wine",
-    premium: "bg-gold-light text-[#6b5410]",
+    premium: "bg-gold-light text-gold-ink",
   };
   return <span className={`chip ${colors[tier]}`}>{TIERS[tier].name}</span>;
 }

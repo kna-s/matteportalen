@@ -33,7 +33,7 @@ function Content() {
           const current = t === tier;
           return (
             <div key={t} className={`card flex flex-col ${current ? "border-navy ring-2 ring-navy" : t === "premium" ? "border-gold" : ""}`}>
-              {t === "premium" && <span className="chip mb-2 self-start bg-gold-light text-[#6b5410]">Mest komplett</span>}
+              {t === "premium" && <span className="chip mb-2 self-start bg-gold-light text-gold-ink">Mest komplett</span>}
               <h2 className="text-2xl font-bold">{info.name}</h2>
               <p className="text-xl font-semibold text-wine">{info.price}</p>
               <p className="mt-1 text-sm text-muted">{info.tagline}</p>

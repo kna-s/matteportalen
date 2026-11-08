@@ -103,7 +103,7 @@ export default function Landing() {
       <Section className="!pt-10 sm:!pt-16">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <span className="chip bg-gold-light text-[#6b5410]">Matematik för årskurs 4–6</span>
+            <span className="chip bg-gold-light text-gold-ink">Matematik för årskurs 4–6</span>
             <h1 className="mt-4 text-4xl font-bold sm:text-5xl lg:text-[3.4rem]">
               Matte som känns <span className="text-wine">lugn</span> och går att förstå.
             </h1>

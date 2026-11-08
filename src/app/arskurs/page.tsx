@@ -27,7 +27,7 @@ export default function GradePicker() {
             <p className="mt-1 font-semibold text-wine">Årskurs {g}</p>
             <p className="mt-2 text-sm text-muted">{GRADE_TEXT[g]}</p>
             <p className="mt-3 text-xs text-muted">{chaptersFor(g).length} kapitel</p>
-            {currentStudent?.grade === g && <span className="chip mt-3 bg-gold-light text-[#6b5410]">Din årskurs</span>}
+            {currentStudent?.grade === g && <span className="chip mt-3 bg-gold-light text-gold-ink">Din årskurs</span>}
           </Link>
         ))}
       </div>

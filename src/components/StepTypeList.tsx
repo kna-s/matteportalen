@@ -55,7 +55,7 @@ export default function StepTypeList({ type }: { type: StepType }) {
                     className={`group flex flex-col overflow-hidden rounded-2xl border bg-paper transition-shadow hover:shadow-md ${open ? "border-line" : "border-dashed border-line opacity-80"}`}
                   >
                     {type === "video" && (
-                      <div className="grid aspect-video place-items-center text-4xl text-white" style={{ background: `linear-gradient(135deg, ${a.color}, #1b2a4a)` }}>
+                      <div className="grid aspect-video place-items-center text-4xl text-white" style={{ background: `linear-gradient(135deg, ${a.color}, var(--color-navy))` }}>
                         {open ? "▶" : "🔒"}
                       </div>
                     )}

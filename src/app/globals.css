@@ -8,6 +8,7 @@
   --color-wine-light: #9c3442;
   --color-gold: #c9a227;
   --color-gold-light: #f3e7bf;
+  --color-gold-ink: #6b5410;
   --color-cream: #faf7f0;
   --color-paper: #ffffff;
   --color-ink: #1f2430;
@@ -18,6 +19,64 @@
   --color-bad: #a2312f;
   --font-sans: var(--font-body), system-ui, sans-serif;
   --font-serif: var(--font-heading), Georgia, serif;
+}
+
+/*
+ * Färgpaletter att jämföra. Namnen på tokens (navy/wine/gold) är kvar från
+ * första versionen men betyder: navy = primär, wine = accent, gold = highlight.
+ * Paletten väljs med data-palette på <html> eller på valfritt element.
+ */
+[data-palette="skog"] {
+  --color-navy: #1f4d3f;
+  --color-navy-light: #2d6754;
+  --color-wine: #d4583f;
+  --color-wine-light: #e2715a;
+  --color-gold: #f2b84b;
+  --color-gold-light: #fbe8c4;
+  --color-gold-ink: #7a5310;
+  --color-cream: #f8f5ee;
+  --color-ink: #1d2a25;
+  --color-muted: #5a6661;
+  --color-line: #e3ddd0;
+}
+[data-palette="korall"] {
+  --color-navy: #2b2d6e;
+  --color-navy-light: #3d409a;
+  --color-wine: #e8574d;
+  --color-wine-light: #f0736a;
+  --color-gold: #ffc845;
+  --color-gold-light: #fff0c7;
+  --color-gold-ink: #7a5600;
+  --color-cream: #f6f6fb;
+  --color-ink: #1e1f3b;
+  --color-muted: #5c5e78;
+  --color-line: #e2e2ef;
+}
+[data-palette="hav"] {
+  --color-navy: #0e4f61;
+  --color-navy-light: #186a80;
+  --color-wine: #f07c3e;
+  --color-wine-light: #f4955f;
+  --color-gold: #ffd166;
+  --color-gold-light: #fff1cc;
+  --color-gold-ink: #7a5a00;
+  --color-cream: #f3f8f7;
+  --color-ink: #13292f;
+  --color-muted: #55696e;
+  --color-line: #d9e6e3;
+}
+[data-palette="plommon"] {
+  --color-navy: #3d2352;
+  --color-navy-light: #573373;
+  --color-wine: #c93f68;
+  --color-wine-light: #d95f83;
+  --color-gold: #f5b83d;
+  --color-gold-light: #fcebc6;
+  --color-gold-ink: #7a520a;
+  --color-cream: #faf6f2;
+  --color-ink: #261a30;
+  --color-muted: #66596f;
+  --color-line: #e8dfe0;
 }
 
 html {
