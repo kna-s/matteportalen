@@ -9,7 +9,7 @@ import { nextAccessible, stepHref } from "@/lib/flow";
 import { fullScreening, levelOf, shortComment } from "@/lib/screening";
 import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
-import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
+import { LockedNotice, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
 import { MergedStep, monthLabel, useVersions, youtubeId } from "@/lib/content";
 import Mascot, { MascotSays, Mood } from "@/components/Mascot";
@@ -138,7 +138,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
             <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
             {step.title}
           </h1>
-          {open && <MascotSays mood={INTRO_MOOD[step.type]} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
+          {open && step.type !== "screening" && <MascotSays mood={INTRO_MOOD[step.type]} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
@@ -550,52 +550,129 @@ function QuizStep({
   );
 }
 
+const FOCUS_TEXT: Record<string, { title: string; icon: "ovning" | "kalkylator" | "problemlosning" }> = {
+  Begrepp: { title: "Förstå begreppen", icon: "ovning" },
+  Metod: { title: "Räkna på rätt sätt", icon: "kalkylator" },
+  Tillämpning: { title: "Använda det i vardagen", icon: "problemlosning" },
+};
+
+/** Screening för ett kapitel: Sigge berättar hur det gick och vad vi gör nu. */
 function ScreeningStep({ chapter }: { chapter: Chapter }) {
-  const { state, currentStudent } = useStore();
+  const { state, tier, currentStudent } = useStore();
   const p = (currentStudent && state.progress[currentStudent.id]) || emptyProgress();
   const latest = [...p.quizResults].reverse().find((r) => r.chapterId === chapter.id);
   const quiz = chapter.steps.find((s) => s.type === "quiz")!;
+  const video = chapter.steps.find((s) => s.type === "video")!;
+  const area = getArea(chapter.areaId);
 
   if (!latest)
     return (
-      <div className="card text-center">
-        <p>Gör quizen först, så kan vi visa din screening.</p>
-        <Link href={stepHref(quiz.id)} className="btn-primary mt-3">
-          Till quizen
+      <div className="rounded-3xl bg-paper p-8 text-center ring-1 ring-line">
+        <div className="flex justify-center">
+          <Mascot mood="pekar" size={100} />
+        </div>
+        <p className="mt-2 text-lg font-semibold">Gör quizen först, så kan jag berätta hur det gick!</p>
+        <Link href={stepHref(quiz.id)} className="btn-accent mt-4">
+          Till quizen →
         </Link>
       </div>
     );
 
   const ratio = latest.score / latest.total;
+  const level = levelOf(ratio);
   const parts = fullScreening(latest);
+  const head =
+    level === "stark"
+      ? { title: "Du kan det här!", text: "Riktigt snyggt jobbat. Du har koll på det här kapitlet.", mood: "dansar" as Mood }
+      : level === "okej"
+        ? { title: "Nästan där!", text: "Det mesta sitter redan. Lite till så har du full koll.", mood: "nickar" as Mood }
+        : { title: "Vi övar lite till", text: "Det här var klurigt, och det är helt okej. Vi tar det steg för steg.", mood: "laser" as Mood };
+  const otherSteps = chapter.steps.filter((s) => s.type !== "screening" && canAccess(tier, s, chapter.id));
+  const screeningStep = chapter.steps.find((s) => s.type === "screening")!;
+  const keyFound = !!p.completed[screeningStep.id];
+  const keyNext = !keyFound && otherSteps.every((s) => p.completed[s.id]);
+
   return (
-    <div className="space-y-4">
-      <div className="card">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-bold">Hur det gick i ”{chapter.title}”</h2>
-          <LevelChip level={levelOf(ratio)} />
-        </div>
-        <p className="mt-1 text-muted">
-          {latest.score} av {latest.total} rätt. {shortComment(latest)}
-        </p>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {parts.map((x) => (
-          <div key={x.focus} className="card">
-            <div className="flex items-center justify-between">
-              <b className="text-navy">{x.focus}</b>
-              <LevelChip level={x.level} />
+    <div className="mx-auto max-w-3xl space-y-5">
+      {/* Resultat */}
+      <div className="pop-in overflow-hidden rounded-3xl bg-navy text-white shadow-md">
+        <div className="flex flex-col items-center gap-4 p-6 text-center sm:flex-row sm:text-left">
+          <Mascot mood={head.mood} size={110} />
+          <div className="flex-1">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold">{head.title}</p>
+            <p className="mt-1 font-serif text-3xl font-bold">
+              {latest.score} av {latest.total} rätt
+            </p>
+            <div className="mt-2 flex justify-center gap-1.5 sm:justify-start">
+              {Array.from({ length: latest.total }, (_, k) => (
+                <span key={k} className={`h-3 w-7 rounded-full ${k < latest.score ? "bg-gold" : "bg-white/20"}`} />
+              ))}
             </div>
-            <div className="my-2">
-              <ProgressBar value={x.ratio} />
-            </div>
-            <p className="text-sm text-muted">{x.comment}</p>
+            <p className="mt-3 text-white/80">{head.text}</p>
           </div>
-        ))}
+        </div>
       </div>
-      <Link href="/screening" className="btn-ghost">
-        Se hela din screening för åk {chapter.grade} →
-      </Link>
+
+      {/* Så gick det, del för del */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        {parts.map((x) => {
+          const f = FOCUS_TEXT[x.focus] ?? { title: x.focus, icon: "ovning" as const };
+          const look =
+            x.level === "stark"
+              ? { badge: "stjarna" as const, label: "Sitter!", cls: "bg-good/10 ring-good/20", text: "text-good" }
+              : x.level === "okej"
+                ? { badge: "klar" as const, label: "Nästan", cls: "bg-gold-light/60 ring-gold/30", text: "text-gold-ink" }
+                : { badge: "mal" as const, label: "Öva mer", cls: "bg-wine/10 ring-wine/20", text: "text-wine" };
+          return (
+            <div key={x.focus} className={`rounded-3xl p-4 ring-1 ${look.cls}`}>
+              <div className="flex items-center justify-between">
+                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-paper shadow-sm">
+                  <Icon name={f.icon} size={26} />
+                </span>
+                <span className={`flex items-center gap-1 text-sm font-bold ${look.text}`}>
+                  <Icon name={look.badge} size={18} /> {look.label}
+                </span>
+              </div>
+              <p className="mt-3 font-bold leading-tight text-navy">{f.title}</p>
+              <div className="mt-2 flex gap-1">
+                {Array.from({ length: x.total }, (_, k) => (
+                  <span key={k} className={`h-2 flex-1 rounded-full ${k < x.correct ? "bg-good" : "bg-paper"}`} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Vad gör vi nu? */}
+      <div className="rounded-3xl bg-paper p-5 ring-1 ring-line">
+        <h2 className="text-lg font-bold">Vad gör vi nu?</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {level !== "stark" && (
+            <Link href={stepHref(video.id)} className={level === "ova" ? "btn-accent" : "btn-ghost"}>
+              <Icon name="video" size={20} className={level === "ova" ? "icon-invert" : ""} /> Se videon igen
+            </Link>
+          )}
+          {level !== "stark" && (
+            <Link href={stepHref(quiz.id)} className={level === "okej" ? "btn-accent" : "btn-ghost"}>
+              <Icon name="quiz" size={20} className={level === "okej" ? "icon-invert" : ""} /> Gör om quizen
+            </Link>
+          )}
+          <Link href="/screening" className="btn-ghost">
+            <Icon name="screening" size={20} /> Allt jag kan i åk {chapter.grade}
+          </Link>
+        </div>
+        {keyFound && (
+          <p className="mt-4 flex items-center gap-2 rounded-2xl bg-good/10 px-4 py-3 text-sm font-semibold text-good">
+            <Icon name="nyckel" size={24} /> Du har redan hittat nyckeln i det här kapitlet.
+          </p>
+        )}
+        {keyNext && (
+          <p className="mt-4 flex items-center gap-2 rounded-2xl bg-gold-light/60 px-4 py-3 text-sm font-semibold text-navy">
+            <Icon name="nyckel" size={24} /> Klicka på Nästa så hittar du en nyckel till ön {area.title}!
+          </p>
+        )}
+      </div>
     </div>
   );
 }
