@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 import { Role, useStore } from "@/lib/store";
 import { TIERS } from "@/lib/tiers";
 import DemoBar from "./DemoBar";
+import { BadgeWatcher } from "./Badges";
 
 interface NavItem {
   href: string;
   label: string;
   icon: string;
-  roles: Role[];
-  /** Visas i mobilens bottenmeny. */
-  mobile?: boolean;
+  /** Kort etikett i mobilens bottenmeny (visas bara om satt). */
+  short?: string;
 }
 
 interface NavGroup {
@@ -21,36 +21,73 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const ALL: Role[] = ["elev", "foralder", "admin"];
-const PARENT: Role[] = ["foralder"];
-
-export const NAV_GROUPS: NavGroup[] = [
+/** Eleven: lärandet först. */
+const ELEV_NAV: NavGroup[] = [
   {
     title: "Lära",
     items: [
-      { href: "/", label: "Startsida", icon: "🏠", roles: ALL, mobile: true },
-      { href: "/arskurs", label: "Välj årskurs", icon: "🎓", roles: ALL },
-      { href: "/videolektioner", label: "Videolektioner", icon: "🎥", roles: ALL, mobile: true },
-      { href: "/ovningar", label: "Matematikövningar", icon: "✏️", roles: ALL, mobile: true },
-      { href: "/quiz", label: "Quiz och utmaningar", icon: "🏆", roles: ALL, mobile: true },
+      { href: "/", label: "Startsida", icon: "🏠", short: "Start" },
+      { href: "/arskurs", label: "Välj årskurs", icon: "🎓" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "🎥", short: "Videor" },
+      { href: "/ovningar", label: "Matematikövningar", icon: "✏️", short: "Övningar" },
+      { href: "/quiz", label: "Quiz och utmaningar", icon: "🏆", short: "Quiz" },
     ],
   },
   {
-    title: "Uppföljning",
+    title: "Mina framsteg",
     items: [
-      { href: "/screening", label: "Screening", icon: "🧠", roles: ALL },
-      { href: "/resultat", label: "Mina resultat", icon: "📊", roles: ALL },
+      { href: "/marken", label: "Mina märken", icon: "🏅" },
+      { href: "/screening", label: "Screening", icon: "🧠" },
+      { href: "/resultat", label: "Mina resultat", icon: "📊" },
+    ],
+  },
+];
+
+/** Föräldern: uppföljning först, lärandet längre ner. */
+const PARENT_NAV: NavGroup[] = [
+  {
+    title: "Mina barn",
+    items: [
+      { href: "/", label: "Översikt", icon: "🏠", short: "Översikt" },
+      { href: "/foraldraportal", label: "Mina barn", icon: "👨‍👩‍👧", short: "Barn" },
+      { href: "/resultat", label: "Resultat", icon: "📊", short: "Resultat" },
+      { href: "/screening", label: "Screening", icon: "🧠", short: "Screening" },
+      { href: "/marken", label: "Märken", icon: "🏅" },
+    ],
+  },
+  {
+    title: "Innehåll",
+    items: [
+      { href: "/arskurs", label: "Kursplan", icon: "📚" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "🎥" },
+      { href: "/ovningar", label: "Övningar", icon: "✏️" },
+      { href: "/quiz", label: "Quiz", icon: "🏆" },
     ],
   },
   {
     title: "Konto",
+    items: [{ href: "/abonnemang", label: "Mitt abonnemang", icon: "💳" }],
+  },
+];
+
+/** Admin: administrationen först, resten som förhandsvisning. */
+const ADMIN_NAV: NavGroup[] = [
+  {
+    title: "Administration",
+    items: [{ href: "/", label: "Administration", icon: "🛠️", short: "Admin" }],
+  },
+  {
+    title: "Förhandsvisa",
     items: [
-      { href: "/foraldraportal", label: "Föräldraportal", icon: "👨‍👩‍👧", roles: PARENT },
-      { href: "/abonnemang", label: "Mitt abonnemang", icon: "💳", roles: PARENT },
-      { href: "/admin", label: "Administration", icon: "🛠️", roles: ["admin"] },
+      { href: "/arskurs", label: "Kursplan", icon: "📚", short: "Kursplan" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "🎥", short: "Videor" },
+      { href: "/ovningar", label: "Övningar", icon: "✏️", short: "Övningar" },
+      { href: "/quiz", label: "Quiz", icon: "🏆" },
     ],
   },
 ];
+
+export const NAV_BY_ROLE: Record<Role, NavGroup[]> = { elev: ELEV_NAV, foralder: PARENT_NAV, admin: ADMIN_NAV };
 
 const ROLE_LABEL: Record<Role, string> = { elev: "Elev", foralder: "Förälder", admin: "Admin" };
 
@@ -181,10 +218,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => setCollapsed(inLesson), [inLesson]);
   useEffect(() => setMoreOpen(false), [pathname]);
 
-  const groups = NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => i.roles.includes(role)) })).filter((g) => g.items.length);
+  const groups = NAV_BY_ROLE[role];
   const flat = groups.flatMap((g) => g.items);
-  const mobileItems = flat.filter((i) => i.mobile);
-  const moreItems = flat.filter((i) => !i.mobile);
+  const mobileItems = flat.filter((i) => i.short).slice(0, 4);
+  const moreItems = flat.filter((i) => !mobileItems.includes(i));
 
   const name = role === "elev" ? currentStudent?.name : role === "foralder" ? state.parent.name : "Admin";
   const doLogout = () => {
@@ -291,7 +328,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <span aria-hidden className="text-xl">
                   {n.icon}
                 </span>
-                {n.label.split(" ")[0].replace("Matematikövningar", "Övningar")}
+                {n.short}
               </Link>
             </li>
           ))}
@@ -316,6 +353,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {state.session ? <AppLayout>{children}</AppLayout> : <MarketingShell>{children}</MarketingShell>}
       <DemoBar />
+      {state.session && <BadgeWatcher />}
     </>
   );
 }

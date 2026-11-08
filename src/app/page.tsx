@@ -9,6 +9,8 @@ import { TIERS, canAccess, tierAtLeast } from "@/lib/tiers";
 import Landing from "@/components/Landing";
 import AdminPanel from "@/components/AdminPanel";
 import { MascotSays } from "@/components/Mascot";
+import { BadgeMedal } from "@/components/Badges";
+import { BADGES } from "@/lib/badges";
 
 export default function Home() {
   const { state, ready } = useStore();
@@ -28,9 +30,18 @@ function StudentHome() {
   const p = state.progress[currentStudent.id] ?? emptyProgress();
   const cont = continuePoint(currentStudent.grade, tier, p);
   const aktuellt = (state.aktuellt[currentStudent.id] ?? []).map(getChapter).filter((c) => !!c);
-  const chapters = chaptersFor(currentStudent.grade);
   const chapterDone = (id: string) => getChapter(id)!.steps.filter((s) => canAccess(tier, s, id)).every((s) => p.completed[s.id]);
-  const doneCount = chapters.filter((c) => chapterDone(c.id)).length;
+  const ctx = { p, grade: currentStudent.grade, tier };
+  const earned = BADGES.filter((b) => b.earned(ctx));
+  const locked = BADGES.filter((b) => !b.earned(ctx))
+    .map((b) => ({ badge: b, isEarned: false, prog: b.progress?.(ctx) ?? 0 }))
+    .sort((a, b) => b.prog - a.prog);
+  const seen = state.seenBadges[currentStudent.id] ?? {};
+  const recent = earned
+    .map((b) => ({ badge: b, isEarned: true, prog: 1, at: seen[b.id] ?? "" }))
+    .sort((a, b) => b.at.localeCompare(a.at));
+  const showcase = [...recent.slice(0, 4), ...locked].slice(0, 6);
+  const next = locked[0];
 
   // Stigen visar området där eleven är just nu.
   const areaId = cont?.chapter.areaId ?? AREAS[0].id;
@@ -127,37 +138,29 @@ function StudentHome() {
       </section>
 
 
-      {/* Märken per område */}
+      {/* Märken */}
       <section className="rounded-3xl bg-paper p-5 ring-1 ring-line">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-lg font-bold">🏅 Dina märken</h2>
-          <span className="text-sm text-muted">
-            {doneCount} av {chapters.length} kapitel klara
-          </span>
+          <Link href="/marken" className="shrink-0 text-sm font-semibold text-wine hover:underline">
+            Se alla {earned.length} / {BADGES.length} →
+          </Link>
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
-          {AREAS.map((a) => {
-            const chs = chaptersFor(currentStudent.grade, a.id);
-            const d = chs.filter((c) => chapterDone(c.id)).length;
-            const ratio = d / chs.length;
-            const earned = d === chs.length;
-            const r = 26;
-            const circ = 2 * Math.PI * r;
-            return (
-              <div key={a.id} className="flex flex-col items-center text-center" title={`${a.title}: ${d} av ${chs.length} kapitel`}>
-                <div className="relative h-16 w-16">
-                  <svg viewBox="0 0 64 64" className="h-16 w-16 -rotate-90">
-                    <circle cx={32} cy={32} r={r} fill="none" stroke="var(--color-line)" strokeWidth={6} />
-                    <circle cx={32} cy={32} r={r} fill="none" stroke={a.color} strokeWidth={6} strokeLinecap="round" strokeDasharray={`${circ * ratio} ${circ}`} />
-                  </svg>
-                  <span className={`absolute inset-0 grid place-items-center text-2xl ${earned || ratio > 0 ? "" : "opacity-40 grayscale"}`}>{a.emoji}</span>
-                  {earned && <span className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-gold text-xs font-bold text-navy">✓</span>}
-                </div>
-                <span className="mt-1 text-[0.7rem] leading-tight text-muted">{a.title.split(" ")[0]}</span>
+        <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
+          {showcase.map(({ badge, isEarned, prog }) => (
+            <Link key={badge.id} href="/marken" className="group flex flex-col items-center rounded-2xl p-2 text-center hover:bg-cream" title={isEarned ? badge.description : badge.hint}>
+              <div className="transition-transform group-hover:scale-105">
+                <BadgeMedal badge={badge} earned={isEarned} size={56} progress={prog} />
               </div>
-            );
-          })}
+              <span className={`text-[0.72rem] font-semibold leading-tight ${isEarned ? "text-navy" : "text-muted"}`}>{badge.name}</span>
+            </Link>
+          ))}
         </div>
+        {next && (
+          <p className="mt-3 rounded-xl bg-cream px-3 py-2 text-sm">
+            🎯 <b>Nästa märke:</b> {next.badge.name}. {next.badge.hint}
+          </p>
+        )}
       </section>
     </div>
   );
@@ -197,6 +200,7 @@ function ParentHome() {
           const done = chs.reduce((s, c) => s + c.steps.filter((x) => p.completed[x.id]).length, 0);
           const week = Object.values(p.completed).filter((d) => new Date(d).getTime() > weekAgo).length;
           const plan = trainingPlan(p, st.grade);
+          const badgeCount = BADGES.filter((b) => b.earned({ p, grade: st.grade, tier })).length;
           const select = () => update((s) => ({ ...s, session: { ...s.session!, studentId: st.id } }));
           return (
             <div key={st.id} className="card space-y-4 !p-6">
@@ -234,6 +238,9 @@ function ParentHome() {
                 </Link>
                 <Link href="/screening" onClick={select} className="btn-ghost !py-1.5 text-sm">
                   Screening
+                </Link>
+                <Link href="/marken" onClick={select} className="btn-ghost !py-1.5 text-sm">
+                  🏅 {badgeCount} märken
                 </Link>
               </div>
             </div>

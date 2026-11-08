@@ -10,7 +10,9 @@ Läxhjälp i matematik för mellanstadiet (åk 4–6). Kursplanen följer Skolve
 - Demo-inloggning som **elev**, **förälder** eller **admin** (vi som driver sajten och lägger upp innehåll). Ingen riktig inloggning än.
 - Allt sparas i webbläsarens localStorage. Under Administration → Kunder kan demodatan återställas.
 - Allt innehåll är platshållare och genereras i `src/lib/curriculum.ts`.
-- Nivån kan bytas med rutan "Demo-nivå" nere till vänster.
+- Knappen **🎛️ Demo** nere till höger byter färger, maskot och nivå, och kan visa märkesnotiser.
+- Jämförelsesidor: `/designval` (färger) och `/maskot` (maskotar).
+- 18 märken (`src/lib/badges.ts`) som räknas om per årskurs. Nya märken visas som notis för eleven.
 
 ### Nivåer och flöde ("Nästa")
 

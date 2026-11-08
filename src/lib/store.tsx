@@ -18,6 +18,14 @@ export const PALETTES = [
 ] as const;
 export type Palette = (typeof PALETTES)[number]["id"];
 
+export const MASCOTS = [
+  { id: "sigge", name: "Sigge", kind: "sköldpadda", desc: "Lugn och klok. Vi tar det i vår egen takt." },
+  { id: "bit", name: "Bit", kind: "robot", desc: "Nyfiken liten robot som älskar siffror." },
+  { id: "frida", name: "Frida", kind: "räv", desc: "Klurig räv som gillar att lösa problem." },
+  { id: "pi", name: "Pi", kind: "matte-figur", desc: "Rund figur med ett π, knuten till loggan." },
+] as const;
+export type MascotId = (typeof MASCOTS)[number]["id"];
+
 export interface Student {
   id: string;
   name: string;
@@ -38,6 +46,8 @@ export interface StudentProgress {
   completed: Record<string, string>; // stepId -> ISO-datum
   quizResults: QuizResult[];
   notes: Record<string, string>; // stepId -> elevens anteckning i övning
+  /** Hjälpmedel eleven har använt (för märken). */
+  toolsUsed?: string[];
 }
 
 export interface AppState {
@@ -50,9 +60,14 @@ export interface AppState {
   textSize: "normal" | "stor";
   /** Färgpalett som testas (se globals.css). */
   palette: Palette;
+  mascot: MascotId;
+  /** Märken som eleven redan har sett notisen för: studentId -> badgeId -> datum. */
+  seenBadges: Record<string, Record<string, string>>;
+  /** Demo: märke som visas som notis direkt (för att testa). */
+  demoBadge?: string | null;
 }
 
-const KEY = "matteportalen-demo-v2";
+const KEY = "matteportalen-demo-v3";
 
 function daysAgo(n: number) {
   const d = new Date();
@@ -98,7 +113,10 @@ export function defaultState(): AppState {
       maja: CHAPTERS.filter((c) => c.grade === 6 && c.areaId === "algebra").slice(2, 3).map((c) => c.id),
     },
     textSize: "normal",
-    palette: "akademisk",
+    palette: "hav",
+    mascot: "sigge",
+    seenBadges: {},
+    demoBadge: null,
   };
 }
 
@@ -113,6 +131,7 @@ interface Ctx {
   login: (role: Role, studentId?: string) => void;
   logout: () => void;
   completeStep: (studentId: string, stepId: string) => void;
+  markToolUsed: (studentId: string, tool: string) => void;
   saveQuiz: (studentId: string, r: QuizResult) => void;
 }
 
@@ -147,12 +166,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       state,
       ready,
       update,
-      reset: () => setState({ ...defaultState(), session: state.session, palette: state.palette }),
+      reset: () => setState({ ...defaultState(), session: state.session, palette: state.palette, mascot: state.mascot }),
       currentStudent: state.students.find((s) => s.id === sid),
       tier: state.parent.tier,
       login: (role, studentId) =>
         setState((s) => ({ ...s, session: { role, studentId: studentId ?? s.students[0]?.id } })),
       logout: () => setState((s) => ({ ...s, session: null })),
+      markToolUsed: (studentId, tool) =>
+        setState((s) => {
+          const p = s.progress[studentId] ?? emptyProgress();
+          if (p.toolsUsed?.includes(tool)) return s;
+          return { ...s, progress: { ...s.progress, [studentId]: { ...p, toolsUsed: [...(p.toolsUsed ?? []), tool] } } };
+        }),
       completeStep: (studentId, stepId) =>
         setState((s) => {
           const p = s.progress[studentId] ?? { completed: {}, quizResults: [], notes: {} };

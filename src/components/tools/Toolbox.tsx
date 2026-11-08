@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TOOL_LABELS, ToolId } from "@/lib/curriculum";
+import { useStore } from "@/lib/store";
 import Calculator from "./Calculator";
 import Draggable, { Protractor, Ruler } from "./Draggable";
 import { CoordinateSystem, NumberLine } from "./Graphs";
@@ -17,8 +18,12 @@ const ICONS: Record<ToolId, string> = {
 /** Hjälpmedel som våra lärare slår på per uppgift (Step.tools). */
 export default function Toolbox({ tools }: { tools: ToolId[] }) {
   const [open, setOpen] = useState<ToolId[]>([]);
+  const { state, markToolUsed } = useStore();
   if (!tools.length) return null;
-  const toggle = (t: ToolId) => setOpen((o) => (o.includes(t) ? o.filter((x) => x !== t) : [...o, t]));
+  const toggle = (t: ToolId) => {
+    if (!open.includes(t) && state.session?.role === "elev" && state.session.studentId) markToolUsed(state.session.studentId, t);
+    setOpen((o) => (o.includes(t) ? o.filter((x) => x !== t) : [...o, t]));
+  };
   const panelTools = open.filter((t) => t === "kalkylator" || t === "koordinatsystem" || t === "tallinje");
 
   return (

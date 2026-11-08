@@ -131,3 +131,63 @@ h3 {
     @apply w-full rounded-xl border border-line bg-paper px-3 py-2 focus:border-navy focus:outline-none;
   }
 }
+
+/* Animationer för märkesnotiser */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0.8;
+  }
+}
+.confetti {
+  position: absolute;
+  top: -20px;
+  height: 12px;
+  border-radius: 2px;
+  animation-name: confetti-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes pop-in {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.pop-in {
+  animation: pop-in 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+@keyframes medal-spin {
+  0% {
+    transform: scale(0.3) rotateY(180deg);
+  }
+  60% {
+    transform: scale(1.15) rotateY(0deg);
+  }
+  100% {
+    transform: scale(1) rotateY(0deg);
+  }
+}
+.medal-spin {
+  animation: medal-spin 0.9s 0.2s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
+  .pop-in,
+  .medal-spin {
+    animation: none;
+  }
+}
