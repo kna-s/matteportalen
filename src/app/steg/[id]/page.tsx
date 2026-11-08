@@ -163,7 +163,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
               <VersionPicker versions={versions} active={vIdx} onPick={setVIdx} label="Tidigare quiz om samma sak" />
             </>
           ) : (
-            <ScreeningStep chapter={chapter} />
+            <ScreeningStep chapter={chapter} onNext={goNext} nextTitle={next?.chapter.id !== chapter.id ? next?.chapter.title : undefined} />
           )}
         </div>
         {open && step.tools.length > 0 && (
@@ -557,7 +557,7 @@ const FOCUS_TEXT: Record<string, { title: string; icon: "ovning" | "kalkylator" 
 };
 
 /** Screening för ett kapitel: Sigge berättar hur det gick och vad vi gör nu. */
-function ScreeningStep({ chapter }: { chapter: Chapter }) {
+function ScreeningStep({ chapter, onNext, nextTitle }: { chapter: Chapter; onNext: () => void; nextTitle?: string }) {
   const { state, tier, currentStudent } = useStore();
   const p = (currentStudent && state.progress[currentStudent.id]) || emptyProgress();
   const latest = [...p.quizResults].reverse().find((r) => r.chapterId === chapter.id);
@@ -648,19 +648,19 @@ function ScreeningStep({ chapter }: { chapter: Chapter }) {
       <div className="rounded-3xl bg-paper p-5 ring-1 ring-line">
         <h2 className="text-lg font-bold">Vad gör vi nu?</h2>
         <div className="mt-3 flex flex-wrap gap-2">
-          {level !== "stark" && (
-            <Link href={stepHref(video.id)} className={level === "ova" ? "btn-accent" : "btn-ghost"}>
-              <Icon name="video" size={20} className={level === "ova" ? "icon-invert" : ""} /> Se videon igen
+          {level === "ova" && (
+            <Link href={stepHref(video.id)} className="btn-accent">
+              <Icon name="video" size={20} className="icon-invert" /> Se videon igen
             </Link>
           )}
-          {level !== "stark" && (
-            <Link href={stepHref(quiz.id)} className={level === "okej" ? "btn-accent" : "btn-ghost"}>
-              <Icon name="quiz" size={20} className={level === "okej" ? "icon-invert" : ""} /> Gör om quizen
+          {level === "okej" && (
+            <Link href={stepHref(quiz.id)} className="btn-ghost">
+              <Icon name="quiz" size={20} /> Gör om quizen
             </Link>
           )}
-          <Link href="/screening" className="btn-ghost">
-            <Icon name="screening" size={20} /> Allt jag kan i åk {chapter.grade}
-          </Link>
+          <button onClick={onNext} className={level === "ova" ? "btn-ghost" : "btn-accent"}>
+            {nextTitle ? (level === "ova" ? `Fortsätt ändå till ${nextTitle}` : `Fortsätt till ${nextTitle}`) : "Fortsätt"} →
+          </button>
         </div>
         {keyFound && (
           <p className="mt-4 flex items-center gap-2 rounded-2xl bg-good/10 px-4 py-3 text-sm font-semibold text-good">
@@ -669,7 +669,7 @@ function ScreeningStep({ chapter }: { chapter: Chapter }) {
         )}
         {keyNext && (
           <p className="mt-4 flex items-center gap-2 rounded-2xl bg-gold-light/60 px-4 py-3 text-sm font-semibold text-navy">
-            <Icon name="nyckel" size={24} /> Klicka på Nästa så hittar du en nyckel till ön {area.title}!
+            <Icon name="nyckel" size={24} /> När du fortsätter hittar du en nyckel till ön {area.title}!
           </p>
         )}
       </div>
