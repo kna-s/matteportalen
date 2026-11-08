@@ -18,7 +18,7 @@ const MINT_D = "#5fb894";
 const INK = "#1b2730";
 
 /** Ögon och mun som delas av alla figurer. */
-function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: number; cy: number; mood: Mood; gap?: number; eye?: number; color?: string }) {
+export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: number; cy: number; mood: Mood; gap?: number; eye?: number; color?: string }) {
   const lx = cx - gap;
   const rx = cx + gap;
   return (
@@ -53,7 +53,7 @@ function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: number; c
   );
 }
 
-function Cheeks({ cx, cy, gap = 15 }: { cx: number; cy: number; gap?: number }) {
+export function Cheeks({ cx, cy, gap = 15 }: { cx: number; cy: number; gap?: number }) {
   return (
     <>
       <ellipse cx={cx - gap} cy={cy} rx={4} ry={2.6} style={{ fill: ACCENT }} opacity={0.4} />
