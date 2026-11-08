@@ -10,7 +10,9 @@ import Landing from "@/components/LandingNew";
 import ParentHome from "@/components/ParentHome";
 import { TreasureTeaser } from "@/components/Treasure";
 import AdminPanel from "@/components/AdminPanel";
-import { MascotSays } from "@/components/Mascot";
+import { MascotSays, Mood } from "@/components/Mascot";
+import { useEffect, useState } from "react";
+import { LINE_LABEL, SiggeLine, shuffledLines } from "@/lib/funfacts";
 import { BadgeMedal } from "@/components/Badges";
 import { BADGES } from "@/lib/badges";
 
@@ -51,9 +53,12 @@ function StudentHome() {
       <div>
         <h1 className="text-3xl font-bold sm:text-4xl">Hej {currentStudent.name}!</h1>
         <div className="mt-3">
-          <MascotSays mood="glad">
-            {welcomeBack(p) ?? (cont ? `Kul att se dig! Idag fortsätter vi med ${cont.chapter.title.toLowerCase()}. Ett steg i taget.` : "Wow, du har gjort allt! Nytt material kommer snart.")}
-          </MascotSays>
+          <SiggeTalk
+            greeting={
+              welcomeBack(p) ??
+              (cont ? `Kul att se dig! Idag fortsätter vi med ${cont.chapter.title.toLowerCase()}. Ett steg i taget.` : "Wow, du har gjort allt! Nytt material kommer snart.")
+            }
+          />
         </div>
       </div>
 
@@ -121,6 +126,43 @@ function StudentHome() {
           </p>
         )}
       </section>
+    </div>
+  );
+}
+
+const LINE_MOOD: Record<SiggeLine["kind"], Mood> = { fakta: "tanker", tips: "pekar", pepp: "hurra" };
+
+/** Sigge hälsar först och byter sen till roliga fakta, tips och pepp medan eleven är kvar. */
+function SiggeTalk({ greeting }: { greeting: string }) {
+  const [lines] = useState(shuffledLines);
+  const [idx, setIdx] = useState(-1);
+  useEffect(() => {
+    const t = setTimeout(() => setIdx((i) => (i + 1) % lines.length), idx === -1 ? 9000 : 14000);
+    return () => clearTimeout(t);
+  }, [idx, lines.length]);
+  const line = idx >= 0 ? lines[idx] : null;
+  return (
+    <div className="flex items-end gap-2">
+      <div className="min-w-0 flex-1">
+        <MascotSays mood={line ? LINE_MOOD[line.kind] : "glad"}>
+          <span key={idx} className="bubble-in block" aria-live="polite">
+            {line ? (
+              <>
+                <b className="text-wine">{LINE_LABEL[line.kind]}</b> {line.text}
+              </>
+            ) : (
+              greeting
+            )}
+          </span>
+        </MascotSays>
+      </div>
+      <button
+        onClick={() => setIdx((i) => (i + 1) % lines.length)}
+        className="mb-3 shrink-0 rounded-full bg-paper px-3 py-1.5 text-xs font-semibold text-navy shadow-sm ring-1 ring-line hover:bg-gold-light"
+        title="Sigge berättar något nytt"
+      >
+        Berätta mer
+      </button>
     </div>
   );
 }

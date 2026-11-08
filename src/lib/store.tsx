@@ -71,6 +71,10 @@ export interface AppState {
   openedChests: Record<string, string[]>;
   /** Demo: lås upp alla kistor och föremål. */
   demoUnlockAll?: boolean;
+  /** Kartbitar (kapitel-id) som eleven redan har sett animationen för, per elev. */
+  seenPieces?: Record<string, string[]>;
+  /** Demo: visa kartbit-animationen för en ö ("omrade" eller "omrade:hel"). */
+  demoPiece?: string | null;
 }
 
 const KEY = "matteportalen-demo-v3";
@@ -197,6 +201,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           progress: {},
           aktuellt: {},
           seenBadges: {},
+          seenPieces: {},
         })),
       addStudent: (name, grade) => {
         const clean = name.trim();

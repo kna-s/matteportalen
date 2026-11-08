@@ -11,7 +11,7 @@ export default function TreasureMapPage() {
       <StudentPicker />
       <h1 className="page-title mb-4">{BRAND.adventure}</h1>
       <div className="mb-5">
-        <MascotSays mood="glad">Varje kapitel du klarar ger en nyckel. Samla alla nycklar på en ö så kan du öppna skattkistan!</MascotSays>
+        <MascotSays mood="glad">Varje kapitel du klarar ger en kartbit. Samla alla bitar på en ö så blir kartan hel och visar vägen till skattkistan!</MascotSays>
       </div>
       <TreasureMap />
     </RequireLogin>

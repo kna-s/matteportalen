@@ -224,6 +224,13 @@ const ICONS = {
       <path d="m16 9.5 2 2M18 9.5l-2 2" stroke={A} strokeWidth={1.8} strokeLinecap="round" />
     </>
   ),
+  kartbit: (
+    <>
+      <path d="M4 5h6a2 2 0 0 1 4 0h6v6a2 2 0 0 0 0 4v5H4z" {...filled(F)} />
+      <path d="M6.5 17.5c2-.5 3-3.5 6-4" stroke={A} strokeWidth={1.7} strokeDasharray="1.6 1.9" strokeLinecap="round" fill="none" />
+      <path d="m14 9 2.4 2.4M16.4 9 14 11.4" stroke={A} strokeWidth={1.8} strokeLinecap="round" />
+    </>
+  ),
   nyckel: (
     <>
       <circle cx={8} cy={12} r={4.5} {...filled(F)} />

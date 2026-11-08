@@ -433,6 +433,64 @@ h3 {
   border-radius: 9999px;
   animation: rays 12s linear infinite;
 }
+/* Kartbitar */
+@keyframes piece-fly {
+  0% { transform: translate(40px, -160px) rotate(-24deg) scale(1.35); opacity: 0; }
+  25% { opacity: 1; }
+  80% { transform: translate(0, 4px) rotate(2deg) scale(1.02); }
+  100% { transform: none; opacity: 1; }
+}
+.piece-fly {
+  transform-box: view-box;
+  animation: piece-fly 1.1s cubic-bezier(0.25, 0.8, 0.3, 1.1) 0.35s both;
+}
+@keyframes piece-glow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+.piece-glow {
+  animation: piece-glow 1.2s ease-in-out 1.3s 2 both;
+}
+@keyframes seam-fade {
+  to { opacity: 0; }
+}
+.seam-fade {
+  animation: seam-fade 0.6s ease 0.2s forwards;
+}
+@keyframes seam-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.seam-fade-in {
+  animation: seam-fade-in 0.6s ease 0.2s both;
+}
+@keyframes trail-draw {
+  to { stroke-dashoffset: 0; }
+}
+.trail-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: trail-draw 2s ease-in-out 0.7s forwards;
+}
+@keyframes x-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.x-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: x-pop 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3) 2.6s both;
+}
+@keyframes trail-march {
+  to { stroke-dashoffset: -38; }
+}
+.trail-march {
+  animation: trail-march 2.4s linear infinite;
+}
 @media (prefers-reduced-motion: reduce) {
+  .piece-fly, .piece-glow, .seam-fade, .seam-fade-in, .trail-draw, .x-pop, .trail-march { animation: none; }
+  .trail-draw { stroke-dashoffset: 0; }
+  .seam-fade { opacity: 0; }
   .island-bob, .chest-ready, .rays { animation: none; }
 }

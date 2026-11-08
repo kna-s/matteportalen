@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { BADGES } from "@/lib/badges";
+import { AREAS } from "@/lib/curriculum";
 import { MASCOTS, MascotId, PALETTES, Palette, useStore } from "@/lib/store";
 import { TIERS, TIER_ORDER, Tier } from "@/lib/tiers";
 
@@ -11,6 +12,7 @@ export default function DemoBar() {
   const { state, tier, update, reset } = useStore();
   const [open, setOpen] = useState(false);
   const [badge, setBadge] = useState(BADGES[0].id);
+  const [pieceArea, setPieceArea] = useState(AREAS[0].id);
   const showTier = state.session && state.session.role !== "admin";
   const pos = state.session ? "top-[4.25rem]" : "bottom-3";
 
@@ -88,6 +90,26 @@ export default function DemoBar() {
           >
             Slumpa ett märke
           </button>
+        </div>
+        <div className="border-t border-line pt-2.5">
+          <p className="mb-1.5 font-semibold text-navy">Testa kartbit</p>
+          <div className="flex gap-2">
+            <select className={`${sel} min-w-0 flex-1`} value={pieceArea} onChange={(e) => setPieceArea(e.target.value)} aria-label="Välj ö">
+              {AREAS.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mt-1.5 flex gap-2">
+            <button onClick={() => update((s) => ({ ...s, demoPiece: pieceArea }))} className="rounded-lg bg-wine px-3 py-1 font-semibold text-white hover:bg-wine-light">
+              Ny bit
+            </button>
+            <button onClick={() => update((s) => ({ ...s, demoPiece: `${pieceArea}:hel` }))} className="rounded-lg bg-navy px-3 py-1 font-semibold text-white">
+              Hel karta
+            </button>
+          </div>
         </div>
         <div className="border-t border-line pt-2.5">
           <label className="flex items-center justify-between gap-3">

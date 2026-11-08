@@ -1,5 +1,6 @@
-// Skattjakten: varje område är en ö, varje klart kapitel ger en nyckel och
-// varje ö har en skattkista med ett föremål till maskoten.
+// Äventyret: varje område är en ö och varje klart kapitel ger en kartbit.
+// När alla kartbitar på en ö är hittade blir kartan hel och visar vägen till
+// skattkistan, som innehåller ett föremål till maskoten.
 
 import { AREAS, Grade, chaptersFor } from "./curriculum";
 import { StudentProgress } from "./store";
@@ -63,7 +64,10 @@ export function chapterDone(ctx: TreasureCtx, chapterId: string) {
 
 export interface IslandState {
   areaId: string;
-  keys: number;
+  /** Antal hittade kartbitar. */
+  pieces: number;
+  /** Vilka kapitel (i ordning) som har gett en kartbit. */
+  have: boolean[];
   total: number;
   chestReady: boolean;
   reward?: Accessory;
@@ -72,19 +76,26 @@ export interface IslandState {
 export function islands(ctx: TreasureCtx): IslandState[] {
   return AREAS.map((a) => {
     const chs = chaptersFor(ctx.grade, a.id);
-    const keys = ctx.unlockAll ? chs.length : chs.filter((c) => chapterDone(ctx, c.id)).length;
+    const have = chs.map((c) => !!ctx.unlockAll || chapterDone(ctx, c.id));
+    const pieces = have.filter(Boolean).length;
     return {
       areaId: a.id,
-      keys,
+      pieces,
+      have,
       total: chs.length,
-      chestReady: keys === chs.length,
+      chestReady: pieces === chs.length,
       reward: ACCESSORIES.find((x) => x.unlock.type === "area" && x.unlock.areaId === a.id),
     };
   });
 }
 
-export function totalKeys(ctx: TreasureCtx) {
-  return islands(ctx).reduce((s, i) => s + i.keys, 0);
+export function totalPieces(ctx: TreasureCtx) {
+  return islands(ctx).reduce((s, i) => s + i.pieces, 0);
+}
+
+/** Kapitel-id för alla kartbitar eleven har hittat i sin årskurs (utan demo-upplåsning). */
+export function foundPieceIds(ctx: TreasureCtx) {
+  return chaptersFor(ctx.grade).filter((c) => chapterDone({ ...ctx, unlockAll: false }, c.id)).map((c) => c.id);
 }
 
 export function isUnlocked(ctx: TreasureCtx, acc: Accessory) {

@@ -10,7 +10,7 @@ export const BRAND = {
   short: "Extra stöd i matte för åk 4–6",
   domain: "megaakademin.se",
   email: "hej@megaakademin.se",
-  /** Namnet på elevens karta med öar, nycklar och kistor. */
+  /** Namnet på elevens karta med öar, kartbitar och kistor. */
   adventure: "Äventyret",
   adventureMap: "Kartan",
 };

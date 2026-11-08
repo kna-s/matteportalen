@@ -390,6 +390,8 @@ function QuizStep({
   const [checked, setChecked] = useState(false);
   const [reply, setReply] = useState<{ title: string; line: string; mood: Mood } | null>(null);
   const [result, setResult] = useState<QuizResult | null>(null);
+  /** Förra försöket på samma kapitel, för att se om det gick sämre den här gången. */
+  const [prev, setPrev] = useState<QuizResult | null>(null);
   const feedback = quizFeedbackLevel(tier);
   const isStudent = state.session?.role === "elev";
   const q = qs[idx];
@@ -408,6 +410,8 @@ function QuizStep({
       }
     });
     const r = { stepId: step.id, chapterId: chapter.id, score, total: qs.length, byFocus, date: new Date().toISOString() };
+    const earlier = (currentStudent && state.progress[currentStudent.id]?.quizResults.filter((x) => x.chapterId === chapter.id).at(-1)) || null;
+    setPrev(earlier);
     setResult(r);
     if (isStudent && currentStudent) saveQuiz(currentStudent.id, r);
   };
@@ -421,6 +425,8 @@ function QuizStep({
 
   if (result) {
     const ratio = result.score / result.total;
+    const worse = !!prev && ratio < prev.score / prev.total;
+    const videoHref = stepHref(chapter.steps.find((s) => s.type === "video")!.id);
     return (
       <div className="pop-in mx-auto max-w-xl overflow-hidden rounded-3xl bg-paper text-center shadow-md ring-1 ring-line">
         <div className="bg-navy px-6 pb-6 pt-6 text-white">
@@ -455,14 +461,30 @@ function QuizStep({
               <Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.
             </p>
           )}
-          {ratio < 0.6 && (
+          {worse && (
+            <div className="pop-in mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
+              <div className="flex items-start gap-3">
+                <Mascot mood="nickar" size={52} />
+                <div className="flex-1">
+                  <p className="font-semibold text-navy">
+                    Förra gången fick du {prev!.score} av {prev!.total}. Det går upp och ner ibland, det är helt normalt!
+                  </p>
+                  <p className="mt-1 text-sm">Kika på videon igen så sitter det bättre nästa gång.</p>
+                  <Link href={videoHref} className="btn-accent mt-3 !px-4 !py-2 text-sm">
+                    <Icon name="video" size={18} className="icon-invert" /> Se videon igen
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+          {ratio < 0.6 && !worse && (
             <div className="mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
               <div className="flex items-start gap-3">
                 <Mascot mood="glad" size={52} />
                 <div className="flex-1">
                   <p className="font-semibold text-navy">Vill du öva lite till på samma sak?</p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <Link href={stepHref(chapter.steps.find((s) => s.type === "video")!.id)} className="btn-ghost !px-3 !py-1.5 text-sm">
+                    <Link href={videoHref} className="btn-ghost !px-3 !py-1.5 text-sm">
                       Se videon igen
                     </Link>
                     {others.map((o) => (
@@ -690,12 +712,12 @@ function ScreeningStep({ chapter, onNext, nextTitle }: { chapter: Chapter; onNex
         </div>
         {keyFound && (
           <p className="mt-4 flex items-center gap-2 rounded-2xl bg-good/10 px-4 py-3 text-sm font-semibold text-good">
-            <Icon name="nyckel" size={24} /> Du har redan hittat nyckeln i det här kapitlet.
+            <Icon name="kartbit" size={24} /> Du har redan hittat kartbiten i det här kapitlet.
           </p>
         )}
         {keyNext && (
           <p className="mt-4 flex items-center gap-2 rounded-2xl bg-gold-light/60 px-4 py-3 text-sm font-semibold text-navy">
-            <Icon name="nyckel" size={24} /> När du fortsätter hittar du en nyckel till ön {area.title}!
+            <Icon name="kartbit" size={24} /> När du fortsätter hittar du en kartbit till ön {area.title}!
           </p>
         )}
       </div>

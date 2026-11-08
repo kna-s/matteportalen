@@ -9,6 +9,7 @@ import { TIERS } from "@/lib/tiers";
 import DemoBar from "./DemoBar";
 import Icon, { IconName } from "./icons/Icon";
 import { BadgeWatcher } from "./Badges";
+import { MapPieceWatcher } from "./Treasure";
 
 interface NavItem {
   href: string;
@@ -368,6 +369,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {state.session ? <AppLayout>{children}</AppLayout> : <MarketingShell>{children}</MarketingShell>}
       <DemoBar />
       {state.session && <BadgeWatcher />}
+      {state.session && <MapPieceWatcher />}
     </>
   );
 }

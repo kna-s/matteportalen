@@ -8,7 +8,7 @@ const ROWS: { label: string; tiers: Tier[] }[] = [
   { label: "Videolektioner", tiers: ["start", "plus", "premium"] },
   { label: "Övningar efter varje kapitel", tiers: ["start", "plus", "premium"] },
   { label: "Hjälpmedel som kalkylator och linjal", tiers: ["start", "plus", "premium"] },
-  { label: "Äventyret med nycklar och skattkistor", tiers: ["gratis", "start", "plus", "premium"] },
+  { label: "Äventyret med kartbitar och skattkistor", tiers: ["gratis", "start", "plus", "premium"] },
   { label: "Föräldraportal och veckorapport", tiers: ["gratis", "start", "plus", "premium"] },
   { label: "Självrättande quiz", tiers: ["plus", "premium"] },
   { label: "Screening: styrkor, svagheter och träningsplan", tiers: ["premium"] },
