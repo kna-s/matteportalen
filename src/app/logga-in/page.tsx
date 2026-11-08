@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Icon from "@/components/icons/Icon";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,7 +18,7 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="page-title text-center">Välkommen till Matteportalen</h1>
+      <h1 className="page-title text-center">Välkommen till {BRAND.name}</h1>
       <p className="mt-2 text-center text-muted">
         Det här är en demoversion. Välj vem du vill logga in som för att se hur sidan ser ut för olika användare.
       </p>

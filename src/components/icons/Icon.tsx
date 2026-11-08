@@ -1,5 +1,5 @@
 /**
- * Matteportalens egna ikoner (ersätter emojis). Ritade i 24×24 med rundade
+ * Mega Akademins egna ikoner (ersätter emojis). Ritade i 24×24 med rundade
  * linjer i primärfärgen och en mjuk fyllnad i palettens färger, så att de
  * alltid matchar sajten.
  *

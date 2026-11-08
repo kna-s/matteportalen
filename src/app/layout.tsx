@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BRAND } from "@/lib/brand";
 import { Lexend, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
@@ -9,7 +10,7 @@ const body = Lexend({ variable: "--font-body", subsets: ["latin"] });
 const heading = Source_Serif_4({ variable: "--font-heading", subsets: ["latin"], weight: ["600", "700"] });
 
 export const metadata: Metadata = {
-  title: "Matteportalen – matte för åk 4–6",
+  title: `${BRAND.name} – ${BRAND.short}`,
   description: "Läxhjälp i matematik för mellanstadiet: videolektioner, övningar, quiz och screening enligt Skolverkets kursplan.",
 };
 

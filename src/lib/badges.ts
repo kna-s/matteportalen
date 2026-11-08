@@ -73,7 +73,7 @@ export const BADGES: Badge[] = [
     name: "Första steget",
     icon: "👣",
     category: "start",
-    description: "Du gjorde ditt allra första steg på Matteportalen.",
+    description: "Du gjorde ditt allra första steg på Mega Akademin.",
     hint: "Gör ditt första steg, till exempel en videolektion.",
     funFact: "Alla som är bra på matte började någon gång med sitt allra första steg.",
     cheer: "Välkommen! Nu kör vi!",

@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { AREAS, STEP_ICON, STEP_LABELS } from "@/lib/curriculum";
 import Icon, { IconName } from "./icons/Icon";
@@ -7,7 +8,7 @@ import { TIERS, TIER_ORDER } from "@/lib/tiers";
 import { ReadAloud } from "./ui";
 
 const HERO_TEXT =
-  "Korta videolektioner, övningar och quiz som följer skolans kursplan. Ditt barn vet alltid vad nästa steg är, och du ser direkt vad som behöver övas mer på.";
+  "Ett extra stöd vid sidan av skolan. Korta videolektioner, övningar och quiz som följer kursplanen, så att ditt barn kan repetera, öva och komma ikapp hemma, i sin egen takt.";
 
 function Section({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) {
   return (
@@ -37,7 +38,7 @@ function AppPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-bad/60" />
           <span className="h-2.5 w-2.5 rounded-full bg-warn/60" />
           <span className="h-2.5 w-2.5 rounded-full bg-good/60" />
-          <span className="ml-3 text-xs text-muted">matteportalen.se</span>
+          <span className="ml-3 text-xs text-muted">{BRAND.domain}</span>
         </div>
         <div className="space-y-4 p-5">
           <p className="font-serif text-xl font-bold text-navy">Hej Leo!</p>
@@ -76,7 +77,11 @@ function AppPreview() {
 
 const FAQ = [
   {
-    q: "Vilka årskurser passar Matteportalen för?",
+    q: `Ersätter ${BRAND.name} skolans undervisning?`,
+    a: "Nej. Vi är ett extra stöd vid sidan av skolan, som läxhjälp hemma. Eleven kan repetera det som gås igenom i klassrummet, öva mer på det som är svårt och komma ikapp i egen takt.",
+  },
+  {
+    q: `Vilka årskurser passar ${BRAND.name} för?`,
     a: "Årskurs 4, 5 och 6. Allt innehåll följer Skolverkets centrala innehåll för matematik på mellanstadiet.",
   },
   {
@@ -104,9 +109,9 @@ export default function Landing() {
       <Section className="!pt-10 sm:!pt-16">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <span className="chip bg-gold-light text-gold-ink">Matematik för årskurs 4–6</span>
+            <span className="chip bg-gold-light text-gold-ink">Läxhjälp i matte för åk 4–6</span>
             <h1 className="mt-4 text-4xl font-bold sm:text-5xl lg:text-[3.4rem]">
-              Matte som känns <span className="text-wine">lugn</span> och går att förstå.
+              Läxhjälpen som finns där <span className="text-wine">när du behöver den</span>.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted">
               {HERO_TEXT} <ReadAloud text={HERO_TEXT} />
@@ -148,8 +153,8 @@ export default function Landing() {
           <Eyebrow>Känner du igen dig?</Eyebrow>
           <h2 className="mt-2 text-3xl font-bold sm:text-4xl">När läxan tar stopp och ingen riktigt vet varför</h2>
           <p className="mt-4 text-lg text-muted">
-            Många barn tappar tråden i matten på mellanstadiet. Det är sällan allt som är svårt, oftast är det ett par delmoment som skaver. Matteportalen hjälper er att hitta
-            just dem och öva i lugn och ro, utan stress och tidspress.
+            Många barn tappar tråden i matten på mellanstadiet. Det är sällan allt som är svårt, oftast är det ett par delmoment som skaver. {BRAND.name} är ett stöd vid sidan av skolan som hjälper er att hitta just
+            dem och öva i lugn och ro hemma, utan stress och tidspress.
           </p>
         </div>
       </Section>
@@ -286,7 +291,7 @@ export default function Landing() {
       {/* Slut-CTA */}
       <Section>
         <div className="rounded-3xl bg-wine px-6 py-12 text-center text-white sm:px-12">
-          <h2 className="text-3xl font-bold !text-white sm:text-4xl">Redo att göra matten lite lättare?</h2>
+          <h2 className="text-3xl font-bold !text-white sm:text-4xl">Ge ditt barn ett extra stöd i matten</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/80">Skapa ett gratiskonto på en minut och testa två lektioner tillsammans med ditt barn.</p>
           <Link href="/logga-in?skapa=1" className="btn mt-6 bg-gold !px-6 !py-3 text-lg text-navy hover:bg-gold-light">
             Kom igång gratis

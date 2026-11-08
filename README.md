@@ -1,4 +1,4 @@
-# Matteportalen
+# Mega Akademin
 
 Läxhjälp i matematik för mellanstadiet (åk 4–6). Kursplanen följer Skolverkets centrala innehåll.
 

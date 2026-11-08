@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -92,13 +93,24 @@ export const NAV_BY_ROLE: Record<Role, NavGroup[]> = { elev: ELEV_NAV, foralder:
 
 const ROLE_LABEL: Record<Role, string> = { elev: "Elev", foralder: "Förälder", admin: "Admin" };
 
+/** Loggans märke: ett M i en rundad ruta med en liten stjärna. */
+export function LogoMark({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden className="shrink-0">
+      <rect width={40} height={40} rx={11} fill="var(--color-navy)" />
+      <path d="M10 29V12.5c0-.8 1-1.2 1.6-.6L20 21l8.4-9.1c.6-.6 1.6-.2 1.6.6V29" fill="none" stroke="var(--color-gold)" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m31 5 1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="var(--color-wine)" />
+    </svg>
+  );
+}
+
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex min-w-0 items-center gap-2">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-navy font-serif text-lg font-bold text-gold">π</span>
+      <LogoMark />
       {!compact && (
         <span className="truncate font-serif text-lg font-bold text-navy">
-          Matte<span className="text-wine">portalen</span>
+          {BRAND.first} <span className="text-wine">{BRAND.second}</span>
         </span>
       )}
     </Link>
@@ -177,9 +189,9 @@ function MarketingShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:grid-cols-3">
           <div>
             <p className="font-serif text-lg font-bold text-white">
-              Matte<span className="text-gold">portalen</span>
+              {BRAND.first} <span className="text-gold">{BRAND.second}</span>
             </p>
-            <p className="mt-2">Läxhjälp i matematik för årskurs 4–6, skapad av behöriga lärare.</p>
+            <p className="mt-2">Extra stöd och läxhjälp i matematik för årskurs 4–6, skapad av behöriga lärare.</p>
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-semibold text-white">Tjänsten</p>
@@ -191,11 +203,11 @@ function MarketingShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex flex-col gap-1">
             <p className="font-semibold text-white">Kontakt</p>
-            <span>hej@matteportalen.se (platshållare)</span>
+            <span>{BRAND.email} (platshållare)</span>
             <span>Följer Skolverkets kursplan för matematik</span>
           </div>
         </div>
-        <div className="border-t border-white/10 py-4 text-center text-xs text-white/50">© {new Date().getFullYear()} Matteportalen (arbetsnamn)</div>
+        <div className="border-t border-white/10 py-4 text-center text-xs text-white/50">© {new Date().getFullYear()} {BRAND.name} (arbetsnamn)</div>
       </footer>
     </div>
   );
@@ -351,7 +363,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="grid min-h-screen place-items-center">
         <div className="flex flex-col items-center gap-3 text-muted">
-          <span className="grid h-14 w-14 animate-pulse place-items-center rounded-2xl bg-navy font-serif text-2xl font-bold text-gold">π</span>
+          <span className="animate-pulse"><LogoMark size={56} /></span>
           <span className="text-sm">Laddar…</span>
         </div>
       </div>

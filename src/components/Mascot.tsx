@@ -23,6 +23,7 @@ export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: nu
   const rx = cx + gap;
   return (
     <g>
+      <g className="m-eyes">
       {mood === "hurra" ? (
         <>
           <path d={`M${lx - 4} ${cy + 1} Q${lx} ${cy - 5} ${lx + 4} ${cy + 1}`} stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
@@ -42,6 +43,7 @@ export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: nu
           <circle cx={rx + 1.3} cy={cy - 1.4} r={1.4} fill="#fff" />
         </>
       )}
+      </g>
       {mood === "tanker" ? (
         <path d={`M${cx - 3} ${cy + 10} Q${cx + 2} ${cy + 8} ${cx + 5} ${cy + 10}`} stroke={color} strokeWidth={2.6} fill="none" strokeLinecap="round" />
       ) : mood === "hurra" ? (
@@ -76,31 +78,43 @@ function Sigge({ mood }: { mood: Mood }) {
       {/* armar */}
       {mood === "hurra" ? (
         <>
-          <path d="M31 60 Q20 50 18 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          <path d="M69 60 Q80 50 82 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <g className="m-arm-l" style={{ transformOrigin: "31px 60px" }}>
+            <path d="M31 60 Q20 50 18 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          </g>
+          <g className="m-arm-r" style={{ transformOrigin: "69px 60px" }}>
+            <path d="M69 60 Q80 50 82 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          </g>
         </>
       ) : mood === "tanker" ? (
         <>
           <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          <path d="M69 64 Q74 56 64 50" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <g className="m-arm-chin" style={{ transformOrigin: "69px 64px" }}>
+            <path d="M69 64 Q74 56 64 50" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          </g>
         </>
       ) : (
         <>
           <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          <path d="M69 62 Q76 70 75 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <g className="m-arm-wave" style={{ transformOrigin: "69px 62px" }}>
+            <path d="M69 62 Q76 70 75 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          </g>
         </>
       )}
       {/* mage */}
       <rect x={34} y={52} width={32} height={38} rx={15} style={{ fill: GOLD_L, stroke: GOLD }} strokeWidth={2} />
       <path d="M36 65 H64 M36 77 H64 M50 54 V88" style={{ stroke: GOLD }} strokeWidth={1.6} />
-      {/* huvud */}
-      <circle cx={50} cy={31} r={21} fill={MINT} />
-      <ellipse cx={50} cy={40} rx={11} ry={6.5} fill={MINT_L} />
       {/* halsduk */}
       <path d="M34 49 Q50 56 66 49 L64 55 Q50 62 36 55 Z" style={{ fill: ACCENT }} />
-      <path d="M58 54 l5 10 l-7 -1 Z" style={{ fill: ACCENT }} />
-      <Face cx={50} cy={28} mood={mood} gap={8} eye={3.8} />
-      <Cheeks cx={50} cy={37} gap={14} />
+      <g className="m-scarf" style={{ transformOrigin: "60px 54px" }}>
+        <path d="M58 54 l5 10 l-7 -1 Z" style={{ fill: ACCENT }} />
+      </g>
+      {/* huvud */}
+      <g className="m-head" style={{ transformOrigin: "50px 50px" }}>
+        <circle cx={50} cy={31} r={21} fill={MINT} />
+        <ellipse cx={50} cy={40} rx={11} ry={6.5} fill={MINT_L} />
+        <Face cx={50} cy={28} mood={mood} gap={8} eye={3.8} />
+        <Cheeks cx={50} cy={37} gap={14} />
+      </g>
     </g>
   );
 }
@@ -219,13 +233,39 @@ function Pi({ mood }: { mood: Mood }) {
 
 const FIGURES: Record<MascotId, (p: { mood: Mood }) => React.ReactElement> = { sigge: Sigge, bit: Bit, frida: Frida, pi: Pi };
 
-export default function Mascot({ mood = "glad", size = 72, className = "", kind }: { mood?: Mood; size?: number; className?: string; kind?: MascotId }) {
+/**
+ * animate: maskoten andas, blinkar och rör sig efter humöret
+ * (hälsar = vinkar, firar = hoppar och viftar, tänker = lutar huvudet).
+ * Stängs av automatiskt för den som valt "minska rörelse" i sin dator.
+ */
+export default function Mascot({
+  mood = "glad",
+  size = 72,
+  className = "",
+  kind,
+  animate = true,
+}: {
+  mood?: Mood;
+  size?: number;
+  className?: string;
+  kind?: MascotId;
+  animate?: boolean;
+}) {
   const { state } = useStore();
   const id = kind ?? state.mascot ?? "sigge";
   const Figure = FIGURES[id];
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" className={className} role="img" aria-label={`Maskoten ${id}`}>
-      <Figure mood={mood} />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      className={`${animate ? `mascot mascot-${mood}` : ""} overflow-visible ${className}`}
+      role="img"
+      aria-label={`Maskoten ${id}`}
+    >
+      <g className="m-body">
+        <Figure mood={mood} />
+      </g>
     </svg>
   );
 }
