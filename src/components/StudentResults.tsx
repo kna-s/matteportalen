@@ -1,5 +1,6 @@
 "use client";
 
+import { welcomeBack } from "@/lib/encourage";
 import Link from "next/link";
 import { useState } from "react";
 import { BADGES } from "@/lib/badges";
@@ -46,9 +47,10 @@ export default function StudentResults({ student, p }: { student: Student; p: St
   const best = p.quizResults.reduce<{ score: number; total: number } | null>((b, r) => (!b || r.score / r.total > b.score / b.total ? r : b), null);
   const recent = [...p.quizResults].reverse().slice(0, 4);
 
+  const back = welcomeBack(p);
   const message =
     weekSteps === 0
-      ? "Den här veckan har du inte räknat än. Ett litet steg idag räcker!"
+      ? back ?? "Den här veckan har du inte räknat än. Ett litet steg idag räcker!"
       : `Den här veckan har du klarat ${weekSteps} steg${weekQuiz ? ` och ${weekQuiz} quiz` : ""}. Grymt jobbat!`;
 
   return (

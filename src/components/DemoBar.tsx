@@ -99,6 +99,24 @@ export default function DemoBar() {
               onChange={(e) => update((s) => ({ ...s, demoUnlockAll: e.target.checked }))}
             />
           </label>
+          <button
+            onClick={() =>
+              update((s) => {
+                // Flytta all aktivitet en vecka bakåt i tiden, så att Sigge säger "välkommen tillbaka".
+                const shift = (d: string) => new Date(new Date(d).getTime() - 7 * 864e5).toISOString();
+                const progress = Object.fromEntries(
+                  Object.entries(s.progress).map(([id, p]) => [
+                    id,
+                    { ...p, completed: Object.fromEntries(Object.entries(p.completed).map(([k, d]) => [k, shift(d)])), quizResults: p.quizResults.map((r) => ({ ...r, date: shift(r.date) })) },
+                  ]),
+                );
+                return { ...s, progress };
+              })
+            }
+            className="mt-1.5 block text-wine underline"
+          >
+            Simulera en paus på en vecka
+          </button>
           <button onClick={() => update((s) => ({ ...s, openedChests: {}, outfits: {} }))} className="mt-1.5 text-wine underline">
             Stäng kistorna och nollställ Sigges kläder
           </button>

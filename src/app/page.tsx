@@ -1,5 +1,6 @@
 "use client";
 
+import { daysSinceActive, welcomeBack } from "@/lib/encourage";
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { AREAS, STEP_ICON, STEP_LABELS, chaptersFor, getArea, getChapter } from "@/lib/curriculum";
@@ -52,7 +53,7 @@ function StudentHome() {
         <h1 className="text-3xl font-bold sm:text-4xl">Hej {currentStudent.name}!</h1>
         <div className="mt-3">
           <MascotSays mood="glad">
-            {cont ? `Kul att se dig! Idag fortsätter vi med ${cont.chapter.title.toLowerCase()}. Ett steg i taget.` : "Wow, du har gjort allt! Nytt material kommer snart."}
+            {welcomeBack(p) ?? (cont ? `Kul att se dig! Idag fortsätter vi med ${cont.chapter.title.toLowerCase()}. Ett steg i taget.` : "Wow, du har gjort allt! Nytt material kommer snart.")}
           </MascotSays>
         </div>
       </div>
@@ -173,6 +174,7 @@ function ParentHome() {
           const week = Object.values(p.completed).filter((d) => new Date(d).getTime() > weekAgo).length;
           const plan = trainingPlan(p, st.grade);
           const badgeCount = BADGES.filter((b) => b.earned({ p, grade: st.grade, tier })).length;
+          const idle = daysSinceActive(p);
           const select = () => update((s) => ({ ...s, session: { ...s.session!, studentId: st.id } }));
           return (
             <div key={st.id} className="card space-y-4 !p-6">
@@ -193,6 +195,11 @@ function ParentHome() {
                   <p className="text-xs text-muted">av årskursen</p>
                 </div>
               </div>
+              {idle !== null && idle >= 3 && (
+                <p className="rounded-xl bg-gold-light/60 px-3 py-2 text-sm">
+                  <b>{st.name}</b> har inte varit inne på {idle} dagar. Ett tips: välj något som är aktuellt i skolan, så blir det lättare att komma igång.
+                </p>
+              )}
               {tierAtLeast(tier, "premium") ? (
                 plan.length > 0 ? (
                   <p className="text-sm">
