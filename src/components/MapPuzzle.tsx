@@ -8,7 +8,8 @@ import { useId } from "react";
 import Icon from "./icons/Icon";
 import Mascot from "./Mascot";
 
-export const TRAIL_COLOR = "#d8463c";
+/** Mörkt rött "bläck på karta", så att stigen inte förväxlas med de orangea knapparna. */
+export const TRAIL_COLOR = "#b8392f";
 
 const W = 400;
 const H = 260;

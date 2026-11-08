@@ -23,7 +23,7 @@ function baseMood(m: Mood): "glad" | "hurra" | "tanker" {
 
 const NAVY = "var(--color-navy)";
 const NAVY_L = "var(--color-navy-light)";
-const ACCENT = "var(--color-wine)";
+const ACCENT = "var(--icon-accent, var(--color-wine))";
 const GOLD = "var(--color-gold)";
 const GOLD_L = "var(--color-gold-light)";
 const MINT = "#8fd3b6";

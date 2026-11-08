@@ -55,15 +55,22 @@
 [data-palette="hav"] {
   --color-navy: #0e4f61;
   --color-navy-light: #186a80;
-  --color-wine: #f07c3e;
-  --color-wine-light: #f4955f;
+  /* Mörkare orange för text och knappar (4,8:1 mot vitt), ljusa orange bara i ikoner och illustrationer. */
+  --color-wine: #bd521d;
+  --color-wine-light: #d0602a;
+  --icon-accent: #f07c3e;
   --color-gold: #ffd166;
   --color-gold-light: #fff1cc;
   --color-gold-ink: #7a5a00;
-  --color-cream: #f3f8f7;
+  /* Bakgrunden lite mörkare än korten så att de lyfter utan kantlinjer. */
+  --color-cream: #ecf3f1;
   --color-ink: #13292f;
   --color-muted: #55696e;
-  --color-line: #d9e6e3;
+  --color-line: #d5e3e0;
+  /* Statusfärger som passar petrol och orange och klarar kontrastkraven. */
+  --color-good: #1a7d52;
+  --color-warn: #a8620a;
+  --color-bad: #c0392f;
 }
 [data-palette="plommon"] {
   --color-navy: #3d2352;
