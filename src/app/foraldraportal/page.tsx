@@ -14,7 +14,7 @@ export default function ParentPortal() {
     <div>
       <PageHeader
         icon="👨‍👩‍👧"
-        title="Mina barn"
+        title="Föräldraportal"
         intro="Skapa konton åt dina barn, välj vad som är aktuellt för dem, följ hur det går och få en veckorapport."
       />
       <RequireLogin roles={["foralder"]}>

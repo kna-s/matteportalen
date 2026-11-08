@@ -46,10 +46,10 @@ const ELEV_NAV: NavGroup[] = [
 /** Föräldern: uppföljning först, lärandet längre ner. */
 const PARENT_NAV: NavGroup[] = [
   {
-    title: "Mina barn",
+    title: "Uppföljning",
     items: [
       { href: "/", label: "Översikt", icon: "🏠", short: "Översikt" },
-      { href: "/foraldraportal", label: "Mina barn", icon: "👨‍👩‍👧", short: "Barn" },
+      { href: "/foraldraportal", label: "Föräldraportal", icon: "👨‍👩‍👧", short: "Portal" },
       { href: "/resultat", label: "Resultat", icon: "📊", short: "Resultat" },
       { href: "/screening", label: "Screening", icon: "🧠", short: "Screening" },
       { href: "/marken", label: "Märken", icon: "🏅" },
