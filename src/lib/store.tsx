@@ -52,7 +52,7 @@ export interface StudentProgress {
 
 export interface AppState {
   session: { role: Role; studentId?: string } | null;
-  parent: { name: string; email: string; tier: Tier; weeklyReport: boolean };
+  parent: { name: string; email: string; tier: Tier; weeklyReport: boolean; onboarded?: boolean };
   students: Student[];
   progress: Record<string, StudentProgress>;
   /** Kapitel som föräldern markerat som "Aktuellt", per barn (studentId). */
@@ -132,6 +132,9 @@ interface Ctx {
   logout: () => void;
   completeStep: (studentId: string, stepId: string) => void;
   markToolUsed: (studentId: string, tool: string) => void;
+  /** Demo: skapa ett nytt, tomt föräldrakonto (startar guiden "Kom igång"). */
+  startNewAccount: (name: string, email: string) => void;
+  addStudent: (name: string, grade: Grade) => Student;
   saveQuiz: (studentId: string, r: QuizResult) => void;
 }
 
@@ -166,12 +169,38 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       state,
       ready,
       update,
-      reset: () => setState({ ...defaultState(), session: state.session, palette: state.palette, mascot: state.mascot }),
+      reset: () => {
+        const d = defaultState();
+        const sid = d.students.some((x) => x.id === state.session?.studentId) ? state.session?.studentId : d.students[0].id;
+        setState({ ...d, session: state.session ? { ...state.session, studentId: sid } : null, palette: state.palette, mascot: state.mascot });
+      },
       currentStudent: state.students.find((s) => s.id === sid),
       tier: state.parent.tier,
       login: (role, studentId) =>
         setState((s) => ({ ...s, session: { role, studentId: studentId ?? s.students[0]?.id } })),
       logout: () => setState((s) => ({ ...s, session: null })),
+      startNewAccount: (name, email) =>
+        setState((s) => ({
+          ...s,
+          session: { role: "foralder" },
+          parent: { name: name || "Ny förälder", email: email || "", tier: "gratis", weeklyReport: true, onboarded: false },
+          students: [],
+          progress: {},
+          aktuellt: {},
+          seenBadges: {},
+        })),
+      addStudent: (name, grade) => {
+        const clean = name.trim();
+        const base = clean.toLowerCase().replace(/[åä]/g, "a").replace(/ö/g, "o").replace(/[^a-z0-9]/g, "") || "elev";
+        const student: Student = { id: `${base}-${Date.now().toString(36)}`, name: clean, grade, username: `${base}${Math.floor(10 + Math.random() * 89)}` };
+        setState((s) => ({
+          ...s,
+          students: [...s.students, student],
+          progress: { ...s.progress, [student.id]: emptyProgress() },
+          session: s.session && !s.session.studentId ? { ...s.session, studentId: student.id } : s.session,
+        }));
+        return student;
+      },
       markToolUsed: (studentId, tool) =>
         setState((s) => {
           const p = s.progress[studentId] ?? emptyProgress();

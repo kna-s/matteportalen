@@ -12,6 +12,8 @@ Läxhjälp i matematik för mellanstadiet (åk 4–6). Kursplanen följer Skolve
 - Allt innehåll är platshållare och genereras i `src/lib/curriculum.ts`.
 - Knappen **🎛️ Demo** nere till höger byter färger, maskot och nivå, och kan visa märkesnotiser.
 - Jämförelsesidor: `/designval` (färger) och `/maskot` (maskotar).
+- Quiz visar en fråga i taget med direkt återkoppling från Sigge. Övningar har en rityta.
+- Nya föräldrakonton går igenom guiden `/kom-igang` (lägg till barn, välj nivå, få inloggningsuppgifter).
 - 18 märken (`src/lib/badges.ts`) som räknas om per årskurs. Nya märken visas som notis för eleven.
 
 ### Nivåer och flöde ("Nästa")

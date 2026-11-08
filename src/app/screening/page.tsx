@@ -2,6 +2,7 @@
 
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
+import Mascot from "@/components/Mascot";
 import { getChapter } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
 import { gradeOverview, shortComment, trainingPlan } from "@/lib/screening";
@@ -64,6 +65,20 @@ function ScreeningContent() {
       </div>
     );
   }
+
+  if (p.quizResults.length === 0)
+    return (
+      <div className="rounded-3xl bg-paper p-8 text-center ring-1 ring-line">
+        <div className="flex justify-center">
+          <Mascot mood="glad" size={110} />
+        </div>
+        <h2 className="mt-2 text-2xl font-bold">Ingen screening än</h2>
+        <p className="mx-auto mt-1 max-w-md text-muted">Screeningen bygger på quizen. Efter första quizen ser du här vad som går bra och vad som kan övas mer på.</p>
+        <Link href="/quiz" className="btn-accent mt-5">
+          Till quizen
+        </Link>
+      </div>
+    );
 
   const { areas, overall } = gradeOverview(p, currentStudent.grade);
   const plan = trainingPlan(p, currentStudent.grade);

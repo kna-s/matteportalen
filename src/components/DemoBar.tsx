@@ -8,11 +8,11 @@ import { TIERS, TIER_ORDER, Tier } from "@/lib/tiers";
 
 /** Bara för demo: byt färger, maskot, nivå och testa märkesnotiser. Tas bort i produktion. */
 export default function DemoBar() {
-  const { state, tier, update } = useStore();
+  const { state, tier, update, reset } = useStore();
   const [open, setOpen] = useState(false);
   const [badge, setBadge] = useState(BADGES[0].id);
   const showTier = state.session && state.session.role !== "admin";
-  const pos = state.session ? "bottom-20 lg:bottom-3" : "bottom-3";
+  const pos = state.session ? "top-[4.25rem]" : "bottom-3";
 
   if (!open)
     return (
@@ -97,6 +97,14 @@ export default function DemoBar() {
             Jämför maskotar
           </Link>
         </div>
+        <button
+          onClick={() => {
+            if (confirm("Återställ exempelfamiljen (Anna, Leo och Maja)? Allt du har testat försvinner.")) reset();
+          }}
+          className="w-full rounded-lg border border-line py-1.5 font-semibold text-wine hover:bg-cream"
+        >
+          Återställ demodata
+        </button>
       </div>
     </div>
   );

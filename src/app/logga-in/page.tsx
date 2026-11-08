@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 
 export default function LoginPage() {
-  const { state, login } = useStore();
+  const { state, login, startNewAccount } = useStore();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const router = useRouter();
   const [mode, setMode] = useState<"logga-in" | "skapa">("logga-in");
   useEffect(() => {
@@ -83,16 +85,21 @@ export default function LoginPage() {
           className="mt-4 grid gap-3"
           onSubmit={(e) => {
             e.preventDefault();
-            login("foralder");
-            router.push("/foraldraportal");
+            if (mode === "skapa") {
+              startNewAccount(name, email);
+              router.push("/kom-igang");
+            } else {
+              login("foralder");
+              router.push("/");
+            }
           }}
         >
-          {mode === "skapa" && <input className="input" placeholder="Ditt namn" />}
-          <input className="input" type="email" placeholder="E-post" />
+          {mode === "skapa" && <input className="input" placeholder="Ditt namn" value={name} onChange={(e) => setName(e.target.value)} />}
+          <input className="input" type="email" placeholder="E-post" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="input" type="password" placeholder="Lösenord" />
           <button className="btn-primary">{mode === "skapa" ? "Skapa konto (gratis)" : "Logga in"}</button>
           <p className="text-xs text-muted">
-            Riktig inloggning kopplas på i nästa fas. Alla nya konton börjar på gratisnivån. Elevkonton skapas av föräldern i Föräldraportalen.
+            Demo: ”Skapa konto” startar ett nytt, tomt konto med guiden Kom igång. Exempelfamiljen (Anna, Leo och Maja) kommer tillbaka via 🎛️ Demo → Återställ demodata. Riktig inloggning kopplas på i nästa fas.
           </p>
         </form>
       </div>

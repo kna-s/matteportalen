@@ -65,7 +65,7 @@ export const AREAS: Area[] = [
     icon: "taluppfattning",
     title: "Taluppfattning och tals användning",
     emoji: "🔢",
-    color: "#1f3a68",
+    color: "#1d7a94",
     topics: [
       "Rationella tal och negativa tal",
       "Positionssystemet och decimaltal",
@@ -82,7 +82,7 @@ export const AREAS: Area[] = [
     icon: "algebra",
     title: "Algebra",
     emoji: "🧩",
-    color: "#7a1f2b",
+    color: "#e8743b",
     topics: [
       "Likheter och likhetstecknet",
       "Variabler och uttryck",
@@ -95,7 +95,7 @@ export const AREAS: Area[] = [
     icon: "geometri",
     title: "Geometri",
     emoji: "📐",
-    color: "#2f6b4f",
+    color: "#2f9e74",
     topics: [
       "Två- och tredimensionella objekt",
       "Mäta längd, area, massa, volym, tid och vinkel",
@@ -109,7 +109,7 @@ export const AREAS: Area[] = [
     icon: "sannolikhet",
     title: "Sannolikhet och statistik",
     emoji: "🎲",
-    color: "#8a6a12",
+    color: "#d9a21b",
     topics: [
       "Slump, chans och risk",
       "Enkel kombinatorik",
@@ -122,7 +122,7 @@ export const AREAS: Area[] = [
     icon: "samband",
     title: "Samband och förändring",
     emoji: "📈",
-    color: "#5b3a7a",
+    color: "#7a5fc2",
     topics: [
       "Proportionalitet",
       "Koordinatsystem och gradering av axlar",
@@ -134,7 +134,7 @@ export const AREAS: Area[] = [
     icon: "problemlosning",
     title: "Problemlösning",
     emoji: "💡",
-    color: "#a2471c",
+    color: "#d6517a",
     topics: [
       "Strategier för problemlösning",
       "Formulera egna matematiska frågor",
@@ -185,7 +185,7 @@ function placeholderQuestions(chapterId: string, grade: Grade, topic: string, n:
     const opts = [correct, correct + 1, correct - 2, correct + 3].sort(() => rand() - 0.5);
     return {
       id: `${chapterId}-q${i + 1}`,
-      prompt: `Platshållarfråga ${i + 1} om ${topic.toLowerCase()}: Vad är ${a} + ${b}?`,
+      prompt: `Vad är ${a} + ${b}?`,
       options: opts.map(String),
       correctIndex: opts.indexOf(correct),
       focus: focuses[i % focuses.length],
@@ -200,6 +200,8 @@ function buildChapters(): Chapter[] {
       for (const topic of area.topics) {
         const id = `ak${grade}-${slug(topic)}`;
         const tools = toolsFor(area.id, topic);
+        // Demo: sprid ut publiceringsmånader så att "Nytt denna månad" syns.
+        const month = ["2026-09", "2026-10", "2026-11"][(chapters.length * 7) % 3 === 0 ? 2 : chapters.length % 2];
         chapters.push({
           id,
           grade,
@@ -207,13 +209,13 @@ function buildChapters(): Chapter[] {
           title: topic,
           description: `Åk ${grade}: ${BABBEL}`,
           steps: [
-            { id: `${id}-video`, type: "video", title: `Videolektion: ${topic}`, tools: [], publishedMonth: "2026-11", version: 1 },
+            { id: `${id}-video`, type: "video", title: `Videolektion: ${topic}`, tools: [], publishedMonth: month, version: 1 },
             {
               id: `${id}-ovning`,
               type: "ovning",
               title: `Övning: ${topic}`,
               tools,
-              publishedMonth: "2026-11",
+              publishedMonth: month,
               version: 1,
               tasks: [
                 `Gör uppgift 1 om ${topic.toLowerCase()} och skriv ner hur du tänkte.`,
@@ -226,11 +228,11 @@ function buildChapters(): Chapter[] {
               type: "quiz",
               title: `Quiz: ${topic}`,
               tools,
-              publishedMonth: "2026-11",
+              publishedMonth: month,
               version: 1,
               questions: placeholderQuestions(id, grade, topic, 6),
             },
-            { id: `${id}-screening`, type: "screening", title: `Screening: ${topic}`, tools: [], publishedMonth: "2026-11", version: 1 },
+            { id: `${id}-screening`, type: "screening", title: `Screening: ${topic}`, tools: [], publishedMonth: month, version: 1 },
           ],
         });
       }
@@ -240,6 +242,9 @@ function buildChapters(): Chapter[] {
 }
 
 export const CHAPTERS: Chapter[] = buildChapters();
+
+/** Senaste publiceringsmånaden i kursplanen. */
+export const LATEST_MONTH = "2026-11";
 
 export function getChapter(id: string) {
   return CHAPTERS.find((c) => c.id === id);

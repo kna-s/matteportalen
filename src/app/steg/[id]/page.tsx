@@ -11,7 +11,8 @@ import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
-import Mascot from "@/components/Mascot";
+import Mascot, { MascotSays } from "@/components/Mascot";
+import DrawPad from "@/components/DrawPad";
 
 export default function StepPage() {
   return (
@@ -20,6 +21,13 @@ export default function StepPage() {
     </RequireLogin>
   );
 }
+
+const SIGGE_INTRO: Record<Step["type"], string> = {
+  video: "Titta i lugn och ro. Du kan pausa och spola tillbaka så många gånger du vill.",
+  ovning: "Här finns inget rätt eller fel. Testa, rita och skriv hur du tänker!",
+  quiz: "En fråga i taget. Ta den tid du behöver, du klarar det!",
+  screening: "Här ser du vad du redan kan och vad du kan öva lite mer på.",
+};
 
 function StepView() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +41,7 @@ function StepView() {
   const isStudent = state.session?.role === "elev";
   const studentId = currentStudent?.id;
   const { next, skipped } = nextAccessible(chapter.grade, tier, step.id);
+  const stepIndex = chapter.steps.findIndex((s) => s.id === step.id);
 
   const goNext = () => {
     if (open && isStudent && studentId && step.type !== "quiz") completeStep(studentId, step.id);
@@ -61,13 +70,12 @@ function StepView() {
       )}
 
       <div className="grid gap-5 lg:grid-cols-[1fr_auto]">
-        <div className="space-y-5">
-          <h1 className="text-3xl font-bold">
-            <span className="flex items-center gap-3">
-              <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
-              {step.title}
-            </span>
+        <div className="min-w-0 space-y-5">
+          <h1 className="flex items-center gap-3 text-2xl font-bold sm:text-3xl">
+            <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
+            {step.title}
           </h1>
+          {open && <MascotSays mood={step.type === "quiz" ? "tanker" : "glad"} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
@@ -82,23 +90,31 @@ function StepView() {
         </div>
         {open && step.tools.length > 0 && (
           <aside className="lg:w-80">
-            <Toolbox tools={step.tools} />
+            <div className="lg:sticky lg:top-20">
+              <Toolbox tools={step.tools} />
+            </div>
           </aside>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-        <div className="text-sm text-muted">
-          {skipped.length > 0 && (
-            <span>
-              Hoppar över {skipped.map((s) => STEP_LABELS[s.step.type].toLowerCase()).join(", ")} (ingår i{" "}
-              {TIERS[requiredTier(skipped[0].step, skipped[0].chapter.id)].name}).
+      {/* Fast Nästa-rad längst ner */}
+      <div className="sticky bottom-[4.5rem] z-20 -mx-4 border-t border-line bg-cream/95 px-4 py-3 backdrop-blur lg:bottom-0 lg:-mx-8 lg:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0 text-sm text-muted">
+            <span className="font-semibold text-navy">
+              Steg {stepIndex + 1} av {chapter.steps.length}
             </span>
-          )}
+            <span className="hidden sm:inline"> · {chapter.title}</span>
+            {skipped.length > 0 && (
+              <span className="block text-xs">
+                Hoppar över {skipped.map((s) => STEP_LABELS[s.step.type].toLowerCase()).join(", ")} (ingår i {TIERS[requiredTier(skipped[0].step, skipped[0].chapter.id)].name})
+              </span>
+            )}
+          </div>
+          <button onClick={goNext} className="btn-primary text-lg">
+            {next ? `Nästa: ${STEP_LABELS[next.step.type]} →` : "Tillbaka till kursplanen"}
+          </button>
         </div>
-        <button onClick={goNext} className="btn-primary text-lg">
-          {next ? `Nästa: ${STEP_LABELS[next.step.type]} →` : "Tillbaka till kursplanen"}
-        </button>
       </div>
     </div>
   );
@@ -133,21 +149,41 @@ function Stepper({ chapter, current }: { chapter: Chapter; current: Step }) {
 }
 
 function VideoStep({ chapter }: { chapter: Chapter }) {
+  const area = getArea(chapter.areaId);
   return (
     <div className="space-y-4">
-      <div className="relative grid aspect-video place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-navy to-navy-light text-white">
-        <div className="text-center">
-          <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-white/15 text-4xl">▶</div>
+      <div className="relative mx-auto grid aspect-video max-w-3xl place-items-center overflow-hidden rounded-2xl text-white shadow-md" style={{ background: `linear-gradient(135deg, ${area.color}, var(--color-navy))` }}>
+        <Icon name={area.icon} size={160} className="icon-invert absolute -right-6 -top-6 opacity-15" />
+        <div className="relative text-center">
+          <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-white/20 text-4xl backdrop-blur">▶</div>
           <p className="mt-3 font-serif text-xl">Videolektion kommer snart</p>
-          <p className="text-sm text-white/70">Här läggs lärarens video om ”{chapter.title}” in.</p>
+          <p className="text-sm text-white/75">Här läggs lärarens video om ”{chapter.title}” in.</p>
         </div>
-        <span className="absolute bottom-3 right-3 rounded bg-black/40 px-2 py-0.5 text-xs">ca 5 min</span>
+        <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/40 to-transparent px-4 pb-3 pt-8 text-xs">
+          <span>0:00</span>
+          <span className="h-1.5 flex-1 rounded-full bg-white/30">
+            <span className="block h-full w-0 rounded-full bg-gold" />
+          </span>
+          <span>ca 5:00</span>
+        </div>
       </div>
-      <div className="card">
-        <h2 className="text-lg font-bold">Om lektionen</h2>
-        <p className="mt-1 text-muted">
-          {BABBEL} <ReadAloud text={BABBEL} />
-        </p>
+      <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
+        <div className="card">
+          <h2 className="text-lg font-bold">Om lektionen</h2>
+          <p className="mt-1 text-sm text-muted">
+            {BABBEL} <ReadAloud text={BABBEL} />
+          </p>
+        </div>
+        <div className="card">
+          <h2 className="text-lg font-bold">Det här lär du dig</h2>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {["Vad delmomentet handlar om", "Ett enkelt sätt att räkna", "Hur du kan använda det i vardagen"].map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <Icon name="klar" size={18} /> {t}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
@@ -156,13 +192,22 @@ function VideoStep({ chapter }: { chapter: Chapter }) {
 function ExerciseStep({ step }: { step: Step }) {
   const { state, update, currentStudent } = useStore();
   const sid = currentStudent?.id;
-  const note = (sid && state.progress[sid]?.notes[step.id]) || "";
+  const notes = (sid && state.progress[sid]?.notes) || {};
+  const note = notes[step.id] || "";
+  const drawing = notes[`${step.id}:ritning`];
   const done = sid && state.progress[sid]?.completed[step.id];
+  const isStudent = state.session?.role === "elev";
+  const setNote = (key: string, value: string) =>
+    sid &&
+    update((s) => {
+      const p = s.progress[sid] ?? emptyProgress();
+      return { ...s, progress: { ...s.progress, [sid]: { ...p, notes: { ...p.notes, [key]: value } } } };
+    });
   return (
     <div className="space-y-4">
       <div className="card">
-        <p className="text-muted">Gör uppgifterna nedan. Det finns inget rätt eller fel här, det viktiga är att du provar och visar hur du tänker.</p>
-        <ol className="mt-4 space-y-3">
+        <h2 className="text-lg font-bold">Uppgifter</h2>
+        <ol className="mt-3 space-y-3">
           {step.tasks!.map((t, i) => (
             <li key={i} className="flex gap-3 rounded-xl bg-cream p-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-navy text-sm font-bold text-white">{i + 1}</span>
@@ -173,44 +218,46 @@ function ExerciseStep({ step }: { step: Step }) {
           ))}
         </ol>
       </div>
+      <div className="card">
+        <h2 className="mb-2 text-lg font-bold">Rita här</h2>
+        <DrawPad key={step.id} value={drawing} disabled={!isStudent} onChange={(v) => setNote(`${step.id}:ritning`, v)} />
+      </div>
       <label className="card block">
-        <span className="font-semibold text-navy">Mina anteckningar</span>
-        <textarea
-          className="input mt-2 min-h-28"
-          placeholder="Skriv hur du tänkte här…"
-          value={note}
-          disabled={state.session?.role !== "elev"}
-          onChange={(e) =>
-            sid &&
-            update((s) => {
-              const p = s.progress[sid] ?? emptyProgress();
-              return { ...s, progress: { ...s.progress, [sid]: { ...p, notes: { ...p.notes, [step.id]: e.target.value } } } };
-            })
-          }
-        />
+        <span className="text-lg font-bold text-navy">Skriv hur du tänkte</span>
+        <textarea className="input mt-2 min-h-28" placeholder="Jag tänkte att…" value={note} disabled={!isStudent} onChange={(e) => setNote(step.id, e.target.value)} />
       </label>
-      {done && <p className="text-good">✓ Du har gjort den här övningen. Bra kämpat!</p>}
+      {done && (
+        <p className="flex items-center gap-2 text-good">
+          <Icon name="klar" size={20} /> Du har gjort den här övningen. Bra kämpat!
+        </p>
+      )}
     </div>
   );
 }
 
+/** Quiz med en fråga i taget och direkt, mjuk återkoppling. */
 function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
   const { state, tier, currentStudent, saveQuiz } = useStore();
   const qs = step.questions!;
+  const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => qs.map(() => null));
+  const [checked, setChecked] = useState(false);
   const [result, setResult] = useState<QuizResult | null>(null);
   const feedback = quizFeedbackLevel(tier);
   const isStudent = state.session?.role === "elev";
+  const q = qs[idx];
+  const chosen = answers[idx];
+  const isRight = chosen === q.correctIndex;
 
-  const submit = () => {
+  const finish = () => {
     const byFocus: QuizResult["byFocus"] = {};
     let score = 0;
-    qs.forEach((q, i) => {
-      byFocus[q.focus] ??= { correct: 0, total: 0 };
-      byFocus[q.focus].total++;
-      if (answers[i] === q.correctIndex) {
+    qs.forEach((qq, i) => {
+      byFocus[qq.focus] ??= { correct: 0, total: 0 };
+      byFocus[qq.focus].total++;
+      if (answers[i] === qq.correctIndex) {
         score++;
-        byFocus[q.focus].correct++;
+        byFocus[qq.focus].correct++;
       }
     });
     const r = { stepId: step.id, chapterId: chapter.id, score, total: qs.length, byFocus, date: new Date().toISOString() };
@@ -218,67 +265,136 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
     if (isStudent && currentStudent) saveQuiz(currentStudent.id, r);
   };
 
-  return (
-    <div className="space-y-4">
-      {qs.map((q, i) => (
-        <fieldset key={q.id} className="card">
-          <legend className="sr-only">Fråga {i + 1}</legend>
-          <p className="font-semibold">
-            {i + 1}. {q.prompt} <ReadAloud text={q.prompt} />
-          </p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {q.options.map((o, oi) => {
-              const chosen = answers[i] === oi;
-              const show = !!result;
-              const correct = oi === q.correctIndex;
-              return (
-                <label
-                  key={oi}
-                  className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 ${
-                    show && correct ? "border-good bg-good/10" : show && chosen ? "border-warn bg-warn/10" : chosen ? "border-navy bg-navy/5" : "border-line hover:bg-cream"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name={q.id}
-                    checked={chosen}
-                    disabled={show}
-                    onChange={() => setAnswers((a) => a.map((x, xi) => (xi === i ? oi : x)))}
-                    className="accent-navy"
-                  />
-                  {o}
-                  {show && correct && <span className="ml-auto text-good">✓</span>}
-                  {show && chosen && !correct && <span className="ml-auto text-sm text-warn">Inte riktigt</span>}
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
-      ))}
+  const restart = () => {
+    setResult(null);
+    setAnswers(qs.map(() => null));
+    setIdx(0);
+    setChecked(false);
+  };
 
-      {!result ? (
-        <button className="btn-accent" disabled={answers.some((a) => a === null)} onClick={submit}>
-          Rätta quizen
-        </button>
-      ) : (
-        <div className="card border-navy">
-          <Mascot size={72} mood={result.score / result.total >= 0.6 ? "hurra" : "glad"} />
-          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-wine">
-            {result.score / result.total >= 0.85 ? "Superbra!" : result.score / result.total >= 0.6 ? "Bra jobbat!" : "Bra kämpat!"}
-          </p>
-          <p className="font-serif text-4xl font-bold text-navy">
+  if (result) {
+    const ratio = result.score / result.total;
+    return (
+      <div className="pop-in mx-auto max-w-xl overflow-hidden rounded-3xl bg-paper text-center shadow-md ring-1 ring-line">
+        <div className="bg-navy px-6 pb-6 pt-6 text-white">
+          <div className="flex justify-center">
+            <Mascot size={96} mood={ratio >= 0.6 ? "hurra" : "glad"} />
+          </div>
+          <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-gold">{ratio >= 0.85 ? "Superbra!" : ratio >= 0.6 ? "Bra jobbat!" : "Bra kämpat!"}</p>
+          <p className="font-serif text-4xl font-bold">
             {result.score} av {result.total} rätt
           </p>
-          <div className="mt-2">
-            <ProgressBar value={result.score / result.total} color="var(--color-wine)" />
+        </div>
+        <div className="p-6">
+          <div className="flex justify-center gap-1.5">
+            {qs.map((qq, i) => (
+              <span key={qq.id} className={`grid h-8 w-8 place-items-center rounded-full text-sm font-bold ${answers[i] === qq.correctIndex ? "bg-good text-white" : "bg-gold-light text-gold-ink"}`}>
+                {answers[i] === qq.correctIndex ? "✓" : i + 1}
+              </span>
+            ))}
           </div>
-          {feedback === "kort" && <p className="mt-3 flex gap-2"><Icon name="prat" size={22} className="shrink-0" /> {shortComment(result)}</p>}
-          {feedback === "full" && <p className="mt-3 flex gap-2"><Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.</p>}
-          <button className="btn-ghost mt-4" onClick={() => (setResult(null), setAnswers(qs.map(() => null)))}>
+          {feedback === "kort" && (
+            <p className="mt-4 flex items-start justify-center gap-2 text-left">
+              <Icon name="prat" size={22} className="shrink-0" /> {shortComment(result)}
+            </p>
+          )}
+          {feedback === "full" && (
+            <p className="mt-4 flex items-start justify-center gap-2 text-left">
+              <Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.
+            </p>
+          )}
+          <button className="btn-ghost mt-5" onClick={restart}>
             Gör om quizen
           </button>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl">
+      {/* framsteg */}
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex flex-1 gap-1.5">
+          {qs.map((qq, i) => (
+            <span
+              key={qq.id}
+              className={`h-2.5 flex-1 rounded-full transition-colors ${
+                i < idx ? (answers[i] === qq.correctIndex ? "bg-good" : "bg-gold") : i === idx ? "bg-navy" : "bg-line"
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-sm font-semibold text-muted">
+          {idx + 1} / {qs.length}
+        </span>
+      </div>
+
+      <div key={q.id} className="pop-in rounded-3xl bg-paper p-6 shadow-sm ring-1 ring-line sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-wider text-wine">Fråga {idx + 1}</p>
+        <p className="mt-1 font-serif text-3xl font-bold text-navy">
+          {q.prompt} <ReadAloud text={q.prompt} />
+        </p>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          {q.options.map((o, oi) => {
+            const sel = chosen === oi;
+            const correct = oi === q.correctIndex;
+            const style = checked
+              ? correct
+                ? "border-good bg-good/10 text-good"
+                : sel
+                  ? "border-gold bg-gold-light text-gold-ink"
+                  : "border-line opacity-60"
+              : sel
+                ? "border-navy bg-navy text-white"
+                : "border-line bg-paper hover:border-navy hover:bg-cream";
+            return (
+              <button
+                key={oi}
+                disabled={checked}
+                onClick={() => setAnswers((a) => a.map((x, xi) => (xi === idx ? oi : x)))}
+                className={`rounded-2xl border-2 px-4 py-5 text-2xl font-bold transition-all ${style}`}
+                aria-pressed={sel}
+              >
+                {o}
+              </button>
+            );
+          })}
+        </div>
+
+        {checked && (
+          <div className={`pop-in mt-5 flex items-center gap-3 rounded-2xl p-4 ${isRight ? "bg-good/10" : "bg-gold-light/70"}`}>
+            <Mascot size={56} mood={isRight ? "hurra" : "tanker"} />
+            <div>
+              <p className={`text-lg font-bold ${isRight ? "text-good" : "text-gold-ink"}`}>{isRight ? "Rätt!" : "Nästan!"}</p>
+              <p className="text-sm">{isRight ? ["Snyggt räknat!", "Precis så!", "Du är på gång!"][idx % 3] : `Rätt svar är ${q.options[q.correctIndex]}. Det gör inget, nu vet du!`}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-6 flex justify-end">
+          {!checked ? (
+            <button className="btn-accent !px-8 !py-3 text-lg" disabled={chosen === null} onClick={() => setChecked(true)}>
+              Kolla svaret
+            </button>
+          ) : idx < qs.length - 1 ? (
+            <button
+              className="btn-primary !px-8 !py-3 text-lg"
+              onClick={() => {
+                setIdx((i) => i + 1);
+                setChecked(false);
+              }}
+              autoFocus
+            >
+              Nästa fråga →
+            </button>
+          ) : (
+            <button className="btn-primary !px-8 !py-3 text-lg" onClick={finish} autoFocus>
+              Se resultatet →
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

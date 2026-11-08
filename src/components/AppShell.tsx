@@ -347,7 +347,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { state, ready } = useStore();
-  if (!ready) return <div className="min-h-screen" />;
+  if (!ready)
+    return (
+      <div className="grid min-h-screen place-items-center">
+        <div className="flex flex-col items-center gap-3 text-muted">
+          <span className="grid h-14 w-14 animate-pulse place-items-center rounded-2xl bg-navy font-serif text-2xl font-bold text-gold">π</span>
+          <span className="text-sm">Laddar…</span>
+        </div>
+      </div>
+    );
   return (
     <>
       {state.session ? <AppLayout>{children}</AppLayout> : <MarketingShell>{children}</MarketingShell>}

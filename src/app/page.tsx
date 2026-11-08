@@ -9,7 +9,7 @@ import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, tierAtLeast } from "@/lib/tiers";
 import Landing from "@/components/Landing";
 import AdminPanel from "@/components/AdminPanel";
-import { MascotSays } from "@/components/Mascot";
+import Mascot, { MascotSays } from "@/components/Mascot";
 import { BadgeMedal } from "@/components/Badges";
 import { BADGES } from "@/lib/badges";
 
@@ -185,12 +185,25 @@ function ParentHome() {
       </div>
 
       {state.students.length === 0 && (
-        <div className="card text-center">
-          <p>Du har inte lagt till några barn ännu.</p>
-          <Link href="/foraldraportal" className="btn-primary mt-3">
-            Lägg till barn
+        <div className="rounded-3xl bg-paper p-8 text-center ring-1 ring-line">
+          <div className="flex justify-center">
+            <Mascot mood="glad" size={110} />
+          </div>
+          <h2 className="mt-2 text-2xl font-bold">Lägg till ditt första barn</h2>
+          <p className="mx-auto mt-1 max-w-md text-muted">När du har lagt till ett barn ser du här hur veckan har gått, vad barnet behöver öva på och vilka märken det har fått.</p>
+          <Link href="/kom-igang" className="btn-accent mt-5">
+            <Icon name="plus" size={20} className="icon-invert" /> Kom igång
           </Link>
         </div>
+      )}
+      {state.students.length > 0 && state.parent.onboarded === false && (
+        <Link href="/kom-igang" className="flex items-center gap-3 rounded-2xl bg-gold-light/60 p-4 hover:bg-gold-light">
+          <Icon name="aktuellt" size={24} />
+          <span className="flex-1 text-sm">
+            <b>Slutför guiden Kom igång</b> för att välja nivå och få barnens inloggningsuppgifter.
+          </span>
+          <span aria-hidden>→</span>
+        </Link>
       )}
 
       <div className="grid gap-5 md:grid-cols-2">
