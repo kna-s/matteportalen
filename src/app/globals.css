@@ -272,14 +272,27 @@ h3 {
 }
 @keyframes m-tilt {
   0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-7deg); }
+  50% { transform: rotate(-5deg); }
 }
+/* handen knackar två gånger mot hakan, sen en paus */
 .mascot-tanker .m-arm-chin {
-  animation: m-tap 1.5s ease-in-out infinite;
+  animation: m-tap 3s ease-in-out infinite;
 }
 @keyframes m-tap {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-10deg); }
+  0%, 40%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-7deg); }
+  20% { transform: rotate(0deg); }
+}
+/* tankebubblorna tänds en i taget */
+.mascot-tanker .m-think circle {
+  animation: m-think 3s ease-in-out infinite both;
+}
+.mascot-tanker .m-think circle:nth-child(2) { animation-delay: 0.35s; }
+.mascot-tanker .m-think circle:nth-child(3) { animation-delay: 0.7s; }
+@keyframes m-think {
+  0%, 10% { opacity: 0; transform: translateY(3px); }
+  30%, 75% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-2px); }
 }
 /* Nickar: uppmuntrande nickningar */
 .mascot-nickar .m-head {

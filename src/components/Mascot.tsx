@@ -48,9 +48,12 @@ export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: nu
           </>
         ) : mood === "tanker" ? (
           <>
-            <circle cx={lx} cy={cy} r={eye} fill={color} />
-            <path d={`M${rx - 4} ${cy} H${rx + 4}`} stroke={color} strokeWidth={3} strokeLinecap="round" />
-            <circle cx={lx + 1.3} cy={cy - 1.3} r={1.3} fill="#fff" />
+            {/* tittar upp åt sidan, ett ögonbryn höjt */}
+            <circle cx={lx + 1.2} cy={cy - 1.4} r={eye} fill={color} />
+            <circle cx={rx + 1.2} cy={cy - 1.4} r={eye} fill={color} />
+            <circle cx={lx + 2.4} cy={cy - 2.8} r={1.3} fill="#fff" />
+            <circle cx={rx + 2.4} cy={cy - 2.8} r={1.3} fill="#fff" />
+            <path d={`M${rx - 3.5} ${cy - 8.5} Q${rx + 0.5} ${cy - 11} ${rx + 4.5} ${cy - 8.5}`} stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" />
           </>
         ) : (
           <>
@@ -62,7 +65,7 @@ export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: nu
         )}
       </g>
       {mood === "tanker" ? (
-        <path d={`M${cx - 3} ${cy + 10} Q${cx + 2} ${cy + 8} ${cx + 5} ${cy + 10}`} stroke={color} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+        <path d={`M${cx - 4} ${cy + 10} Q${cx} ${cy + 8.5} ${cx + 4} ${cy + 9}`} stroke={color} strokeWidth={2.4} fill="none" strokeLinecap="round" />
       ) : mood === "forvanad" ? (
         <ellipse cx={cx} cy={cy + 10} rx={3} ry={3.8} fill={color} />
       ) : closed ? (
@@ -161,6 +164,37 @@ function SiggeGlasses({ id }: { id?: string | null }) {
   return null;
 }
 
+/** Tänkarpose: ena armen stöttar armbågen, andra handen mot hakan. */
+function SiggeThinkArms() {
+  const arm = (d: string) => <path d={d} stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />;
+  return (
+    <g>
+      {/* vänster arm över magen, håller under armbågen */}
+      {arm("M31 63 Q42 75 62 71")}
+      {/* höger överarm ner till armbågen */}
+      {arm("M69 62 Q69 68 64 70")}
+      {/* underarm och hand mot hakan, knackar lätt */}
+      <g className="m-arm-chin" style={{ transformOrigin: "64px 70px" }}>
+        {arm("M64 70 Q64 59 56 53")}
+        <circle cx={55} cy={51.5} r={4.6} fill={MINT_D} />
+        <path d="M52.5 49.2 Q55 47.6 57.6 49" stroke={MINT} strokeWidth={1.4} fill="none" strokeLinecap="round" />
+      </g>
+      <circle cx={63} cy={71} r={3.8} fill={MINT_D} />
+    </g>
+  );
+}
+
+/** Tankebubblor som stiger upp bredvid huvudet. */
+function ThinkBubbles() {
+  return (
+    <g className="m-think" fill="#fff" stroke={INK} strokeWidth={1.3}>
+      <circle cx={74} cy={15} r={1.8} />
+      <circle cx={79.5} cy={9.5} r={2.5} />
+      <circle cx={86.5} cy={4.2} r={3.5} />
+    </g>
+  );
+}
+
 /** Sigges armar för varje humör. */
 function SiggeArms({ mood }: { mood: Mood }) {
   const arm = (d: string) => <path d={d} stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />;
@@ -174,12 +208,8 @@ function SiggeArms({ mood }: { mood: Mood }) {
         </>
       );
     case "tanker":
-      return (
-        <>
-          {arm("M31 62 Q24 70 25 80")}
-          <g className="m-arm-chin" style={{ transformOrigin: "69px 64px" }}>{arm("M69 64 Q74 56 64 50")}</g>
-        </>
-      );
+      // Armarna ritas framför magen och huvudet, se SiggeThinkArms.
+      return null;
     case "pekar":
       return (
         <>
@@ -252,6 +282,12 @@ function Sigge({ mood, outfit }: { mood: Mood; outfit?: Outfit }) {
         <SiggeGlasses id={outfit?.glasogon} />
         <SiggeHat id={outfit?.hatt} />
       </g>
+      {mood === "tanker" && (
+        <>
+          <SiggeThinkArms />
+          <ThinkBubbles />
+        </>
+      )}
     </g>
   );
 }
