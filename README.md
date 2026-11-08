@@ -44,9 +44,11 @@ npm run dev
 Innehåll som admins lägger upp (YouTube-videor, övningar, quiz) sparas i Supabase och syns för alla besökare. Utan nycklar visas platshållarna som förut.
 
 1. Kopiera `.env.example` till `.env.local` och fyll i URL och anon-nyckel (Supabase: Project Settings → API). Lägg in samma två variabler på Vercel.
-2. Kör `supabase/migrations/001_innehall.sql` i Supabase SQL Editor.
+2. Kör `supabase/migrations/001_innehall.sql` och sedan `supabase/migrations/002_versioner.sql` i Supabase SQL Editor.
 3. Skapa en användare (Authentication → Users → Add user) och kör `supabase/gor-mig-till-admin.sql` med den e-posten.
-4. Logga in som Admin i demot → Administration → Lägg upp nytt → logga in med Supabase-kontot.
+4. Logga in som Admin i demot → Administration → Lägg upp nytt → logga in med Supabase-kontot. Guiden tar dig igenom fem steg.
+
+Varje kapitel kan ha flera versioner av video, övning och quiz. Nyaste visas först och äldre finns kvar som historik för eleven.
 
 Inloggning för föräldrar och elever samt sparade framsteg ligger fortfarande i webbläsaren (nästa steg).
 

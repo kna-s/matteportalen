@@ -175,7 +175,7 @@ function seeded(seed: number) {
   };
 }
 
-function placeholderQuestions(chapterId: string, grade: Grade, topic: string, n: number): QuizQuestion[] {
+export function placeholderQuestions(chapterId: string, grade: Grade, topic: string, n: number): QuizQuestion[] {
   const rand = seeded(chapterId.split("").reduce((a, c) => a + c.charCodeAt(0), grade * 7));
   const focuses = ["Begrepp", "Metod", "Tillämpning"];
   return Array.from({ length: n }, (_, i) => {

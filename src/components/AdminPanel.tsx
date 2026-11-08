@@ -5,24 +5,25 @@ import { useState } from "react";
 import { AREAS, CHAPTERS, GRADES, Grade, STEP_ICON, STEP_LABELS, StepType, TOOL_LABELS, chaptersFor } from "@/lib/curriculum";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS } from "@/lib/tiers";
-import ContentEditor from "./ContentEditor";
-import { useContent } from "@/lib/content";
+import { ContentWizard, MyMaterial } from "./ContentEditor";
+import { ContentItem, useContent } from "@/lib/content";
 
 const TABS = [
-  { id: "oversikt", label: "Översikt", icon: "hem" },
-  { id: "innehall", label: "Innehåll", icon: "kursplan" },
   { id: "nytt", label: "Lägg upp nytt", icon: "plus" },
+  { id: "material", label: "Mitt material", icon: "ovning" },
+  { id: "innehall", label: "Kursplanen", icon: "kursplan" },
+  { id: "oversikt", label: "Översikt", icon: "hem" },
   { id: "kunder", label: "Kunder", icon: "foraldraportal" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
 export default function AdminPanel() {
-  const [tab, setTab] = useState<TabId>("oversikt");
+  const [tab, setTab] = useState<TabId>("nytt");
+  const [editItem, setEditItem] = useState<ContentItem | null>(null);
   return (
     <div className="space-y-6">
       <div>
         <h1 className="page-title flex items-center gap-3"><Icon name="admin" size={40} /> Administration</h1>
-        <p className="mt-1 text-muted">Här lägger ni upp nytt innehåll varje månad och har koll på kunderna.</p>
       </div>
       <div className="flex flex-wrap gap-1 rounded-xl bg-paper p-1 shadow-sm sm:inline-flex" role="tablist">
         {TABS.map((t) => (
@@ -30,7 +31,10 @@ export default function AdminPanel() {
             key={t.id}
             role="tab"
             aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id);
+              setEditItem(null);
+            }}
             className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${tab === t.id ? "bg-navy text-white" : "text-navy hover:bg-cream"}`}
           >
             <Icon name={t.icon} size={18} className={tab === t.id ? "icon-invert" : ""} /> {t.label}
@@ -39,7 +43,15 @@ export default function AdminPanel() {
       </div>
       {tab === "oversikt" && <Overview goTo={setTab} />}
       {tab === "innehall" && <ContentList />}
-      {tab === "nytt" && <ContentEditor />}
+      {tab === "nytt" && <ContentWizard key={editItem?.id ?? "ny"} editItem={editItem} onDone={() => editItem && (setEditItem(null), setTab("material"))} />}
+      {tab === "material" && (
+        <MyMaterial
+          onEdit={(it) => {
+            setEditItem(it);
+            setTab("nytt");
+          }}
+        />
+      )}
       {tab === "kunder" && <Customers />}
     </div>
   );

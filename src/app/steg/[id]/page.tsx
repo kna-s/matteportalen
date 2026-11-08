@@ -3,7 +3,7 @@
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BABBEL, Chapter, STEP_ICON, STEP_LABELS, Step, findStep, getArea } from "@/lib/curriculum";
 import { nextAccessible, stepHref } from "@/lib/flow";
 import { fullScreening, levelOf, shortComment } from "@/lib/screening";
@@ -11,7 +11,7 @@ import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
-import { mergeStep, useContent, youtubeId } from "@/lib/content";
+import { MergedStep, monthLabel, useVersions, youtubeId } from "@/lib/content";
 import Mascot, { MascotSays } from "@/components/Mascot";
 import DrawPad from "@/components/DrawPad";
 
@@ -32,13 +32,44 @@ const SIGGE_INTRO: Record<Step["type"], string> = {
 
 function StepView() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
-  const { state, tier, currentStudent, completeStep } = useStore();
-  const { rows } = useContent();
   const found = findStep(id);
   if (!found) return <p>Steget finns inte.</p>;
-  const { chapter } = found;
-  const step = mergeStep(found.step, rows[found.step.id]);
+  return <StepInner key={id} chapter={found.chapter} baseStep={found.step} />;
+}
+
+/** Lista med versioner (nyaste först) som eleven kan växla mellan. */
+function VersionPicker({ versions, active, onPick, label }: { versions: MergedStep[]; active: number; onPick: (i: number) => void; label: string }) {
+  if (versions.length < 2) return null;
+  return (
+    <div className="mx-auto max-w-3xl rounded-2xl bg-paper p-4 ring-1 ring-line">
+      <p className="text-sm font-bold text-navy">{label}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {versions.map((v, i) => (
+          <button
+            key={v.versionId}
+            onClick={() => onPick(i)}
+            className={`rounded-xl px-3 py-1.5 text-sm font-medium ring-1 ${i === active ? "bg-navy text-white ring-navy" : "bg-cream text-navy ring-line hover:bg-gold-light"}`}
+          >
+            {i === 0 ? "Nyaste" : `Från ${monthLabel(v.publishedMonth)}`}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) {
+  const router = useRouter();
+  const { state, tier, currentStudent, completeStep } = useStore();
+  const versions = useVersions(baseStep);
+  const [vIdx, setVIdx] = useState(0);
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get("v");
+    const i = versions.findIndex((x) => x.versionId === v);
+    if (i > 0) setVIdx(i);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [versions.length]);
+  const step = versions[vIdx] ?? versions[0];
   const area = getArea(chapter.areaId);
   const open = canAccess(tier, step, chapter.id);
   const isStudent = state.session?.role === "elev";
@@ -82,11 +113,26 @@ function StepView() {
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
-            <VideoStep chapter={chapter} videoUrl={step.videoUrl} description={step.description} />
+            <>
+              <VideoStep key={step.versionId} chapter={chapter} videoUrl={step.videoUrl} description={step.description} />
+              <VersionPicker versions={versions} active={vIdx} onPick={setVIdx} label="Tidigare videor om samma sak" />
+            </>
           ) : step.type === "ovning" ? (
             <ExerciseStep step={step} />
           ) : step.type === "quiz" ? (
-            <QuizStep key={`${step.id}-${step.questions?.length}-${step.custom}`} chapter={chapter} step={step} />
+            <>
+              <QuizStep
+                key={`${step.versionId}-${step.questions?.length}`}
+                chapter={chapter}
+                step={step}
+                others={versions.map((v, i) => ({ i, label: i === 0 ? "Nyaste quizen" : `Quiz från ${monthLabel(v.publishedMonth)}` })).filter((x) => x.i !== vIdx)}
+                onPickOther={(i) => {
+                  setVIdx(i);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+              <VersionPicker versions={versions} active={vIdx} onPick={setVIdx} label="Tidigare quiz om samma sak" />
+            </>
           ) : (
             <ScreeningStep chapter={chapter} />
           )}
@@ -253,7 +299,17 @@ function ExerciseStep({ step }: { step: Step }) {
 }
 
 /** Quiz med en fråga i taget och direkt, mjuk återkoppling. */
-function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
+function QuizStep({
+  chapter,
+  step,
+  others = [],
+  onPickOther,
+}: {
+  chapter: Chapter;
+  step: Step;
+  others?: { i: number; label: string }[];
+  onPickOther?: (i: number) => void;
+}) {
   const { state, tier, currentStudent, saveQuiz } = useStore();
   const qs = step.questions!;
   const [idx, setIdx] = useState(0);
@@ -319,6 +375,26 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
             <p className="mt-4 flex items-start justify-center gap-2 text-left">
               <Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.
             </p>
+          )}
+          {ratio < 0.6 && (
+            <div className="mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
+              <div className="flex items-start gap-3">
+                <Mascot mood="glad" size={52} />
+                <div className="flex-1">
+                  <p className="font-semibold text-navy">Vill du öva lite till på samma sak?</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Link href={stepHref(chapter.steps.find((s) => s.type === "video")!.id)} className="btn-ghost !px-3 !py-1.5 text-sm">
+                      Se videon igen
+                    </Link>
+                    {others.map((o) => (
+                      <button key={o.i} onClick={() => onPickOther?.(o.i)} className="btn-accent !px-3 !py-1.5 text-sm">
+                        Testa {o.label.toLowerCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           <button className="btn-ghost mt-5" onClick={restart}>
             Gör om quizen
