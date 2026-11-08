@@ -3,6 +3,7 @@
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import Mascot from "@/components/Mascot";
+import KidScreening from "@/components/KidScreening";
 import { getChapter } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
 import { gradeOverview, shortComment, trainingPlan } from "@/lib/screening";
@@ -78,6 +79,8 @@ function ScreeningContent() {
         </Link>
       </div>
     );
+
+  if (state.session?.role === "elev") return <KidScreening p={p} grade={currentStudent.grade} />;
 
   const { areas, overall } = gradeOverview(p, currentStudent.grade);
   const plan = trainingPlan(p, currentStudent.grade);
