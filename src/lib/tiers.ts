@@ -32,7 +32,7 @@ export const TIERS: Record<Tier, TierInfo> = {
     name: "Plus",
     price: "XX kr/mån",
     tagline: "Testa dina kunskaper med självrättande quiz.",
-    features: ["Allt i Start", "Självrättande quiz efter varje kapitel", "Kort kommentar efter varje quiz", "Resultathistorik"],
+    features: ["Allt i Start", "Självrättande quiz efter varje kapitel", "Rätt svar och tips från Sigge direkt", "Resultathistorik"],
   },
   premium: {
     id: "premium",
@@ -41,9 +41,10 @@ export const TIERS: Record<Tier, TierInfo> = {
     tagline: "Allt, plus full screening och egen träningsplan.",
     features: [
       "Allt i Plus",
-      "Full screening efter varje quiz",
+      "Screening: se exakt vad barnet behöver öva på",
       "Styrkor och svagheter per kapitel, område och årskurs",
       "Individuell träningsplan",
+      "Veckorapport med det som behöver övas",
     ],
   },
 };
@@ -71,7 +72,7 @@ export function canAccess(tier: Tier, step: Step, chapterId: string) {
   return tierAtLeast(tier, requiredTier(step, chapterId));
 }
 
-/** Plus får en kort kommentar direkt efter quizen, Premium får full screening. */
+/** Plus får rätt svar och uppmuntran efter quizen, Premium får dessutom full screening. */
 export function quizFeedbackLevel(tier: Tier): "none" | "kort" | "full" {
   if (tierAtLeast(tier, "premium")) return "full";
   if (tierAtLeast(tier, "plus")) return "kort";

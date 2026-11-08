@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BABBEL, Chapter, STEP_ICON, STEP_LABELS, Step, findStep, getArea } from "@/lib/curriculum";
 import { nextAccessible, stepHref } from "@/lib/flow";
-import { fullScreening, levelOf, shortComment } from "@/lib/screening";
+import { fullScreening, levelOf } from "@/lib/screening";
 import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LockedNotice, ReadAloud, RequireLogin } from "@/components/ui";
@@ -102,6 +102,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
   const studentId = currentStudent?.id;
   const { next, skipped } = nextAccessible(chapter.grade, tier, step.id);
   const stepIndex = chapter.steps.findIndex((s) => s.id === step.id);
+  const stepCount = chapter.steps.filter((s) => !(isStudent && s.type === "screening" && !canAccess(tier, s, chapter.id))).length;
 
   const ex = step.type === "ovning" ? exerciseProgress(step, (studentId && state.progress[studentId]?.notes) || {}) : null;
   const blocked = !!ex && open && isStudent && ex.done < ex.total;
@@ -180,7 +181,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0 text-sm text-muted">
             <span className="font-semibold text-navy">
-              Steg {stepIndex + 1} av {chapter.steps.length}
+              Steg {stepIndex + 1} av {stepCount}
             </span>
             <span className="hidden sm:inline"> · {chapter.title}</span>
             {skipped.length > 0 && (
@@ -202,9 +203,12 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
 function Stepper({ chapter, current }: { chapter: Chapter; current: Step }) {
   const { state, tier, currentStudent } = useStore();
   const p = (currentStudent && state.progress[currentStudent.id]) || emptyProgress();
+  const isStudent = state.session?.role === "elev";
+  // Barn ser inga låsta screening-steg, bara det de faktiskt kan göra.
+  const steps = chapter.steps.filter((s) => !(isStudent && s.type === "screening" && !canAccess(tier, s, chapter.id)));
   return (
     <ol className="flex flex-wrap gap-2">
-      {chapter.steps.map((s, i) => {
+      {steps.map((s, i) => {
         const open = canAccess(tier, s, chapter.id);
         const active = s.id === current.id;
         const done = !!p.completed[s.id];
@@ -436,9 +440,14 @@ function QuizStep({
               </span>
             ))}
           </div>
-          {feedback === "kort" && (
+          {feedback !== "full" && (
             <p className="mt-4 flex items-start justify-center gap-2 text-left">
-              <Icon name="prat" size={22} className="shrink-0" /> {shortComment(result)}
+              <Icon name="prat" size={22} className="shrink-0" />
+              {ratio >= 0.85
+                ? "Snyggt! Du har koll på det här."
+                : ratio >= 0.6
+                  ? "Bra jobbat! Gör om quizen om du vill få alla rätt."
+                  : "Bra kämpat! Kika på videon igen och testa sen igen."}
             </p>
           )}
           {feedback === "full" && (

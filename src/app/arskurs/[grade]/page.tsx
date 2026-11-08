@@ -25,6 +25,7 @@ export default function GradePage() {
   const { grade: raw } = useParams<{ grade: string }>();
   const grade = Number(raw) as Grade;
   const { state, tier, currentStudent } = useStore();
+  const isStudent = state.session?.role === "elev";
   const p = (currentStudent && state.progress[currentStudent.id]) || emptyProgress();
   const valid = GRADES.includes(grade);
   const cont = valid ? continuePoint(grade, tier, p) : undefined;
@@ -103,7 +104,7 @@ export default function GradePage() {
                           <span className="min-w-0 flex-1">
                             <span className="block font-semibold leading-tight text-navy">{c.title}</span>
                             <span className="mt-1.5 flex gap-1.5">
-                              {c.steps.map((s) => {
+                              {c.steps.filter((s) => !(isStudent && s.type === "screening" && !canAccess(tier, s, c.id))).map((s) => {
                                 const open = canAccess(tier, s, c.id);
                                 const sDone = !!p.completed[s.id];
                                 return (

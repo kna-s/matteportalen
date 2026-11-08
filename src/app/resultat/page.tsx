@@ -4,9 +4,11 @@ import ResultsView from "@/components/ResultsView";
 import StudentResults from "@/components/StudentResults";
 import { emptyProgress, useStore } from "@/lib/store";
 import { PROGRESS_TABS, PageHeader, RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
+import { tierAtLeast } from "@/lib/tiers";
 
 export default function ResultsPage() {
-  const { state } = useStore();
+  const { state, tier } = useStore();
+  const premium = tierAtLeast(tier, "premium");
   const isStudent = state.session?.role === "elev";
   return (
     <div>
@@ -15,7 +17,8 @@ export default function ResultsPage() {
         title={isStudent ? "Mina framsteg" : "Resultat"}
         intro={isStudent ? undefined : "Hur långt barnet har kommit och hur quizen har gått."}
       />
-      {isStudent && <SectionTabs tabs={PROGRESS_TABS} />}
+      {/* Elever utan Premium har ingen Screening-flik, så flikraden behövs inte. */}
+      {isStudent && premium && <SectionTabs tabs={PROGRESS_TABS} />}
       <RequireLogin>
         <StudentPicker />
         <Content />

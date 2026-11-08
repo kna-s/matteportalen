@@ -6,18 +6,18 @@ import Mascot from "@/components/Mascot";
 import KidScreening from "@/components/KidScreening";
 import { getChapter } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
-import { gradeOverview, shortComment, trainingPlan } from "@/lib/screening";
-import { emptyProgress, latestQuizPerChapter, useStore } from "@/lib/store";
-import { quizFeedbackLevel } from "@/lib/tiers";
-import { LevelChip, LockedNotice, PROGRESS_TABS, PageHeader, ProgressBar, RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
+import { gradeOverview, trainingPlan } from "@/lib/screening";
+import { emptyProgress, useStore } from "@/lib/store";
+import { tierAtLeast } from "@/lib/tiers";
+import { LevelChip, PROGRESS_TABS, PageHeader, ProgressBar, RequireLogin, SectionTabs, StudentPicker } from "@/components/ui";
 
 export default function ScreeningPage() {
-  const { state } = useStore();
+  const { state, tier } = useStore();
   const isStudent = state.session?.role === "elev";
   return (
     <div>
       <PageHeader icon={isStudent ? "resultat" : "screening"} title={isStudent ? "Mina framsteg" : "Screening"} />
-      {isStudent && <SectionTabs tabs={PROGRESS_TABS} />}
+      {isStudent && tierAtLeast(tier, "premium") && <SectionTabs tabs={PROGRESS_TABS} />}
       <RequireLogin>
         <StudentPicker />
         <ScreeningContent />
@@ -28,42 +28,26 @@ export default function ScreeningPage() {
 
 function ScreeningContent() {
   const { state, tier, currentStudent } = useStore();
-  const level = quizFeedbackLevel(tier);
+  const premium = tierAtLeast(tier, "premium");
   if (!currentStudent) return null;
   const p = state.progress[currentStudent.id] ?? emptyProgress();
 
-  if (level === "none") return <LockedNotice need="premium" what="Full screening" />;
-
-  if (level === "kort") {
-    const latest = [...latestQuizPerChapter(p).values()];
-    return (
-      <div className="space-y-4">
-        <div className="card bg-gold-light/40">
-          <p>
-            Med <b>Plus</b> får du en kort kommentar efter varje quiz. Med <b>Premium</b> får du full screening per kapitel, område och årskurs plus en egen
-            träningsplan.
-          </p>
-          {state.session?.role !== "elev" && (
-            <Link href="/abonnemang" className="btn-accent mt-3">
-              Uppgradera till Premium
-            </Link>
-          )}
+  if (!premium) {
+    // Barn ska inte mötas av lås eller säljtexter, de får bara en vänlig hänvisning till sina resultat.
+    if (state.session?.role === "elev")
+      return (
+        <div className="rounded-3xl bg-paper p-8 text-center ring-1 ring-line">
+          <div className="flex justify-center">
+            <Mascot mood="glad" size={110} />
+          </div>
+          <h2 className="mt-2 text-2xl font-bold">Kolla in dina framsteg</h2>
+          <p className="mx-auto mt-1 max-w-md text-muted">Där ser du hur det har gått i dina quiz och hur långt du har kommit.</p>
+          <Link href="/resultat" className="btn-accent mt-5">
+            Till mina framsteg
+          </Link>
         </div>
-        <h2 className="text-xl font-bold">Kommentarer från dina quiz</h2>
-        {latest.length === 0 && <p className="text-muted">Du har inte gjort några quiz ännu.</p>}
-        <ul className="grid gap-3 md:grid-cols-2">
-          {latest.map((r) => (
-            <li key={r.chapterId} className="card">
-              <b className="text-navy">{getChapter(r.chapterId)?.title}</b>
-              <p className="text-sm text-muted">
-                {r.score} av {r.total} rätt
-              </p>
-              <p className="mt-1 flex gap-2"><Icon name="prat" size={20} className="shrink-0" /> {shortComment(r)}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+      );
+    return <ScreeningTeaser name={currentStudent.name} />;
   }
 
   if (p.quizResults.length === 0)
@@ -154,6 +138,65 @@ function ScreeningContent() {
           ))}
         </div>
       </section>
+    </div>
+  );
+}
+
+const TEASER_AREAS = [
+  { title: "Taluppfattning", value: 0.92, level: "stark" },
+  { title: "Geometri", value: 0.74, level: "okej" },
+  { title: "Algebra", value: 0.48, level: "ova" },
+  { title: "Sannolikhet och statistik", value: 0.81, level: "okej" },
+] as const;
+
+/** Suddig förhandsvisning för föräldrar utan Premium. Exempeldata, inte barnets riktiga resultat. */
+function ScreeningTeaser({ name }: { name: string }) {
+  return (
+    <div className="relative overflow-hidden rounded-3xl ring-1 ring-line">
+      <div aria-hidden className="pointer-events-none select-none space-y-4 bg-cream/40 p-5 blur-[5px] sm:p-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="card bg-navy text-white">
+            <p className="text-sm uppercase tracking-wide text-gold">Hela årskursen</p>
+            <p className="mt-1 font-serif text-5xl font-bold">78 %</p>
+          </div>
+          <div className="card">
+            <p className="font-semibold text-good">Starkast inom</p>
+            <p className="mt-1">Taluppfattning</p>
+          </div>
+          <div className="card">
+            <p className="font-semibold text-bad">Kika extra på</p>
+            <p className="mt-1">Algebra</p>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {TEASER_AREAS.map((a) => (
+            <div key={a.title} className="card">
+              <div className="flex items-center justify-between gap-2">
+                <b className="text-navy">{a.title}</b>
+                <LevelChip level={a.level} />
+              </div>
+              <div className="mt-3 space-y-2">
+                {[a.value, a.value - 0.1, a.value + 0.05].map((v, i) => (
+                  <ProgressBar key={i} value={Math.max(0.1, Math.min(1, v))} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="absolute inset-0 grid place-items-center bg-paper/40 p-4">
+        <div className="max-w-md rounded-3xl bg-paper p-6 text-center shadow-xl ring-1 ring-line">
+          <Icon name="screening" size={48} className="mx-auto" />
+          <h2 className="mt-2 text-2xl font-bold">Se exakt vad {name} behöver öva på</h2>
+          <p className="mt-2 text-muted">
+            Screeningen visar styrkor och svagheter per kapitel, område och årskurs, och ger en egen träningsplan efter varje quiz.
+          </p>
+          <Link href="/abonnemang" className="btn-accent mt-4">
+            Ingår i Premium →
+          </Link>
+          <p className="mt-2 text-xs text-muted">Bilden bakom är ett exempel.</p>
+        </div>
+      </div>
     </div>
   );
 }

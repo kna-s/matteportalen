@@ -11,7 +11,7 @@ const ROWS: { label: string; tiers: Tier[] }[] = [
   { label: "Äventyret med nycklar och skattkistor", tiers: ["gratis", "start", "plus", "premium"] },
   { label: "Föräldraportal och veckorapport", tiers: ["gratis", "start", "plus", "premium"] },
   { label: "Självrättande quiz", tiers: ["plus", "premium"] },
-  { label: "Full screening och träningsplan", tiers: ["premium"] },
+  { label: "Screening: styrkor, svagheter och träningsplan", tiers: ["premium"] },
 ];
 
 export default function PricingPage() {
