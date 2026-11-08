@@ -62,35 +62,45 @@ export function Cheeks({ cx, cy, gap = 15 }: { cx: number; cy: number; gap?: num
   );
 }
 
-/* Sigge – sköldpadda */
+/* Sigge – sköldpadda (stående, med mage framtill och skalet bakom) */
+const MINT_L = "#b9e6d3";
 function Sigge({ mood }: { mood: Mood }) {
-  const armUp = mood === "hurra";
   return (
     <g>
-      {/* skal */}
-      <ellipse cx={50} cy={70} rx={38} ry={24} style={{ fill: NAVY }} />
-      <ellipse cx={50} cy={70} rx={38} ry={24} fill="none" style={{ stroke: GOLD }} strokeWidth={3} />
-      <path d="M30 66 l8 -8 h12 l8 8 l-8 8 h-12 Z M58 66 l6 -6 h8 l4 6 l-4 6 h-8 Z M20 70 l4 -6 h6 l4 6 l-4 6 h-6 Z" style={{ fill: NAVY_L }} />
+      {/* skal bakom kroppen */}
+      <ellipse cx={50} cy={70} rx={27} ry={24} style={{ fill: NAVY, stroke: GOLD }} strokeWidth={2.5} />
+      <path d="M25 62 l4 -5 h4 M75 62 l-4 -5 h-4 M24 78 h5 l3 4 M76 78 h-5 l-3 4" style={{ stroke: NAVY_L }} strokeWidth={2.5} strokeLinecap="round" fill="none" />
       {/* fötter */}
-      <ellipse cx={30} cy={92} rx={8} ry={5} fill={MINT_D} />
-      <ellipse cx={70} cy={92} rx={8} ry={5} fill={MINT_D} />
+      <ellipse cx={39} cy={93} rx={8} ry={5} fill={MINT_D} />
+      <ellipse cx={61} cy={93} rx={8} ry={5} fill={MINT_D} />
       {/* armar */}
-      {armUp ? (
+      {mood === "hurra" ? (
         <>
-          <path d="M22 56 Q12 44 14 32" stroke={MINT_D} strokeWidth={8} strokeLinecap="round" fill="none" />
-          <path d="M78 56 Q88 44 86 32" stroke={MINT_D} strokeWidth={8} strokeLinecap="round" fill="none" />
+          <path d="M31 60 Q20 50 18 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <path d="M69 60 Q80 50 82 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
         </>
       ) : mood === "tanker" ? (
-        <path d="M70 60 Q72 50 62 48" stroke={MINT_D} strokeWidth={8} strokeLinecap="round" fill="none" />
-      ) : null}
+        <>
+          <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <path d="M69 64 Q74 56 64 50" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+        </>
+      ) : (
+        <>
+          <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+          <path d="M69 62 Q76 70 75 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
+        </>
+      )}
+      {/* mage */}
+      <rect x={34} y={52} width={32} height={38} rx={15} style={{ fill: GOLD_L, stroke: GOLD }} strokeWidth={2} />
+      <path d="M36 65 H64 M36 77 H64 M50 54 V88" style={{ stroke: GOLD }} strokeWidth={1.6} />
       {/* huvud */}
-      <circle cx={50} cy={40} r={24} fill={MINT} />
-      <ellipse cx={50} cy={50} rx={13} ry={8} fill="#b9e6d3" />
+      <circle cx={50} cy={31} r={21} fill={MINT} />
+      <ellipse cx={50} cy={40} rx={11} ry={6.5} fill={MINT_L} />
       {/* halsduk */}
-      <path d="M32 58 Q50 66 68 58 L66 64 Q50 71 34 64 Z" style={{ fill: ACCENT }} />
-      <path d="M60 63 l6 10 l-7 -1 Z" style={{ fill: ACCENT }} />
-      <Face cx={50} cy={37} mood={mood} />
-      <Cheeks cx={50} cy={46} />
+      <path d="M34 49 Q50 56 66 49 L64 55 Q50 62 36 55 Z" style={{ fill: ACCENT }} />
+      <path d="M58 54 l5 10 l-7 -1 Z" style={{ fill: ACCENT }} />
+      <Face cx={50} cy={28} mood={mood} gap={8} eye={3.8} />
+      <Cheeks cx={50} cy={37} gap={14} />
     </g>
   );
 }
