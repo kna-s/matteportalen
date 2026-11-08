@@ -22,7 +22,7 @@ interface NavGroup {
 }
 
 const ALL: Role[] = ["elev", "foralder", "admin"];
-const ADULT: Role[] = ["foralder", "admin"];
+const PARENT: Role[] = ["foralder"];
 
 export const NAV_GROUPS: NavGroup[] = [
   {
@@ -45,14 +45,14 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "Konto",
     items: [
-      { href: "/foraldraportal", label: "Föräldraportal", icon: "👨‍👩‍👧", roles: ADULT },
-      { href: "/abonnemang", label: "Mitt abonnemang", icon: "💳", roles: ADULT },
-      { href: "/larare", label: "Lärarvy", icon: "🧑‍🏫", roles: ["admin"] },
+      { href: "/foraldraportal", label: "Föräldraportal", icon: "👨‍👩‍👧", roles: PARENT },
+      { href: "/abonnemang", label: "Mitt abonnemang", icon: "💳", roles: PARENT },
+      { href: "/admin", label: "Administration", icon: "🛠️", roles: ["admin"] },
     ],
   },
 ];
 
-const ROLE_LABEL: Record<Role, string> = { elev: "Elev", foralder: "Förälder", admin: "Lärare" };
+const ROLE_LABEL: Record<Role, string> = { elev: "Elev", foralder: "Förälder", admin: "Admin" };
 
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
@@ -186,7 +186,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const mobileItems = flat.filter((i) => i.mobile);
   const moreItems = flat.filter((i) => !i.mobile);
 
-  const name = role === "elev" ? currentStudent?.name : role === "foralder" ? state.parent.name : "Lärare";
+  const name = role === "elev" ? currentStudent?.name : role === "foralder" ? state.parent.name : "Admin";
   const doLogout = () => {
     logout();
     router.push("/");
@@ -246,14 +246,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <Logo />
           </div>
           <div className="hidden text-sm text-muted lg:block">
-            {role === "elev" && currentStudent ? `Årskurs ${currentStudent.grade}` : role === "foralder" ? "Föräldravy" : "Lärarvy"}
+            {role === "elev" && currentStudent ? `Årskurs ${currentStudent.grade}` : role === "foralder" ? "Föräldravy" : "Administration"}
           </div>
           <div className="flex items-center gap-2">
             <TextSizeButton />
             <div className="hidden text-right text-sm leading-tight sm:block">
               <span className="block font-semibold text-navy">{name}</span>
               <span className="text-xs text-muted">
-                {ROLE_LABEL[role]} · {TIERS[tier].name}
+                {ROLE_LABEL[role]}
+                {role !== "admin" && ` · ${TIERS[tier].name}`}
               </span>
             </div>
             <span className="grid h-9 w-9 place-items-center rounded-full bg-wine font-semibold text-white" aria-hidden>

@@ -54,17 +54,17 @@ export default function LoginPage() {
           </button>
         </div>
         <div className="card flex flex-col">
-          <div className="text-3xl">🧑‍🏫</div>
-          <h2 className="mt-2 text-xl font-bold">Lärare</h2>
-          <p className="flex-1 text-sm text-muted">För våra lärare: lägg upp innehåll och välj vad som är aktuellt.</p>
+          <div className="text-3xl">🛠️</div>
+          <h2 className="mt-2 text-xl font-bold">Admin</h2>
+          <p className="flex-1 text-sm text-muted">För oss som driver sajten: lägg upp nytt innehåll och hantera kunder.</p>
           <button
             className="btn-ghost mt-3"
             onClick={() => {
               login("admin");
-              router.push("/larare");
+              router.push("/admin");
             }}
           >
-            Logga in som lärare
+            Logga in som admin
           </button>
         </div>
       </div>

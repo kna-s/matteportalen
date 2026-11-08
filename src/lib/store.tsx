@@ -36,12 +36,12 @@ export interface AppState {
   parent: { name: string; email: string; tier: Tier; weeklyReport: boolean };
   students: Student[];
   progress: Record<string, StudentProgress>;
-  /** Kapitel som våra lärare markerat som "Aktuellt", per årskurs. */
-  aktuellt: Record<Grade, string[]>;
+  /** Kapitel som föräldern markerat som "Aktuellt", per barn (studentId). */
+  aktuellt: Record<string, string[]>;
   textSize: "normal" | "stor";
 }
 
-const KEY = "matteportalen-demo-v1";
+const KEY = "matteportalen-demo-v2";
 
 function daysAgo(n: number) {
   const d = new Date();
@@ -83,9 +83,8 @@ export function defaultState(): AppState {
       maja: seedProgress(6, 10, 0.8),
     },
     aktuellt: {
-      4: CHAPTERS.filter((c) => c.grade === 4 && c.areaId === "geometri").slice(2, 3).map((c) => c.id),
-      5: [],
-      6: CHAPTERS.filter((c) => c.grade === 6 && c.areaId === "algebra").slice(2, 3).map((c) => c.id),
+      leo: CHAPTERS.filter((c) => c.grade === 4 && c.areaId === "geometri").slice(2, 3).map((c) => c.id),
+      maja: CHAPTERS.filter((c) => c.grade === 6 && c.areaId === "algebra").slice(2, 3).map((c) => c.id),
     },
     textSize: "normal",
   };

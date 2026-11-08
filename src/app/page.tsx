@@ -7,13 +7,15 @@ import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, tierAtLeast } from "@/lib/tiers";
 import Landing from "@/components/Landing";
+import AdminPanel from "@/components/AdminPanel";
 import { ProgressBar } from "@/components/ui";
 
 export default function Home() {
   const { state, ready } = useStore();
   if (!ready) return null;
   if (!state.session) return <Landing />;
-  return state.session.role === "elev" ? <StudentHome /> : <AdultHome />;
+  if (state.session.role === "admin") return <AdminPanel />;
+  return state.session.role === "elev" ? <StudentHome /> : <ParentHome />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -25,7 +27,7 @@ function StudentHome() {
   if (!currentStudent) return null;
   const p = state.progress[currentStudent.id] ?? emptyProgress();
   const cont = continuePoint(currentStudent.grade, tier, p);
-  const aktuellt = (state.aktuellt[currentStudent.grade] ?? []).map(getChapter).filter((c) => !!c);
+  const aktuellt = (state.aktuellt[currentStudent.id] ?? []).map(getChapter).filter((c) => !!c);
   const chapters = chaptersFor(currentStudent.grade);
   const chapterDone = (id: string) => getChapter(id)!.steps.filter((s) => canAccess(tier, s, id)).every((s) => p.completed[s.id]);
   const doneCount = chapters.filter((c) => chapterDone(c.id)).length;
@@ -108,7 +110,7 @@ function StudentHome() {
 
       {aktuellt.length > 0 && (
         <section className="rounded-2xl border-2 border-dashed border-wine/30 p-5">
-          <h2 className="text-lg font-bold">📌 Din lärare tipsar om</h2>
+          <h2 className="text-lg font-bold">📌 Aktuellt just nu</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {aktuellt.map((c) => (
               <Link key={c.id} href={stepHref(c.steps[0].id)} className="rounded-xl bg-paper px-4 py-2 font-medium text-navy shadow-sm hover:bg-gold-light">
@@ -135,20 +137,19 @@ function StudentHome() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Förälderns/lärarens startsida: översikt över barnen                  */
+/* Förälderns startsida: översikt över barnen                          */
 /* ------------------------------------------------------------------ */
 
-function AdultHome() {
+function ParentHome() {
   const { state, tier, update } = useStore();
-  const role = state.session!.role;
   const weekAgo = Date.now() - 7 * 864e5;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="page-title">{role === "admin" ? "Översikt" : `Hej ${state.parent.name.split(" ")[0]}!`}</h1>
+        <h1 className="page-title">Hej {state.parent.name.split(" ")[0]}!</h1>
         <p className="mt-1 text-muted">
-          {role === "admin" ? "Så här går det för eleverna." : "Så här har veckan gått för dina barn."} Abonnemang: <b>{TIERS[tier].name}</b>
+          Så här har veckan gått för dina barn. Abonnemang: <b>{TIERS[tier].name}</b>
         </p>
       </div>
 

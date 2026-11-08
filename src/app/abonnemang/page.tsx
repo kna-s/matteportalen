@@ -16,7 +16,7 @@ export default function SubscriptionPage() {
   return (
     <div>
       <PageHeader icon="💳" title="Mitt abonnemang" intro="Välj den nivå som passar er. Abonnemanget betalas månadsvis och gäller för alla barn på kontot. Du kan byta eller säga upp när du vill." />
-      <RequireLogin roles={["foralder", "admin"]}>
+      <RequireLogin roles={["foralder"]}>
         <Content />
       </RequireLogin>
     </div>

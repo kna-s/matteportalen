@@ -4,9 +4,11 @@ Läxhjälp i matematik för mellanstadiet (åk 4–6). Kursplanen följer Skolve
 
 ## Status: Fas 1 (klickbar prototyp)
 
-- Alla flikar: Startsida, Välj årskurs, Videolektioner, Matematikövningar, Screening, Quiz och utmaningar, Mina resultat, Föräldraportal, Mitt abonnemang, plus en Lärarvy för våra lärare.
-- Demo-inloggning som **elev**, **förälder** eller **lärare** (ingen riktig inloggning än).
-- Allt sparas i webbläsarens localStorage. Under "Lärarvy" kan demodatan återställas.
+- Utloggade ser en marknadssida riktad till föräldrar (startsida + /priser).
+- Inloggade får appen med sidomeny: Startsida, Välj årskurs, Videolektioner, Matematikövningar, Screening, Quiz och utmaningar, Mina resultat, Föräldraportal, Mitt abonnemang.
+- Föräldern skapar elevkonton och väljer vad som är **Aktuellt** för varje barn.
+- Demo-inloggning som **elev**, **förälder** eller **admin** (vi som driver sajten och lägger upp innehåll). Ingen riktig inloggning än.
+- Allt sparas i webbläsarens localStorage. Under Administration → Kunder kan demodatan återställas.
 - Allt innehåll är platshållare och genereras i `src/lib/curriculum.ts`.
 - Nivån kan bytas med rutan "Demo-nivå" nere till vänster.
 
@@ -35,5 +37,5 @@ npm run dev
 
 ## Nästa faser
 
-2. Riktig inloggning och databas (Supabase). Lärare laddar upp eget innehåll.
+2. Riktig inloggning och databas (Supabase). Admin laddar upp eget innehåll.
 3. Betalning (Stripe/Swish), e-post med veckorapport, månadsvisa uppdateringar och arkiv för gamla quiz (`publishedMonth`/`version` finns redan i datamodellen).

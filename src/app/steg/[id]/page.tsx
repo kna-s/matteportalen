@@ -54,7 +54,7 @@ function StepView() {
 
       {!isStudent && (
         <p className="rounded-xl bg-gold-light/60 px-4 py-2 text-sm text-[#6b5410]">
-          Du förhandsvisar som {state.session?.role === "admin" ? "lärare" : "förälder"}. Framsteg sparas bara när eleven själv gör stegen.
+          Du förhandsvisar som {state.session?.role === "admin" ? "admin" : "förälder"}. Framsteg sparas bara när eleven själv gör stegen.
         </p>
       )}
 

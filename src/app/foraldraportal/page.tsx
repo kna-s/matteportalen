@@ -6,6 +6,7 @@ import { GRADES, Grade, chaptersFor, getChapter } from "@/lib/curriculum";
 import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS, tierAtLeast } from "@/lib/tiers";
+import AktuelltPicker from "@/components/AktuelltPicker";
 import { PageHeader, ProgressBar, RequireLogin } from "@/components/ui";
 
 export default function ParentPortal() {
@@ -14,9 +15,9 @@ export default function ParentPortal() {
       <PageHeader
         icon="👨‍👩‍👧"
         title="Föräldraportal"
-        intro="Skapa konton åt dina barn, följ hur det går och få en veckorapport. Du ser samma resultat som ditt barn ser."
+        intro="Skapa konton åt dina barn, välj vad som är aktuellt för dem, följ hur det går och få en veckorapport."
       />
-      <RequireLogin roles={["foralder", "admin"]}>
+      <RequireLogin roles={["foralder"]}>
         <Content />
       </RequireLogin>
     </div>
@@ -115,6 +116,8 @@ function Content() {
               <p className="text-sm">
                 Senast aktiv: <b>{last ? new Date(last).toLocaleDateString("sv-SE") : "aldrig"}</b>
               </p>
+
+              <AktuelltPicker student={st} />
 
               <div className="rounded-xl bg-cream p-3 text-sm">
                 <p className="font-semibold text-navy">📬 Veckorapport</p>
