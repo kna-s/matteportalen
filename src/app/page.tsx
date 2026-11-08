@@ -1,17 +1,16 @@
 "use client";
 
-import { daysSinceActive, welcomeBack } from "@/lib/encourage";
+import { welcomeBack } from "@/lib/encourage";
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
-import { AREAS, STEP_ICON, STEP_LABELS, chaptersFor, getArea, getChapter } from "@/lib/curriculum";
+import { AREAS, STEP_ICON, STEP_LABELS, getArea, getChapter } from "@/lib/curriculum";
 import { continuePoint, stepHref } from "@/lib/flow";
-import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
-import { TIERS, tierAtLeast } from "@/lib/tiers";
 import Landing from "@/components/LandingNew";
+import ParentHome from "@/components/ParentHome";
 import { TreasureTeaser } from "@/components/Treasure";
 import AdminPanel from "@/components/AdminPanel";
-import Mascot, { MascotSays } from "@/components/Mascot";
+import { MascotSays } from "@/components/Mascot";
 import { BadgeMedal } from "@/components/Badges";
 import { BADGES } from "@/lib/badges";
 
@@ -122,110 +121,6 @@ function StudentHome() {
           </p>
         )}
       </section>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Förälderns startsida: översikt över barnen                          */
-/* ------------------------------------------------------------------ */
-
-function ParentHome() {
-  const { state, tier, update } = useStore();
-  const weekAgo = Date.now() - 7 * 864e5;
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="page-title">Hej {state.parent.name.split(" ")[0]}!</h1>
-        <p className="mt-1 text-muted">
-          Så här har veckan gått för dina barn. Abonnemang: <b>{TIERS[tier].name}</b>
-        </p>
-      </div>
-
-      {state.students.length === 0 && (
-        <div className="rounded-3xl bg-paper p-8 text-center ring-1 ring-line">
-          <div className="flex justify-center">
-            <Mascot mood="glad" size={110} />
-          </div>
-          <h2 className="mt-2 text-2xl font-bold">Lägg till ditt första barn</h2>
-          <p className="mx-auto mt-1 max-w-md text-muted">När du har lagt till ett barn ser du här hur veckan har gått, vad barnet behöver öva på och vilka märken det har fått.</p>
-          <Link href="/kom-igang" className="btn-accent mt-5">
-            <Icon name="plus" size={20} className="icon-invert" /> Kom igång
-          </Link>
-        </div>
-      )}
-      {state.students.length > 0 && state.parent.onboarded === false && (
-        <Link href="/kom-igang" className="flex items-center gap-3 rounded-2xl bg-gold-light/60 p-4 hover:bg-gold-light">
-          <Icon name="aktuellt" size={24} />
-          <span className="flex-1 text-sm">
-            <b>Slutför guiden Kom igång</b> för att välja nivå och få barnens inloggningsuppgifter.
-          </span>
-          <span aria-hidden>→</span>
-        </Link>
-      )}
-
-      <div className="grid gap-5 md:grid-cols-2">
-        {state.students.map((st) => {
-          const p = state.progress[st.id] ?? emptyProgress();
-          const chs = chaptersFor(st.grade);
-          const total = chs.reduce((s, c) => s + c.steps.length, 0);
-          const done = chs.reduce((s, c) => s + c.steps.filter((x) => p.completed[x.id]).length, 0);
-          const week = Object.values(p.completed).filter((d) => new Date(d).getTime() > weekAgo).length;
-          const plan = trainingPlan(p, st.grade);
-          const badgeCount = BADGES.filter((b) => b.earned({ p, grade: st.grade, tier })).length;
-          const idle = daysSinceActive(p);
-          const select = () => update((s) => ({ ...s, session: { ...s.session!, studentId: st.id } }));
-          return (
-            <div key={st.id} className="card space-y-4 !p-6">
-              <div className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-full bg-navy text-lg font-bold text-gold">{st.name[0]}</span>
-                <div>
-                  <h2 className="text-xl font-bold">{st.name}</h2>
-                  <p className="text-sm text-muted">Årskurs {st.grade}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="rounded-xl bg-cream p-3">
-                  <p className="font-serif text-2xl font-bold text-navy">{week}</p>
-                  <p className="text-xs text-muted">steg denna vecka</p>
-                </div>
-                <div className="rounded-xl bg-cream p-3">
-                  <p className="font-serif text-2xl font-bold text-navy">{Math.round((done / total) * 100)} %</p>
-                  <p className="text-xs text-muted">av årskursen</p>
-                </div>
-              </div>
-              {idle !== null && idle >= 3 && (
-                <p className="rounded-xl bg-gold-light/60 px-3 py-2 text-sm">
-                  <b>{st.name}</b> har inte varit inne på {idle} dagar. Ett tips: välj något som är aktuellt i skolan, så blir det lättare att komma igång.
-                </p>
-              )}
-              {tierAtLeast(tier, "premium") ? (
-                plan.length > 0 ? (
-                  <p className="text-sm">
-                    <Icon name="mal" size={18} className="mr-1 inline-block align-[-3px]" /> Behöver öva på: <b>{plan.slice(0, 3).map((x) => x.title).join(", ")}</b>
-                  </p>
-                ) : (
-                  <p className="text-sm text-good"><Icon name="klar" size={18} className="mr-1 inline-block align-[-3px]" /> Inget som behöver repeteras just nu.</p>
-                )
-              ) : (
-                <p className="text-sm text-muted"><Icon name="las" size={18} className="mr-1 inline-block align-[-3px]" /> Se vad {st.name} behöver öva på med Premium.</p>
-              )}
-              <div className="flex flex-wrap gap-2">
-                <Link href="/resultat" onClick={select} className="btn-ghost !py-1.5 text-sm">
-                  Resultat
-                </Link>
-                <Link href="/screening" onClick={select} className="btn-ghost !py-1.5 text-sm">
-                  Screening
-                </Link>
-                <Link href="/marken" onClick={select} className="btn-ghost !py-1.5 text-sm">
-                  <Icon name="marken" size={18} /> {badgeCount} märken
-                </Link>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
