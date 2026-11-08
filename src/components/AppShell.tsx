@@ -109,7 +109,7 @@ function Logo({ compact = false }: { compact?: boolean }) {
     <Link href="/" className="flex min-w-0 items-center gap-2">
       <LogoMark />
       {!compact && (
-        <span className="truncate font-serif text-lg font-bold text-navy">
+        <span className="whitespace-nowrap font-serif text-base font-bold text-navy sm:text-lg">
           {BRAND.first} <span className="text-wine">{BRAND.second}</span>
         </span>
       )}
@@ -149,7 +149,8 @@ const MARKETING_NAV = [
 
 function MarketingShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  const isHome = usePathname() === "/";
+  const path = usePathname();
+  const isHome = path === "/" || path === "/startsida-ny";
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b border-line bg-cream/90 backdrop-blur">
@@ -166,7 +167,7 @@ function MarketingShell({ children }: { children: React.ReactNode }) {
             <Link href="/logga-in" className="hidden text-sm font-semibold text-navy hover:text-wine sm:inline">
               Logga in
             </Link>
-            <Link href="/logga-in?skapa=1" className="btn-accent whitespace-nowrap !px-4 !py-2 text-sm">
+            <Link href="/logga-in?skapa=1" className="btn-accent whitespace-nowrap !px-3 !py-2 text-sm sm:!px-4">
               Prova gratis
             </Link>
             <button className="rounded-lg border border-line px-2.5 py-1 text-navy md:hidden" onClick={() => setOpen((o) => !o)} aria-label="Meny" aria-expanded={open}>

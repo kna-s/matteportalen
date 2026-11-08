@@ -75,7 +75,7 @@ function AppPreview() {
   );
 }
 
-const FAQ = [
+export const FAQ = [
   {
     q: `Ersätter ${BRAND.name} skolans undervisning?`,
     a: "Nej. Vi är ett extra stöd vid sidan av skolan, som läxhjälp hemma. Eleven kan repetera det som gås igenom i klassrummet, öva mer på det som är svårt och komma ikapp i egen takt.",
