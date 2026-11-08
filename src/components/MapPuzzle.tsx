@@ -245,7 +245,7 @@ export function TrailPath({
       </span>
     ) : (
       <span
-        className={`grid h-7 w-7 place-items-center sm:h-8 sm:w-8 rounded-full text-xs font-bold ${i === current ? "bg-paper text-navy shadow ring-4 ring-gold" : "border-2 border-dashed border-navy/30 bg-paper/70 text-navy/50"}`}
+        className={`grid h-7 w-7 place-items-center sm:h-8 sm:w-8 rounded-full text-xs font-bold ${i === current ? `bg-paper text-navy shadow ring-4 ring-gold ${showMascot ? "" : "here-pulse"}` : "border-2 border-dashed border-navy/30 bg-paper/70 text-navy/50"}`}
       >
         {i + 1}
       </span>

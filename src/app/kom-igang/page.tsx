@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/icons/Icon";
-import Mascot, { MascotSays } from "@/components/Mascot";
+import Mascot from "@/components/Mascot";
 import { RequireLogin } from "@/components/ui";
 import { GRADES, Grade } from "@/lib/curriculum";
 import { useStore } from "@/lib/store";
@@ -186,9 +186,12 @@ function Wizard() {
               ))}
             </ul>
             <div className="mt-5">
-              <MascotSays mood="pekar" size={48}>
-                Tips: välj vad som är aktuellt för ditt barn i Föräldraportalen, till exempel det de jobbar med i skolan just nu.
-              </MascotSays>
+              <p className="flex items-start gap-3 rounded-2xl bg-cream px-4 py-3 text-sm">
+                <Icon name="aktuellt" size={22} className="shrink-0" />
+                <span>
+                  <b>Tips:</b> välj vad som är aktuellt för ditt barn i Föräldraportalen, till exempel det de jobbar med i skolan just nu.
+                </span>
+              </p>
             </div>
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
               <Link href="/foraldraportal" onClick={() => update((s) => ({ ...s, parent: { ...s.parent, onboarded: true } }))} className="btn-ghost">

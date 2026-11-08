@@ -139,7 +139,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
             <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
             {step.title}
           </h1>
-          {open && step.type !== "screening" && <MascotSays mood={INTRO_MOOD[step.type]} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
+          {open && (step.type === "video" || step.type === "ovning") && <MascotSays mood={INTRO_MOOD[step.type]} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
@@ -426,6 +426,8 @@ function QuizStep({
   if (result) {
     const ratio = result.score / result.total;
     const worse = !!prev && ratio < prev.score / prev.total;
+    // När det gått sämre eller under 60 % visas bara öva-rutan, inga andra uppmaningar.
+    const needsPractice = worse || ratio < 0.6;
     const videoHref = stepHref(chapter.steps.find((s) => s.type === "video")!.id);
     return (
       <div className="pop-in mx-auto max-w-xl overflow-hidden rounded-3xl bg-paper text-center shadow-md ring-1 ring-line">
@@ -446,7 +448,7 @@ function QuizStep({
               </span>
             ))}
           </div>
-          {feedback !== "full" && (
+          {feedback !== "full" && !needsPractice && (
             <p className="mt-4 flex items-start justify-center gap-2 text-left">
               <Icon name="prat" size={22} className="shrink-0" />
               {ratio >= 0.85
@@ -456,7 +458,7 @@ function QuizStep({
                   : "Bra kämpat! Kika på videon igen och testa sen igen."}
             </p>
           )}
-          {feedback === "full" && (
+          {feedback === "full" && !needsPractice && (
             <p className="mt-4 flex items-start justify-center gap-2 text-left">
               <Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.
             </p>
@@ -464,7 +466,9 @@ function QuizStep({
           {worse && (
             <div className="pop-in mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
               <div className="flex items-start gap-3">
-                <Mascot mood="nickar" size={52} />
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-paper">
+                  <Icon name="video" size={28} />
+                </span>
                 <div className="flex-1">
                   <p className="font-semibold text-navy">
                     Förra gången fick du {prev!.score} av {prev!.total}. Det går upp och ner ibland, det är helt normalt!
@@ -480,7 +484,9 @@ function QuizStep({
           {ratio < 0.6 && !worse && (
             <div className="mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
               <div className="flex items-start gap-3">
-                <Mascot mood="glad" size={52} />
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-paper">
+                  <Icon name="ovning" size={28} />
+                </span>
                 <div className="flex-1">
                   <p className="font-semibold text-navy">Vill du öva lite till på samma sak?</p>
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -556,6 +562,12 @@ function QuizStep({
           })}
         </div>
 
+        {!checked && idx === 0 && (
+          <div className="mt-5 flex items-center gap-3 rounded-2xl bg-cream p-4">
+            <Mascot size={56} mood={INTRO_MOOD.quiz} />
+            <p className="text-sm font-medium">{SIGGE_INTRO.quiz}</p>
+          </div>
+        )}
         {checked && (
           <div className={`pop-in mt-5 flex items-center gap-3 rounded-2xl p-4 ${isRight ? "bg-good/10" : "bg-gold-light/70"}`}>
             <Mascot size={56} mood={reply?.mood ?? (isRight ? "hurra" : "tanker")} />

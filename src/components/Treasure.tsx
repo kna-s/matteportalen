@@ -293,6 +293,7 @@ export function TreasureTrailStrip() {
           chestReady={isl.chestReady}
           chestOpen={isOpen}
           chestHref={`/aventyret/${areaId}`}
+          showMascot={false}
         />
       </div>
       <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-navy">
