@@ -230,7 +230,7 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
                 <label
                   key={oi}
                   className={`flex cursor-pointer items-center gap-2 rounded-xl border p-3 ${
-                    show && correct ? "border-good bg-good/10" : show && chosen ? "border-bad bg-bad/10" : chosen ? "border-navy bg-navy/5" : "border-line hover:bg-cream"
+                    show && correct ? "border-good bg-good/10" : show && chosen ? "border-warn bg-warn/10" : chosen ? "border-navy bg-navy/5" : "border-line hover:bg-cream"
                   }`}
                 >
                   <input
@@ -243,7 +243,7 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
                   />
                   {o}
                   {show && correct && <span className="ml-auto text-good">✓</span>}
-                  {show && chosen && !correct && <span className="ml-auto text-bad">✗</span>}
+                  {show && chosen && !correct && <span className="ml-auto text-sm text-warn">Inte riktigt</span>}
                 </label>
               );
             })}
@@ -257,7 +257,12 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
         </button>
       ) : (
         <div className="card border-navy">
-          <p className="text-sm font-semibold uppercase tracking-wide text-wine">Resultat</p>
+          <p className="text-4xl" aria-hidden>
+            {result.score / result.total >= 0.85 ? "🎉" : result.score / result.total >= 0.6 ? "🌟" : "💪"}
+          </p>
+          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-wine">
+            {result.score / result.total >= 0.85 ? "Superbra!" : result.score / result.total >= 0.6 ? "Bra jobbat!" : "Bra kämpat!"}
+          </p>
           <p className="font-serif text-4xl font-bold text-navy">
             {result.score} av {result.total} rätt
           </p>

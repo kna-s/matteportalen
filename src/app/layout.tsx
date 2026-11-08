@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Lexend, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import DemoBar from "@/components/DemoBar";
+import AppShell from "@/components/AppShell";
 import { StoreProvider } from "@/lib/store";
 
 // Lexend är framtagen för att vara lättläst, vilket passar elever med lässvårigheter.
@@ -19,15 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="sv" className={`${body.variable} ${heading.variable}`}>
       <body className="font-sans antialiased">
         <StoreProvider>
-          <Header />
-          <main className="mx-auto min-h-[70vh] max-w-6xl px-4 py-8">{children}</main>
-          <footer className="border-t border-line bg-navy text-sm text-white/80">
-            <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 sm:flex-row sm:justify-between">
-              <span>© {new Date().getFullYear()} Matteportalen (arbetsnamn)</span>
-              <span>Följer Skolverkets centrala innehåll för matematik åk 4–6</span>
-            </div>
-          </footer>
-          <DemoBar />
+          <AppShell>{children}</AppShell>
         </StoreProvider>
       </body>
     </html>

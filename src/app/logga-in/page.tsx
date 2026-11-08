@@ -1,13 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 
 export default function LoginPage() {
   const { state, login } = useStore();
   const router = useRouter();
   const [mode, setMode] = useState<"logga-in" | "skapa">("logga-in");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("skapa")) setMode("skapa");
+  }, []);
 
   return (
     <div className="mx-auto max-w-3xl">

@@ -8,7 +8,7 @@ export default function DemoBar() {
   const { state, tier, update } = useStore();
   if (!state.session) return null;
   return (
-    <div className="fixed bottom-3 left-3 z-50 flex items-center gap-2 rounded-full border border-gold bg-paper px-3 py-1.5 text-xs shadow-lg">
+    <div className="fixed bottom-20 right-3 z-50 lg:bottom-3 flex items-center gap-2 rounded-full border border-gold bg-paper px-3 py-1.5 text-xs shadow-lg">
       <span className="font-semibold text-[#6b5410]">Demo-nivå:</span>
       <select
         aria-label="Byt abonnemangsnivå (demo)"
