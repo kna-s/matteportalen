@@ -242,7 +242,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen lg:flex">
       {/* Sidomeny, dator */}
       <aside
-        className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-paper transition-[width] duration-200 lg:flex ${collapsed ? "w-[72px]" : "w-64"}`}
+        className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-paper transition-[width] duration-200 lg:flex ${collapsed ? "w-[72px]" : "w-56"}`}
         aria-label="Huvudmeny"
       >
         <div className={`flex items-center py-4 ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
