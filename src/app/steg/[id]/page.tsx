@@ -11,6 +11,7 @@ import { QuizResult, emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
+import { mergeStep, useContent, youtubeId } from "@/lib/content";
 import Mascot, { MascotSays } from "@/components/Mascot";
 import DrawPad from "@/components/DrawPad";
 
@@ -33,9 +34,11 @@ function StepView() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { state, tier, currentStudent, completeStep } = useStore();
+  const { rows } = useContent();
   const found = findStep(id);
   if (!found) return <p>Steget finns inte.</p>;
-  const { chapter, step } = found;
+  const { chapter } = found;
+  const step = mergeStep(found.step, rows[found.step.id]);
   const area = getArea(chapter.areaId);
   const open = canAccess(tier, step, chapter.id);
   const isStudent = state.session?.role === "elev";
@@ -79,11 +82,11 @@ function StepView() {
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
-            <VideoStep chapter={chapter} />
+            <VideoStep chapter={chapter} videoUrl={step.videoUrl} description={step.description} />
           ) : step.type === "ovning" ? (
             <ExerciseStep step={step} />
           ) : step.type === "quiz" ? (
-            <QuizStep key={step.id} chapter={chapter} step={step} />
+            <QuizStep key={`${step.id}-${step.questions?.length}-${step.custom}`} chapter={chapter} step={step} />
           ) : (
             <ScreeningStep chapter={chapter} />
           )}
@@ -148,10 +151,23 @@ function Stepper({ chapter, current }: { chapter: Chapter; current: Step }) {
   );
 }
 
-function VideoStep({ chapter }: { chapter: Chapter }) {
+function VideoStep({ chapter, videoUrl, description }: { chapter: Chapter; videoUrl?: string; description?: string }) {
   const area = getArea(chapter.areaId);
+  const yt = youtubeId(videoUrl);
+  const about = description || BABBEL;
   return (
     <div className="space-y-4">
+      {yt ? (
+        <div className="mx-auto aspect-video max-w-3xl overflow-hidden rounded-2xl bg-ink shadow-md">
+          <iframe
+            className="h-full w-full"
+            src={`https://www.youtube-nocookie.com/embed/${yt}?rel=0&modestbranding=1`}
+            title={`Videolektion: ${chapter.title}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      ) : (
       <div className="relative mx-auto grid aspect-video max-w-3xl place-items-center overflow-hidden rounded-2xl text-white shadow-md" style={{ background: `linear-gradient(135deg, ${area.color}, var(--color-navy))` }}>
         <Icon name={area.icon} size={160} className="icon-invert absolute -right-6 -top-6 opacity-15" />
         <div className="relative text-center">
@@ -167,11 +183,12 @@ function VideoStep({ chapter }: { chapter: Chapter }) {
           <span>ca 5:00</span>
         </div>
       </div>
+      )}
       <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
         <div className="card">
           <h2 className="text-lg font-bold">Om lektionen</h2>
           <p className="mt-1 text-sm text-muted">
-            {BABBEL} <ReadAloud text={BABBEL} />
+            {about} <ReadAloud text={about} />
           </p>
         </div>
         <div className="card">

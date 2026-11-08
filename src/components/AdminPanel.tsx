@@ -2,10 +2,11 @@
 
 import Icon from "@/components/icons/Icon";
 import { useState } from "react";
-import { AREAS, CHAPTERS, GRADES, Grade, STEP_ICON, STEP_LABELS, StepType, TOOL_LABELS, ToolId, chaptersFor } from "@/lib/curriculum";
+import { AREAS, CHAPTERS, GRADES, Grade, STEP_ICON, STEP_LABELS, StepType, TOOL_LABELS, chaptersFor } from "@/lib/curriculum";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS } from "@/lib/tiers";
-import { Placeholder } from "./ui";
+import ContentEditor from "./ContentEditor";
+import { useContent } from "@/lib/content";
 
 const TABS = [
   { id: "oversikt", label: "Översikt", icon: "hem" },
@@ -38,7 +39,7 @@ export default function AdminPanel() {
       </div>
       {tab === "oversikt" && <Overview goTo={setTab} />}
       {tab === "innehall" && <ContentList />}
-      {tab === "nytt" && <NewContent />}
+      {tab === "nytt" && <ContentEditor />}
       {tab === "kunder" && <Customers />}
     </div>
   );
@@ -101,6 +102,7 @@ function Overview({ goTo }: { goTo: (t: TabId) => void }) {
 
 function ContentList() {
   const [grade, setGrade] = useState<Grade>(4);
+  const { rows } = useContent();
   return (
     <div className="card">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -134,7 +136,13 @@ function ContentList() {
                 <td className="py-2 text-muted">{c.steps[1].tools.map((t) => TOOL_LABELS[t]).join(", ") || "–"}</td>
                 <td className="py-2 text-muted">{c.steps[0].publishedMonth}</td>
                 <td className="py-2">
-                  <span className="chip bg-warn/15 text-warn">Platshållare</span>
+                  {(["video", "ovning", "quiz"] as const).filter((t) => rows[`${c.id}-${t}`]).length > 0 ? (
+                    <span className="chip bg-good/15 text-good">
+                      Eget: {(["video", "ovning", "quiz"] as const).filter((t) => rows[`${c.id}-${t}`]).map((t) => STEP_LABELS[t].toLowerCase()).join(", ")}
+                    </span>
+                  ) : (
+                    <span className="chip bg-warn/15 text-warn">Platshållare</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -142,134 +150,6 @@ function ContentList() {
         </table>
       </div>
     </div>
-  );
-}
-
-function NewContent() {
-  const [type, setType] = useState<StepType>("video");
-  const [grade, setGrade] = useState<Grade>(4);
-  const [areaId, setAreaId] = useState(AREAS[0].id);
-  const [tools, setTools] = useState<ToolId[]>([]);
-  const [saved, setSaved] = useState(false);
-
-  return (
-    <form
-      className="card space-y-5"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSaved(true);
-      }}
-    >
-      <h2 className="text-lg font-bold">Lägg upp nytt innehåll</h2>
-
-      <div>
-        <p className="mb-2 text-sm font-semibold text-navy">Typ</p>
-        <div className="flex flex-wrap gap-2">
-          {(["video", "ovning", "quiz"] as StepType[]).map((t) => (
-            <button type="button" key={t} onClick={() => setType(t)} className={type === t ? "btn-primary !py-1.5 text-sm" : "btn-ghost !py-1.5 text-sm"}>
-              <Icon name={STEP_ICON[t]} size={18} className={type === t ? "icon-invert" : ""} /> {STEP_LABELS[t]}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <label className="text-sm">
-          <span className="font-semibold text-navy">Årskurs</span>
-          <select className="input mt-1" value={grade} onChange={(e) => setGrade(Number(e.target.value) as Grade)}>
-            {GRADES.map((g) => (
-              <option key={g} value={g}>
-                Åk {g}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="font-semibold text-navy">Område</span>
-          <select className="input mt-1" value={areaId} onChange={(e) => setAreaId(e.target.value)}>
-            {AREAS.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.title}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="font-semibold text-navy">Kapitel</span>
-          <select className="input mt-1">
-            {chaptersFor(grade, areaId).map((c) => (
-              <option key={c.id}>{c.title}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <label className="block text-sm">
-        <span className="font-semibold text-navy">Titel</span>
-        <input className="input mt-1" placeholder="T.ex. Så räknar du ut arean av en rektangel" />
-      </label>
-
-      {type === "video" && (
-        <div className="rounded-xl border-2 border-dashed border-line p-8 text-center text-sm text-muted">
-          <Icon name="video" size={44} className="mx-auto" />
-          <p className="mt-2">Dra hit en videofil eller klistra in en länk</p>
-          <input className="input mx-auto mt-3 max-w-md" placeholder="https://…" />
-        </div>
-      )}
-      {type === "ovning" && (
-        <label className="block text-sm">
-          <span className="font-semibold text-navy">Uppgifter (en per rad)</span>
-          <textarea className="input mt-1 min-h-32" placeholder={"Rita en rektangel som är 4 cm lång och 3 cm bred.\nRäkna ut omkretsen."} />
-        </label>
-      )}
-      {type === "quiz" && (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-navy">Fråga 1</p>
-          <input className="input" placeholder="Frågan" />
-          <div className="grid gap-2 sm:grid-cols-2">
-            {["A", "B", "C", "D"].map((l, i) => (
-              <label key={l} className="flex items-center gap-2">
-                <input type="radio" name="ratt" defaultChecked={i === 0} className="accent-good" aria-label={`Svar ${l} är rätt`} />
-                <input className="input" placeholder={`Svar ${l}`} />
-              </label>
-            ))}
-          </div>
-          <p className="text-xs text-muted">Markera rätt svar med rundeln. Fler frågor kan läggas till i nästa fas.</p>
-        </div>
-      )}
-
-      {type !== "video" && (
-        <div>
-          <p className="mb-2 text-sm font-semibold text-navy">Hjälpmedel för uppgiften</p>
-          <div className="flex flex-wrap gap-2">
-            {(Object.keys(TOOL_LABELS) as ToolId[]).map((t) => (
-              <label key={t} className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${tools.includes(t) ? "border-navy bg-navy/5" : "border-line"}`}>
-                <input
-                  type="checkbox"
-                  className="accent-navy"
-                  checked={tools.includes(t)}
-                  onChange={() => setTools((x) => (x.includes(t) ? x.filter((y) => y !== t) : [...x, t]))}
-                />
-                {TOOL_LABELS[t]}
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <label className="block text-sm sm:w-60">
-        <span className="font-semibold text-navy">Publiceras</span>
-        <input type="month" className="input mt-1" defaultValue={new Date().toISOString().slice(0, 7)} />
-      </label>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <button className="btn-accent">Spara och publicera</button>
-        <button type="button" className="btn-ghost">
-          Spara som utkast
-        </button>
-      </div>
-      {saved && <Placeholder>Demo: i nästa fas sparas innehållet i databasen och dyker upp för eleverna direkt.</Placeholder>}
-    </form>
   );
 }
 

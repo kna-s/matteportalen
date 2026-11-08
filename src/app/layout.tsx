@@ -4,6 +4,7 @@ import { Lexend, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
 import { StoreProvider } from "@/lib/store";
+import { ContentProvider } from "@/lib/content";
 
 // Lexend är framtagen för att vara lättläst, vilket passar elever med lässvårigheter.
 const body = Lexend({ variable: "--font-body", subsets: ["latin"] });
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="sv" className={`${body.variable} ${heading.variable}`}>
       <body className="font-sans antialiased">
         <StoreProvider>
-          <AppShell>{children}</AppShell>
+          <ContentProvider>
+            <AppShell>{children}</AppShell>
+          </ContentProvider>
         </StoreProvider>
       </body>
     </html>

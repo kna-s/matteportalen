@@ -39,6 +39,17 @@ npm run dev
 
 Öppna http://localhost:3000.
 
+## Databas (Supabase)
+
+Innehåll som admins lägger upp (YouTube-videor, övningar, quiz) sparas i Supabase och syns för alla besökare. Utan nycklar visas platshållarna som förut.
+
+1. Kopiera `.env.example` till `.env.local` och fyll i URL och anon-nyckel (Supabase: Project Settings → API). Lägg in samma två variabler på Vercel.
+2. Kör `supabase/migrations/001_innehall.sql` i Supabase SQL Editor.
+3. Skapa en användare (Authentication → Users → Add user) och kör `supabase/gor-mig-till-admin.sql` med den e-posten.
+4. Logga in som Admin i demot → Administration → Lägg upp nytt → logga in med Supabase-kontot.
+
+Inloggning för föräldrar och elever samt sparade framsteg ligger fortfarande i webbläsaren (nästa steg).
+
 ## Nästa faser
 
 2. Riktig inloggning och databas (Supabase). Admin laddar upp eget innehåll.

@@ -7,12 +7,13 @@ import { AREAS, Area, Chapter, GRADES, Grade, LATEST_MONTH, STEP_ICON, Step, Ste
 import { stepHref } from "@/lib/flow";
 import { QuizResult, emptyProgress, latestQuizPerChapter, useStore } from "@/lib/store";
 import { TIERS, canAccess, requiredTier } from "@/lib/tiers";
+import { mergeStep, useContent, youtubeId } from "@/lib/content";
 
 interface CardProps {
   type: StepType;
   area: Area;
   chapter: Chapter;
-  step: Step;
+  step: Step & { videoUrl?: string; custom?: boolean };
   open: boolean;
   done: boolean;
   quiz?: QuizResult;
@@ -20,10 +21,16 @@ interface CardProps {
 
 function VideoCard({ area, chapter, step, open, done }: CardProps) {
   const isNew = step.publishedMonth === LATEST_MONTH;
+  const yt = youtubeId(step.videoUrl);
   return (
     <Link href={stepHref(step.id)} className="group flex flex-col overflow-hidden rounded-2xl bg-paper ring-1 ring-line transition-all hover:-translate-y-0.5 hover:shadow-md">
       <div className="relative grid aspect-video place-items-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${area.color}33, ${area.color}88)` }}>
-        <Icon name={area.icon} size={120} className="absolute -bottom-8 -left-6 opacity-20 transition-transform group-hover:scale-105" />
+        {yt ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={`https://i.ytimg.com/vi/${yt}/mqdefault.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <Icon name={area.icon} size={120} className="absolute -bottom-8 -left-6 opacity-20 transition-transform group-hover:scale-105" />
+        )}
         <span className={`relative grid h-14 w-14 place-items-center rounded-full shadow-md transition-transform group-hover:scale-110 ${open ? "bg-paper text-2xl text-navy" : "bg-paper/80"}`}>
           {open ? <span className="ml-1">▶</span> : <Icon name="las" size={28} />}
         </span>
@@ -36,7 +43,7 @@ function VideoCard({ area, chapter, step, open, done }: CardProps) {
         )}
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <b className="leading-tight text-navy">{chapter.title}</b>
+        <b className="leading-tight text-navy">{step.custom && step.title ? step.title.replace(/^Videolektion: /, "") : chapter.title}</b>
         <span className="mt-1 text-xs text-muted">{area.title}</span>
         {!open && <span className="mt-auto pt-2 text-xs font-semibold text-wine">Ingår i {TIERS[requiredTier(step, chapter.id)].name}</span>}
       </div>
@@ -84,10 +91,11 @@ export default function StepTypeList({ type }: { type: StepType }) {
   const [areaId, setAreaId] = useState<string>("alla");
   const p = (currentStudent && state.progress[currentStudent.id]) || emptyProgress();
   const latest = latestQuizPerChapter(p);
+  const { rows } = useContent();
 
   const areas = AREAS.filter((a) => areaId === "alla" || a.id === areaId);
   const props = (a: Area, c: Chapter): CardProps => {
-    const s = c.steps.find((x) => x.type === type)!;
+    const s = mergeStep(c.steps.find((x) => x.type === type)!, rows[`${c.id}-${type}`]);
     return { type, area: a, chapter: c, step: s, open: canAccess(tier, s, c.id), done: !!p.completed[s.id], quiz: type === "quiz" ? latest.get(c.id) : undefined };
   };
   const Card = type === "video" ? VideoCard : TaskCard;
