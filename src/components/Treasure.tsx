@@ -266,8 +266,8 @@ export function ChestModal({ reward, outfit, onWear, onClose }: { reward: Access
   );
 }
 
-/** Äventyret på elevens startsida: röd streckad stig fram till kistan. */
-export function TreasureTeaser() {
+/** Stigen till kistan för ön eleven är på, som remsa i startsidans stora kort. */
+export function TreasureTrailStrip() {
   const { ctx, opened } = useTreasure();
   const cont = continuePoint(ctx.grade, ctx.tier, ctx.p);
   const areaId = cont?.chapter.areaId ?? AREAS[0].id;
@@ -277,29 +277,25 @@ export function TreasureTeaser() {
   const chs = chaptersFor(ctx.grade, areaId);
   const left = isl.total - isl.pieces;
   return (
-    <section className="ocean relative overflow-hidden rounded-3xl p-5 shadow-sm ring-1 ring-line">
+    <div className="ocean px-4 pb-4 pt-3 sm:px-6">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-xl font-bold">
-          <Icon name="karta" size={28} /> {BRAND.adventure}
-        </h2>
-        <Link href={`/aventyret/${areaId}`} className="text-sm font-semibold text-navy hover:underline">
+        <p className="flex min-w-0 items-center gap-2 text-sm font-bold text-navy">
+          <Icon name={area.icon} size={22} className="shrink-0" />
+          <span className="truncate">Ön {area.title}</span>
+        </p>
+        <Link href={`/aventyret/${areaId}`} className="shrink-0 text-sm font-semibold text-navy hover:underline">
           Till kartan →
         </Link>
       </div>
-      <div className="island-blob mt-3 px-4 pb-3 pt-4 sm:px-6" style={{ background: `linear-gradient(160deg, ${area.color}33, #f6e3b4 55%)` }}>
-        <p className="flex items-center gap-2 font-bold leading-tight text-navy">
-          <Icon name={area.icon} size={24} /> {area.title}
-        </p>
-        <div className="mt-6">
-          <TrailPath
-            stations={chs.map((c, i) => ({ title: c.title, done: isl.have[i], href: `/aventyret/${areaId}` }))}
-            chestReady={isl.chestReady}
-            chestOpen={isOpen}
-            chestHref={`/aventyret/${areaId}`}
-          />
-        </div>
+      <div className="mt-6">
+        <TrailPath
+          stations={chs.map((c, i) => ({ title: c.title, done: isl.have[i], href: `/aventyret/${areaId}` }))}
+          chestReady={isl.chestReady}
+          chestOpen={isOpen}
+          chestHref={`/aventyret/${areaId}`}
+        />
       </div>
-      <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-navy">
+      <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-navy">
         <Icon name="kartbit" size={20} />
         {isl.chestReady && !isOpen
           ? "Kartan är hel! Kistan är redo att öppnas."
@@ -307,7 +303,7 @@ export function TreasureTeaser() {
             ? "Du har hittat skatten här."
             : `${left} ${left === 1 ? "kartbit" : "kartbitar"} kvar till skattkistan.`}
       </p>
-    </section>
+    </div>
   );
 }
 

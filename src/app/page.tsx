@@ -3,12 +3,12 @@
 import { welcomeBack } from "@/lib/encourage";
 import Icon from "@/components/icons/Icon";
 import Link from "next/link";
-import { AREAS, STEP_ICON, STEP_LABELS, getArea, getChapter } from "@/lib/curriculum";
+import { STEP_ICON, STEP_LABELS, getChapter } from "@/lib/curriculum";
 import { continuePoint, stepHref } from "@/lib/flow";
 import { emptyProgress, useStore } from "@/lib/store";
 import Landing from "@/components/LandingNew";
 import ParentHome from "@/components/ParentHome";
-import { TreasureTeaser } from "@/components/Treasure";
+import { TreasureTrailStrip } from "@/components/Treasure";
 import AdminPanel from "@/components/AdminPanel";
 import { MascotSays, Mood } from "@/components/Mascot";
 import { useEffect, useState } from "react";
@@ -36,23 +36,15 @@ function StudentHome() {
   const aktuellt = (state.aktuellt[currentStudent.id] ?? []).map(getChapter).filter((c) => !!c);
   const ctx = { p, grade: currentStudent.grade, tier };
   const earned = BADGES.filter((b) => b.earned(ctx));
-  const locked = BADGES.filter((b) => !b.earned(ctx))
-    .map((b) => ({ badge: b, isEarned: false, prog: b.progress?.(ctx) ?? 0 }))
-    .sort((a, b) => b.prog - a.prog);
-  const seen = state.seenBadges[currentStudent.id] ?? {};
-  const recent = earned
-    .map((b) => ({ badge: b, isEarned: true, prog: 1, at: seen[b.id] ?? "" }))
-    .sort((a, b) => b.at.localeCompare(a.at));
-  const showcase = [...recent.slice(0, 4), ...locked].slice(0, 6);
-  const next = locked[0];
-
-  const area = getArea(cont?.chapter.areaId ?? AREAS[0].id);
+  const next = BADGES.filter((b) => !b.earned(ctx))
+    .map((b) => ({ badge: b, prog: b.progress?.(ctx) ?? 0 }))
+    .sort((a, b) => b.prog - a.prog)[0];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold sm:text-4xl">Hej {currentStudent.name}!</h1>
-        <div className="mt-3">
+        <div className="mt-2">
           <SiggeTalk
             greeting={
               welcomeBack(p) ??
@@ -62,70 +54,64 @@ function StudentHome() {
         </div>
       </div>
 
-      {/* Stort nästa-steg-kort */}
-      <div className="overflow-hidden rounded-3xl bg-navy text-white shadow-lg">
-        {cont ? (
-          <div className="p-6 sm:p-8">
-            <p className="text-sm font-semibold uppercase tracking-wider text-gold">Ditt nästa steg</p>
-            <p className="mt-2 text-sm text-white/70">
-              {area.title} · {cont.chapter.title}
-            </p>
-            <h2 className="icon-invert mt-2 flex items-center gap-3 text-2xl font-bold !text-white sm:text-3xl">
-              <Icon name={STEP_ICON[cont.step.type]} size={40} /> {STEP_LABELS[cont.step.type]}
-            </h2>
-            <Link href={stepHref(cont.step.id)} className="btn mt-6 w-full bg-gold !py-4 text-xl text-navy hover:bg-gold-light sm:w-auto sm:!px-10">
-              Fortsätt →
-            </Link>
-          </div>
-        ) : (
-          <div className="p-8 text-center">
-            <Icon name="firande" size={56} className="icon-invert mx-auto" />
-            <p className="mt-2 text-xl font-bold">Du har gjort allt som finns just nu!</p>
-            <p className="text-white/70">Snyggt jobbat. Nytt material kommer varje månad.</p>
-          </div>
+      {/* Ett stort kort: nästa steg och stigen till kistan */}
+      <section className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-line">
+        <div className="bg-navy text-white">
+          {cont ? (
+            <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-end sm:justify-between sm:p-8">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold uppercase tracking-wider text-gold">Ditt nästa steg</p>
+                <h2 className="icon-invert mt-2 flex items-center gap-3 text-2xl font-bold !text-white sm:text-3xl">
+                  <Icon name={STEP_ICON[cont.step.type]} size={40} /> {STEP_LABELS[cont.step.type]}
+                </h2>
+                <p className="mt-1 text-white/75">{cont.chapter.title}</p>
+              </div>
+              <Link href={stepHref(cont.step.id)} className="btn shrink-0 bg-gold !py-4 text-xl text-navy hover:bg-gold-light sm:!px-10">
+                Fortsätt →
+              </Link>
+            </div>
+          ) : (
+            <div className="p-8 text-center">
+              <Icon name="firande" size={56} className="icon-invert mx-auto" />
+              <p className="mt-2 text-xl font-bold">Du har gjort allt som finns just nu!</p>
+              <p className="text-white/70">Snyggt jobbat. Nytt material kommer varje månad.</p>
+            </div>
+          )}
+        </div>
+        <TreasureTrailStrip />
+      </section>
+
+      {/* Två små rutor */}
+      <div className={`grid grid-cols-1 gap-3 ${aktuellt.length > 0 && next ? "sm:grid-cols-2" : ""}`}>
+        {aktuellt.length > 0 && (
+          <Link
+            href={stepHref(aktuellt[0].steps[0].id)}
+            className="group flex min-w-0 items-center gap-3 rounded-2xl bg-paper p-4 ring-1 ring-line transition-shadow hover:shadow-md"
+          >
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-wine/10">
+              <Icon name="aktuellt" size={28} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-wine">Tips från din förälder</span>
+              <span className="block truncate font-bold text-navy">{aktuellt.map((c) => c.title).join(", ")}</span>
+            </span>
+            <span className="text-navy transition-transform group-hover:translate-x-0.5">→</span>
+          </Link>
+        )}
+        {next && (
+          <Link href="/marken" className="group flex min-w-0 items-center gap-3 rounded-2xl bg-paper p-4 ring-1 ring-line transition-shadow hover:shadow-md">
+            <BadgeMedal badge={next.badge} earned={false} size={48} progress={next.prog} />
+            <span className="min-w-0 flex-1">
+              <span className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                Nästa märke · {earned.length} av {BADGES.length} klara
+              </span>
+              <span className="block font-bold text-navy">{next.badge.name}</span>
+              <span className="block truncate text-sm text-muted">{next.badge.hint}</span>
+            </span>
+            <span className="text-navy transition-transform group-hover:translate-x-0.5">→</span>
+          </Link>
         )}
       </div>
-
-      {aktuellt.length > 0 && (
-        <section className="rounded-2xl bg-wine/5 p-5 ring-1 ring-wine/15">
-          <h2 className="flex items-center gap-2 text-lg font-bold"><Icon name="aktuellt" size={24} /> Aktuellt just nu</h2>
-          <p className="text-sm text-muted">Det här vill din förälder att du kikar på.</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {aktuellt.map((c) => (
-              <Link key={c.id} href={stepHref(c.steps[0].id)} className="rounded-xl bg-paper px-4 py-2 font-medium text-navy shadow-sm hover:bg-gold-light">
-                {c.title} →
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <TreasureTeaser />
-
-      {/* Märken */}
-      <section className="rounded-3xl bg-paper p-5 ring-1 ring-line">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-lg font-bold"><Icon name="marken" size={26} /> Dina märken</h2>
-          <Link href="/marken" className="shrink-0 text-sm font-semibold text-wine hover:underline">
-            Se alla {earned.length} / {BADGES.length} →
-          </Link>
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-6">
-          {showcase.map(({ badge, isEarned, prog }) => (
-            <Link key={badge.id} href="/marken" className="group flex flex-col items-center rounded-2xl p-2 text-center hover:bg-cream" title={isEarned ? badge.description : badge.hint}>
-              <div className="transition-transform group-hover:scale-105">
-                <BadgeMedal badge={badge} earned={isEarned} size={56} progress={prog} />
-              </div>
-              <span className={`text-[0.72rem] font-semibold leading-tight ${isEarned ? "text-navy" : "text-muted"}`}>{badge.name}</span>
-            </Link>
-          ))}
-        </div>
-        {next && (
-          <p className="mt-3 rounded-xl bg-cream px-3 py-2 text-sm">
-            <Icon name="mal" size={18} className="mr-1 inline-block align-[-3px]" /> <b>Nästa märke:</b> {next.badge.name}. {next.badge.hint}
-          </p>
-        )}
-      </section>
     </div>
   );
 }
