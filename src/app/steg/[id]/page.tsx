@@ -147,7 +147,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
               <VersionPicker versions={versions} active={vIdx} onPick={setVIdx} label="Tidigare videor om samma sak" />
             </>
           ) : step.type === "ovning" ? (
-            <ExerciseStep step={step} />
+            <ExerciseStep key={step.versionId} step={step} />
           ) : step.type === "quiz" ? (
             <>
               <QuizStep
@@ -282,12 +282,13 @@ function VideoStep({ chapter, videoUrl, description }: { chapter: Chapter; video
   );
 }
 
-const isDrawTask = (t: string) => /\brita\b/i.test(t);
+const isDrawTask = (t: string) => /\brit(a|ar|ning|ningen|ningar)\b/i.test(t);
+const drawKey = (stepId: string, i: number) => `${stepId}:ritning:${i}`;
 
-/** Hur många uppgifter i en övning som eleven har svarat på. */
+/** Hur många uppgifter i en övning som eleven har svarat på (text eller teckning). */
 function exerciseProgress(step: Step, notes: Record<string, string>) {
   const tasks = step.tasks ?? [];
-  const answered = tasks.map((t, i) => !!notes[`${step.id}:svar:${i}`]?.trim() || (isDrawTask(t) && !!notes[`${step.id}:ritning`]));
+  const answered = tasks.map((_, i) => !!notes[`${step.id}:svar:${i}`]?.trim() || !!notes[drawKey(step.id, i)]);
   return { answered, done: answered.filter(Boolean).length, total: tasks.length };
 }
 
@@ -295,9 +296,9 @@ function ExerciseStep({ step }: { step: Step }) {
   const { state, update, currentStudent } = useStore();
   const sid = currentStudent?.id;
   const notes = (sid && state.progress[sid]?.notes) || {};
-  const drawing = notes[`${step.id}:ritning`];
   const isStudent = state.session?.role === "elev";
   const { answered, done, total } = exerciseProgress(step, notes);
+  const [drawOpen, setDrawOpen] = useState<number[]>(() => (step.tasks ?? []).map((t, i) => (isDrawTask(t) || notes[drawKey(step.id, i)] ? i : -1)).filter((i) => i >= 0));
   const setNote = (key: string, value: string) =>
     sid &&
     update((s) => {
@@ -306,6 +307,11 @@ function ExerciseStep({ step }: { step: Step }) {
     });
   return (
     <div className="space-y-4">
+      {!isStudent && (
+        <p className="rounded-2xl bg-cream px-4 py-3 text-sm text-muted">
+          Svarsfält och rityta är låsta i förhandsvisningen. Logga in som elev för att svara och rita.
+        </p>
+      )}
       <div className="flex items-center gap-3">
         <div className="flex flex-1 gap-1.5">
           {answered.map((a, i) => (
@@ -316,31 +322,42 @@ function ExerciseStep({ step }: { step: Step }) {
           {done} / {total} klara
         </span>
       </div>
-      {step.tasks!.map((t, i) => (
-        <div key={i} className={`card transition-shadow ${answered[i] ? "ring-2 ring-good/40" : ""}`}>
-          <div className="flex gap-3">
-            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold text-white ${answered[i] ? "bg-good" : "bg-navy"}`}>
-              {answered[i] ? "✓" : i + 1}
-            </span>
-            <p className="pt-1 font-semibold">
-              {t} <ReadAloud text={t} />
-            </p>
-          </div>
-          {isDrawTask(t) && (
-            <div className="mt-3">
-              <DrawPad key={step.id} value={drawing} disabled={!isStudent} onChange={(v) => setNote(`${step.id}:ritning`, v)} />
+      {step.tasks!.map((t, i) => {
+        const open = drawOpen.includes(i);
+        return (
+          <div key={i} className={`card transition-shadow ${answered[i] ? "ring-2 ring-good/40" : ""}`}>
+            <div className="flex gap-3">
+              <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold text-white ${answered[i] ? "bg-good" : "bg-navy"}`}>
+                {answered[i] ? "✓" : i + 1}
+              </span>
+              <p className="flex-1 pt-1 font-semibold">
+                {t} <ReadAloud text={t} />
+              </p>
+              <button
+                type="button"
+                onClick={() => setDrawOpen((d) => (open ? d.filter((x) => x !== i) : [...d, i]))}
+                className={`flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold ${open ? "icon-invert bg-navy text-white" : "bg-cream text-navy hover:bg-gold-light"}`}
+                aria-pressed={open}
+              >
+                <Icon name="ovning" size={18} /> Rita
+              </button>
             </div>
-          )}
-          <textarea
-            className="input mt-3 min-h-20"
-            placeholder={isDrawTask(t) ? "Rita ovan eller skriv här…" : "Skriv ditt svar eller hur du tänkte…"}
-            value={notes[`${step.id}:svar:${i}`] ?? ""}
-            disabled={!isStudent}
-            onChange={(e) => setNote(`${step.id}:svar:${i}`, e.target.value)}
-            aria-label={`Svar på uppgift ${i + 1}`}
-          />
-        </div>
-      ))}
+            {open && (
+              <div className="mt-3">
+                <DrawPad key={`${step.id}-${i}`} value={notes[drawKey(step.id, i)]} disabled={!isStudent} onChange={(v) => setNote(drawKey(step.id, i), v)} />
+              </div>
+            )}
+            <textarea
+              className="input mt-3 min-h-20"
+              placeholder={open ? "Rita ovan eller skriv här…" : "Skriv ditt svar eller hur du tänkte…"}
+              value={notes[`${step.id}:svar:${i}`] ?? ""}
+              disabled={!isStudent}
+              onChange={(e) => setNote(`${step.id}:svar:${i}`, e.target.value)}
+              aria-label={`Svar på uppgift ${i + 1}`}
+            />
+          </div>
+        );
+      })}
       {done === total && total > 0 && (
         <p className="pop-in flex items-center gap-2 font-semibold text-good">
           <Icon name="klar" size={22} /> Alla uppgifter klara! Klicka på Nästa.
