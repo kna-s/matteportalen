@@ -1,0 +1,152 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useStore } from "@/lib/store";
+import { Tier, TIERS } from "@/lib/tiers";
+import { Level, LEVEL_TEXT } from "@/lib/screening";
+
+export function PageHeader({ icon, title, intro }: { icon: string; title: string; intro?: string }) {
+  return (
+    <div className="mb-6">
+      <h1 className="page-title">
+        <span aria-hidden className="mr-2">
+          {icon}
+        </span>
+        {title}
+      </h1>
+      {intro && (
+        <p className="mt-2 max-w-3xl text-muted">
+          {intro} <ReadAloud text={`${title}. ${intro}`} />
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Läser upp text med webbläsarens inbyggda talsyntes. */
+export function ReadAloud({ text, label = "Lyssna" }: { text: string; label?: string }) {
+  const [supported, setSupported] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  useEffect(() => setSupported(typeof window !== "undefined" && "speechSynthesis" in window), []);
+  if (!supported) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const synth = window.speechSynthesis;
+        if (speaking) {
+          synth.cancel();
+          setSpeaking(false);
+          return;
+        }
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "sv-SE";
+        u.rate = 0.95;
+        u.onend = () => setSpeaking(false);
+        synth.cancel();
+        synth.speak(u);
+        setSpeaking(true);
+      }}
+      className="ml-1 inline-flex items-center gap-1 rounded-full border border-line bg-paper px-2 py-0.5 align-middle text-xs font-semibold text-navy hover:bg-gold-light"
+      aria-label={speaking ? "Sluta läsa upp" : "Läs upp texten"}
+    >
+      {speaking ? "⏹ Stoppa" : `🔊 ${label}`}
+    </button>
+  );
+}
+
+export function LockedNotice({ need, what }: { need: Tier; what: string }) {
+  const { state } = useStore();
+  const isParent = state.session?.role !== "elev";
+  return (
+    <div className="card border-gold bg-gold-light/40 text-center">
+      <div className="text-4xl" aria-hidden>
+        🔒
+      </div>
+      <h3 className="mt-2 text-xl font-bold">{what} ingår i {TIERS[need].name}</h3>
+      <p className="mx-auto mt-1 max-w-md text-muted">
+        {isParent
+          ? `Uppgradera till ${TIERS[need].name} för att låsa upp det här.`
+          : `Fråga en förälder om ni vill låsa upp ${TIERS[need].name}. Du kan fortsätta med nästa steg så länge.`}
+      </p>
+      {isParent && (
+        <Link href="/abonnemang" className="btn-accent mt-4">
+          Se abonnemang
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export function TierChip({ tier }: { tier: Tier }) {
+  const colors: Record<Tier, string> = {
+    gratis: "bg-good/15 text-good",
+    start: "bg-navy/10 text-navy",
+    plus: "bg-wine/10 text-wine",
+    premium: "bg-gold-light text-[#6b5410]",
+  };
+  return <span className={`chip ${colors[tier]}`}>{TIERS[tier].name}</span>;
+}
+
+export function LevelChip({ level }: { level: Level }) {
+  const colors: Record<Level, string> = {
+    stark: "bg-good/15 text-good",
+    okej: "bg-warn/15 text-warn",
+    ova: "bg-bad/15 text-bad",
+    "ingen-data": "bg-line text-muted",
+  };
+  return <span className={`chip ${colors[level]}`}>{LEVEL_TEXT[level]}</span>;
+}
+
+export function ProgressBar({ value, color = "var(--color-navy)" }: { value: number; color?: string }) {
+  return (
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={Math.round(value * 100)} aria-valuemin={0} aria-valuemax={100}>
+      <div className="h-full rounded-full transition-all" style={{ width: `${Math.round(value * 100)}%`, background: color }} />
+    </div>
+  );
+}
+
+/** Visar innehåll bara om man är inloggad, annars en uppmaning att logga in. */
+export function RequireLogin({ children, roles }: { children: React.ReactNode; roles?: ("elev" | "foralder" | "admin")[] }) {
+  const { state, ready } = useStore();
+  if (!ready) return <div className="card animate-pulse text-muted">Laddar…</div>;
+  if (!state.session)
+    return (
+      <div className="card text-center">
+        <p className="text-lg">Du behöver logga in för att se den här sidan.</p>
+        <Link href="/logga-in" className="btn-primary mt-4">
+          Logga in eller skapa konto
+        </Link>
+      </div>
+    );
+  if (roles && !roles.includes(state.session.role))
+    return <div className="card text-center text-muted">Den här sidan är inte tillgänglig för din roll.</div>;
+  return <>{children}</>;
+}
+
+/** Låter förälder/lärare välja vilket barn som visas. */
+export function StudentPicker() {
+  const { state, update } = useStore();
+  if (!state.session || state.session.role === "elev" || state.students.length === 0) return null;
+  return (
+    <label className="mb-4 flex flex-wrap items-center gap-2 text-sm">
+      <span className="font-semibold text-navy">Visar elev:</span>
+      <select
+        className="input !w-auto !py-1"
+        value={state.session.studentId}
+        onChange={(e) => update((s) => ({ ...s, session: { ...s.session!, studentId: e.target.value } }))}
+      >
+        {state.students.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.name} (åk {s.grade})
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+export function Placeholder({ children }: { children: React.ReactNode }) {
+  return <p className="rounded-xl border border-dashed border-line bg-cream p-3 text-sm italic text-muted">{children}</p>;
+}

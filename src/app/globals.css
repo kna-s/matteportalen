@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Akademisk färgpalett: marinblå, vinröd, guld på krämvit botten. */
+@theme {
+  --color-navy: #1b2a4a;
+  --color-navy-light: #2c4170;
+  --color-wine: #7a1f2b;
+  --color-wine-light: #9c3442;
+  --color-gold: #c9a227;
+  --color-gold-light: #f3e7bf;
+  --color-cream: #faf7f0;
+  --color-paper: #ffffff;
+  --color-ink: #1f2430;
+  --color-muted: #5d6475;
+  --color-line: #e5dfcf;
+  --color-good: #2f6b4f;
+  --color-warn: #b7791f;
+  --color-bad: #a2312f;
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-serif: var(--font-heading), Georgia, serif;
+}
+
+html {
+  font-size: 17px;
+}
+html[data-textsize="stor"] {
+  font-size: 20px;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  color: var(--color-navy);
+  line-height: 1.25;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-paper p-5 shadow-sm;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 bg-navy text-white hover:bg-navy-light;
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 bg-wine text-white hover:bg-wine-light;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 border border-line bg-paper text-navy hover:bg-gold-light;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .page-title {
+    @apply text-3xl font-bold sm:text-4xl;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-paper px-3 py-2 focus:border-navy focus:outline-none;
+  }
+}
