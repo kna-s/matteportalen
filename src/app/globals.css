@@ -191,3 +191,8 @@ h3 {
     animation: none;
   }
 }
+
+/* Ikoner på mörk bakgrund får vita linjer */
+.icon-invert {
+  --icon-stroke: #fff;
+}

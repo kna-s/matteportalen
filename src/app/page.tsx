@@ -1,7 +1,8 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
-import { AREAS, STEP_ICONS, STEP_LABELS, chaptersFor, getArea, getChapter } from "@/lib/curriculum";
+import { AREAS, STEP_ICON, STEP_LABELS, chaptersFor, getArea, getChapter } from "@/lib/curriculum";
 import { continuePoint, stepHref } from "@/lib/flow";
 import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
@@ -65,10 +66,10 @@ function StudentHome() {
           <div className="p-6 sm:p-8">
             <p className="text-sm font-semibold uppercase tracking-wider text-gold">Ditt nästa steg</p>
             <p className="mt-2 text-sm text-white/70">
-              {area.emoji} {area.title} · {cont.chapter.title}
+              {area.title} · {cont.chapter.title}
             </p>
-            <h2 className="mt-1 text-2xl font-bold !text-white sm:text-3xl">
-              {STEP_ICONS[cont.step.type]} {STEP_LABELS[cont.step.type]}
+            <h2 className="icon-invert mt-2 flex items-center gap-3 text-2xl font-bold !text-white sm:text-3xl">
+              <Icon name={STEP_ICON[cont.step.type]} size={40} /> {STEP_LABELS[cont.step.type]}
             </h2>
             <Link href={stepHref(cont.step.id)} className="btn mt-6 w-full bg-gold !py-4 text-xl text-navy hover:bg-gold-light sm:w-auto sm:!px-10">
               Fortsätt →
@@ -76,7 +77,7 @@ function StudentHome() {
           </div>
         ) : (
           <div className="p-8 text-center">
-            <p className="text-4xl">🎉</p>
+            <Icon name="firande" size={56} className="icon-invert mx-auto" />
             <p className="mt-2 text-xl font-bold">Du har gjort allt som finns just nu!</p>
             <p className="text-white/70">Snyggt jobbat. Nytt material kommer varje månad.</p>
           </div>
@@ -85,7 +86,7 @@ function StudentHome() {
 
       {aktuellt.length > 0 && (
         <section className="rounded-2xl bg-wine/5 p-5 ring-1 ring-wine/15">
-          <h2 className="text-lg font-bold">📌 Aktuellt just nu</h2>
+          <h2 className="flex items-center gap-2 text-lg font-bold"><Icon name="aktuellt" size={24} /> Aktuellt just nu</h2>
           <p className="text-sm text-muted">Det här vill din förälder att du kikar på.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {aktuellt.map((c) => (
@@ -100,8 +101,8 @@ function StudentHome() {
       {/* Stigen */}
       <section>
         <div className="mb-4 flex items-end justify-between gap-3">
-          <h2 className="text-xl font-bold">
-            {area.emoji} {area.title}
+          <h2 className="flex items-center gap-2 text-xl font-bold">
+            <Icon name={area.icon} size={30} /> {area.title}
           </h2>
           <Link href={`/arskurs/${currentStudent.grade}`} className="shrink-0 whitespace-nowrap text-sm text-muted hover:text-navy">
             Hela årskursen →
@@ -141,7 +142,7 @@ function StudentHome() {
       {/* Märken */}
       <section className="rounded-3xl bg-paper p-5 ring-1 ring-line">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-lg font-bold">🏅 Dina märken</h2>
+          <h2 className="flex items-center gap-2 text-lg font-bold"><Icon name="marken" size={26} /> Dina märken</h2>
           <Link href="/marken" className="shrink-0 text-sm font-semibold text-wine hover:underline">
             Se alla {earned.length} / {BADGES.length} →
           </Link>
@@ -158,7 +159,7 @@ function StudentHome() {
         </div>
         {next && (
           <p className="mt-3 rounded-xl bg-cream px-3 py-2 text-sm">
-            🎯 <b>Nästa märke:</b> {next.badge.name}. {next.badge.hint}
+            <Icon name="mal" size={18} className="mr-1 inline-block align-[-3px]" /> <b>Nästa märke:</b> {next.badge.name}. {next.badge.hint}
           </p>
         )}
       </section>
@@ -224,13 +225,13 @@ function ParentHome() {
               {tierAtLeast(tier, "premium") ? (
                 plan.length > 0 ? (
                   <p className="text-sm">
-                    🎯 Behöver öva på: <b>{plan.slice(0, 3).map((x) => x.title).join(", ")}</b>
+                    <Icon name="mal" size={18} className="mr-1 inline-block align-[-3px]" /> Behöver öva på: <b>{plan.slice(0, 3).map((x) => x.title).join(", ")}</b>
                   </p>
                 ) : (
-                  <p className="text-sm text-good">💪 Inget som behöver repeteras just nu.</p>
+                  <p className="text-sm text-good"><Icon name="klar" size={18} className="mr-1 inline-block align-[-3px]" /> Inget som behöver repeteras just nu.</p>
                 )
               ) : (
-                <p className="text-sm text-muted">🔒 Se vad {st.name} behöver öva på med Premium.</p>
+                <p className="text-sm text-muted"><Icon name="las" size={18} className="mr-1 inline-block align-[-3px]" /> Se vad {st.name} behöver öva på med Premium.</p>
               )}
               <div className="flex flex-wrap gap-2">
                 <Link href="/resultat" onClick={select} className="btn-ghost !py-1.5 text-sm">
@@ -240,7 +241,7 @@ function ParentHome() {
                   Screening
                 </Link>
                 <Link href="/marken" onClick={select} className="btn-ghost !py-1.5 text-sm">
-                  🏅 {badgeCount} märken
+                  <Icon name="marken" size={18} /> {badgeCount} märken
                 </Link>
               </div>
             </div>

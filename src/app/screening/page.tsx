@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { getChapter } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
@@ -12,7 +13,7 @@ export default function ScreeningPage() {
   return (
     <div>
       <PageHeader
-        icon="🧠"
+        icon="screening"
         title="Screening"
         intro="Screeningen kartlägger vad du är stark på och vad du kan öva mer på, både inom varje kapitel och för hela årskursen. Den bygger på hur dina quiz har gått."
       />
@@ -56,7 +57,7 @@ function ScreeningContent() {
               <p className="text-sm text-muted">
                 {r.score} av {r.total} rätt
               </p>
-              <p className="mt-1">💬 {shortComment(r)}</p>
+              <p className="mt-1 flex gap-2"><Icon name="prat" size={20} className="shrink-0" /> {shortComment(r)}</p>
             </li>
           ))}
         </ul>
@@ -78,20 +79,20 @@ function ScreeningContent() {
           <p className="text-sm text-white/70">genomsnitt på testade områden</p>
         </div>
         <div className="card">
-          <p className="font-semibold text-good">💪 Starkast inom</p>
+          <p className="flex items-center gap-2 font-semibold text-good"><Icon name="stjarna" size={20} /> Starkast inom</p>
           <p className="mt-1">{strong.length ? strong.map((a) => a.title).join(", ") : "Gör fler quiz för att se dina styrkor."}</p>
         </div>
         <div className="card">
-          <p className="font-semibold text-bad">🎯 Kika extra på</p>
+          <p className="flex items-center gap-2 font-semibold text-bad"><Icon name="mal" size={20} /> Kika extra på</p>
           <p className="mt-1">{weak.length ? weak.map((a) => a.title).join(", ") : "Inget område ligger under 60 % just nu. Bra jobbat!"}</p>
         </div>
       </div>
 
       <section className="card">
-        <h2 className="text-xl font-bold">📝 Din träningsplan</h2>
+        <h2 className="flex items-center gap-2 text-xl font-bold"><Icon name="ovning" size={26} /> Din träningsplan</h2>
         <p className="text-sm text-muted">Kapitel där du fått under 60 % på senaste quizen. Gör dem igen så uppdateras planen.</p>
         {plan.length === 0 ? (
-          <p className="mt-3 text-good">Inget att repetera just nu. Fortsätt framåt i kursplanen! 🎉</p>
+          <p className="mt-3 text-good">Inget att repetera just nu. Fortsätt framåt i kursplanen!</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {plan.map((x) => (
@@ -116,7 +117,8 @@ function ScreeningContent() {
             <div key={a.areaId} className="card">
               <div className="flex items-center justify-between gap-2">
                 <b className="text-navy">
-                  {a.emoji} {a.title}
+                  <Icon name={a.icon} size={24} className="mr-1.5 inline-block align-[-5px]" />
+                  {a.title}
                 </b>
                 <LevelChip level={a.level} />
               </div>

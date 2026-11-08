@@ -19,8 +19,7 @@ const GROUPS: { title: string; items: { name: IconName; label: string; emoji: st
       { name: "foraldraportal", label: "Föräldraportal", emoji: "👨‍👩‍👧" },
       { name: "kursplan", label: "Kursplan", emoji: "📚" },
       { name: "abonnemang", label: "Abonnemang", emoji: "💳" },
-      { name: "admin", label: "Administration (A: kugghjul)", emoji: "🛠️" },
-      { name: "adminReglage", label: "Administration (B: reglage)", emoji: "🛠️" },
+      { name: "admin", label: "Administration", emoji: "🛠️" },
     ],
   },
   {
@@ -53,6 +52,12 @@ const GROUPS: { title: string; items: { name: IconName; label: string; emoji: st
       { name: "klar", label: "Klar", emoji: "✓" },
       { name: "stjarna", label: "Stjärna", emoji: "⭐" },
       { name: "firande", label: "Firande", emoji: "🎉" },
+      { name: "mal", label: "Mål", emoji: "🎯" },
+      { name: "prat", label: "Kommentar", emoji: "💬" },
+      { name: "kalender", label: "Kalender", emoji: "🗓️" },
+      { name: "plus", label: "Lägg till", emoji: "➕" },
+      { name: "brev", label: "Veckorapport", emoji: "📬" },
+      { name: "elev", label: "Elev", emoji: "🧒" },
     ],
   },
 ];
@@ -70,7 +75,7 @@ export default function IconPreview() {
   return (
     <div className="space-y-12">
       <div>
-        <span className="chip bg-gold-light text-gold-ink">Förhandsvisning, inte inkopplad på sajten än</span>
+        <span className="chip bg-gold-light text-gold-ink">Ikonbibliotek</span>
         <h1 className="page-title mt-3">Egna ikoner</h1>
         <p className="mt-2 max-w-2xl text-muted">
           Ett förslag på egna ikoner som ersätter emojis. Alla är ritade i samma stil: rundade linjer i sajtens primärfärg med fyllnad i gult och detaljer i orange. De

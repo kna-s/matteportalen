@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 import { Role, useStore } from "@/lib/store";
 import { TIERS } from "@/lib/tiers";
 import DemoBar from "./DemoBar";
+import Icon, { IconName } from "./icons/Icon";
 import { BadgeWatcher } from "./Badges";
 
 interface NavItem {
   href: string;
   label: string;
-  icon: string;
+  icon: IconName;
   /** Kort etikett i mobilens bottenmeny (visas bara om satt). */
   short?: string;
 }
@@ -26,19 +27,19 @@ const ELEV_NAV: NavGroup[] = [
   {
     title: "Lära",
     items: [
-      { href: "/", label: "Startsida", icon: "🏠", short: "Start" },
-      { href: "/arskurs", label: "Välj årskurs", icon: "🎓" },
-      { href: "/videolektioner", label: "Videolektioner", icon: "🎥", short: "Videor" },
-      { href: "/ovningar", label: "Matematikövningar", icon: "✏️", short: "Övningar" },
-      { href: "/quiz", label: "Quiz och utmaningar", icon: "🏆", short: "Quiz" },
+      { href: "/", label: "Startsida", icon: "hem", short: "Start" },
+      { href: "/arskurs", label: "Välj årskurs", icon: "arskurs" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "video", short: "Videor" },
+      { href: "/ovningar", label: "Matematikövningar", icon: "ovning", short: "Övningar" },
+      { href: "/quiz", label: "Quiz och utmaningar", icon: "quiz", short: "Quiz" },
     ],
   },
   {
     title: "Mina framsteg",
     items: [
-      { href: "/marken", label: "Mina märken", icon: "🏅" },
-      { href: "/screening", label: "Screening", icon: "🧠" },
-      { href: "/resultat", label: "Mina resultat", icon: "📊" },
+      { href: "/marken", label: "Mina märken", icon: "marken" },
+      { href: "/screening", label: "Screening", icon: "screening" },
+      { href: "/resultat", label: "Mina resultat", icon: "resultat" },
     ],
   },
 ];
@@ -48,25 +49,25 @@ const PARENT_NAV: NavGroup[] = [
   {
     title: "Uppföljning",
     items: [
-      { href: "/", label: "Översikt", icon: "🏠", short: "Översikt" },
-      { href: "/foraldraportal", label: "Föräldraportal", icon: "👨‍👩‍👧", short: "Portal" },
-      { href: "/resultat", label: "Resultat", icon: "📊", short: "Resultat" },
-      { href: "/screening", label: "Screening", icon: "🧠", short: "Screening" },
-      { href: "/marken", label: "Märken", icon: "🏅" },
+      { href: "/", label: "Översikt", icon: "hem", short: "Översikt" },
+      { href: "/foraldraportal", label: "Föräldraportal", icon: "foraldraportal", short: "Portal" },
+      { href: "/resultat", label: "Resultat", icon: "resultat", short: "Resultat" },
+      { href: "/screening", label: "Screening", icon: "screening", short: "Screening" },
+      { href: "/marken", label: "Märken", icon: "marken" },
     ],
   },
   {
     title: "Innehåll",
     items: [
-      { href: "/arskurs", label: "Kursplan", icon: "📚" },
-      { href: "/videolektioner", label: "Videolektioner", icon: "🎥" },
-      { href: "/ovningar", label: "Övningar", icon: "✏️" },
-      { href: "/quiz", label: "Quiz", icon: "🏆" },
+      { href: "/arskurs", label: "Kursplan", icon: "kursplan" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "video" },
+      { href: "/ovningar", label: "Övningar", icon: "ovning" },
+      { href: "/quiz", label: "Quiz", icon: "quiz" },
     ],
   },
   {
     title: "Konto",
-    items: [{ href: "/abonnemang", label: "Mitt abonnemang", icon: "💳" }],
+    items: [{ href: "/abonnemang", label: "Mitt abonnemang", icon: "abonnemang" }],
   },
 ];
 
@@ -74,15 +75,15 @@ const PARENT_NAV: NavGroup[] = [
 const ADMIN_NAV: NavGroup[] = [
   {
     title: "Administration",
-    items: [{ href: "/", label: "Administration", icon: "🛠️", short: "Admin" }],
+    items: [{ href: "/", label: "Administration", icon: "admin", short: "Admin" }],
   },
   {
     title: "Förhandsvisa",
     items: [
-      { href: "/arskurs", label: "Kursplan", icon: "📚", short: "Kursplan" },
-      { href: "/videolektioner", label: "Videolektioner", icon: "🎥", short: "Videor" },
-      { href: "/ovningar", label: "Övningar", icon: "✏️", short: "Övningar" },
-      { href: "/quiz", label: "Quiz", icon: "🏆" },
+      { href: "/arskurs", label: "Kursplan", icon: "kursplan", short: "Kursplan" },
+      { href: "/videolektioner", label: "Videolektioner", icon: "video", short: "Videor" },
+      { href: "/ovningar", label: "Övningar", icon: "ovning", short: "Övningar" },
+      { href: "/quiz", label: "Quiz", icon: "quiz" },
     ],
   },
 ];
@@ -250,12 +251,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       href={n.href}
                       title={collapsed ? n.label : undefined}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[0.95rem] font-medium transition-colors ${collapsed ? "justify-center" : ""} ${
-                        isActive(n.href) ? "bg-navy text-white" : "text-navy hover:bg-gold-light"
+                        isActive(n.href) ? "icon-invert bg-navy text-white" : "text-navy hover:bg-gold-light"
                       }`}
                     >
-                      <span aria-hidden className="text-lg">
-                        {n.icon}
-                      </span>
+                      <Icon name={n.icon} size={24} className="shrink-0" />
                       {!collapsed && n.label}
                     </Link>
                   </li>
@@ -311,8 +310,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         {moreOpen && (
           <div className="border-b border-line p-2">
             {moreItems.map((n) => (
-              <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${isActive(n.href) ? "bg-navy text-white" : "text-navy"}`}>
-                <span aria-hidden>{n.icon}</span>
+              <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${isActive(n.href) ? "icon-invert bg-navy text-white" : "text-navy"}`}>
+                <Icon name={n.icon} size={22} />
                 {n.label}
               </Link>
             ))}
@@ -325,8 +324,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           {mobileItems.map((n) => (
             <li key={n.href}>
               <Link href={n.href} className={`flex flex-col items-center gap-0.5 py-2 text-[0.7rem] font-medium ${isActive(n.href) ? "text-wine" : "text-navy"}`}>
-                <span aria-hidden className="text-xl">
-                  {n.icon}
+                <span className={`grid h-8 w-12 place-items-center rounded-full ${isActive(n.href) ? "bg-gold-light" : ""}`}>
+                  <Icon name={n.icon} size={24} />
                 </span>
                 {n.short}
               </Link>

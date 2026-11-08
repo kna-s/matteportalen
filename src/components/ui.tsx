@@ -6,13 +6,14 @@ import { useStore } from "@/lib/store";
 import { Tier, TIERS } from "@/lib/tiers";
 import { Level, LEVEL_TEXT } from "@/lib/screening";
 import Mascot from "./Mascot";
+import Icon, { IconName } from "./icons/Icon";
 
-export function PageHeader({ icon, title, intro }: { icon: string; title: string; intro?: string }) {
+export function PageHeader({ icon, title, intro }: { icon: IconName; title: string; intro?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="page-title">
-        <span aria-hidden className="mr-2">
-          {icon}
+      <h1 className="page-title flex items-center gap-3">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-paper shadow-sm ring-1 ring-line">
+          <Icon name={icon} size={32} />
         </span>
         {title}
       </h1>
@@ -80,7 +81,11 @@ export function ReadAloud({ text, label = "Lyssna" }: { text: string; label?: st
       aria-label={speaking ? "Sluta läsa upp" : "Läs upp texten"}
       title={`Röst: ${voice.name}`}
     >
-      {speaking ? "⏹ Stoppa" : `🔊 ${label}`}
+      {speaking ? "⏹ Stoppa" : (
+        <>
+          <Icon name="lyssna" size={14} /> {label}
+        </>
+      )}
     </button>
   );
 }
@@ -90,7 +95,7 @@ export function LockedNotice({ need, what }: { need: Tier; what: string }) {
   const isParent = state.session?.role !== "elev";
   return (
     <div className="card border-gold bg-gold-light/40 text-center">
-      <div className="flex justify-center">{isParent ? <span className="text-4xl" aria-hidden>🔒</span> : <Mascot mood="tanker" size={64} />}</div>
+      <div className="flex justify-center">{isParent ? <Icon name="las" size={48} /> : <Mascot mood="tanker" size={64} />}</div>
       <h3 className="mt-2 text-xl font-bold">{what} ingår i {TIERS[need].name}</h3>
       <p className="mx-auto mt-1 max-w-md text-muted">
         {isParent

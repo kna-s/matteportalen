@@ -1,9 +1,10 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { BABBEL, Chapter, STEP_ICONS, STEP_LABELS, Step, findStep, getArea } from "@/lib/curriculum";
+import { BABBEL, Chapter, STEP_ICON, STEP_LABELS, Step, findStep, getArea } from "@/lib/curriculum";
 import { nextAccessible, stepHref } from "@/lib/flow";
 import { fullScreening, levelOf, shortComment } from "@/lib/screening";
 import { QuizResult, emptyProgress, useStore } from "@/lib/store";
@@ -62,7 +63,10 @@ function StepView() {
       <div className="grid gap-5 lg:grid-cols-[1fr_auto]">
         <div className="space-y-5">
           <h1 className="text-3xl font-bold">
-            {STEP_ICONS[step.type]} {step.title}
+            <span className="flex items-center gap-3">
+              <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
+              {step.title}
+            </span>
           </h1>
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
@@ -118,7 +122,7 @@ function Stepper({ chapter, current }: { chapter: Chapter; current: Step }) {
               }`}
             >
               <span className="font-bold">{i + 1}</span>
-              {open ? STEP_ICONS[s.type] : "🔒"} {STEP_LABELS[s.type]}
+              <Icon name={open ? STEP_ICON[s.type] : "las"} size={18} className={active ? "icon-invert" : ""} /> {STEP_LABELS[s.type]}
               {done && !active && " ✓"}
             </Link>
           </li>
@@ -268,8 +272,8 @@ function QuizStep({ chapter, step }: { chapter: Chapter; step: Step }) {
           <div className="mt-2">
             <ProgressBar value={result.score / result.total} color="var(--color-wine)" />
           </div>
-          {feedback === "kort" && <p className="mt-3">💬 {shortComment(result)}</p>}
-          {feedback === "full" && <p className="mt-3">💬 Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.</p>}
+          {feedback === "kort" && <p className="mt-3 flex gap-2"><Icon name="prat" size={22} className="shrink-0" /> {shortComment(result)}</p>}
+          {feedback === "full" && <p className="mt-3 flex gap-2"><Icon name="prat" size={22} className="shrink-0" /> Gå vidare till din screening för att se vad du är stark på och vad du kan öva mer på.</p>}
           <button className="btn-ghost mt-4" onClick={() => (setResult(null), setAnswers(qs.map(() => null)))}>
             Gör om quizen
           </button>

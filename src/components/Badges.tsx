@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { BADGES, Badge, CATEGORY_INFO, earnedBadges, getBadge } from "@/lib/badges";
@@ -115,7 +116,7 @@ export function BadgeCelebration({ badge, onClose }: { badge: Badge; onClose: ()
           </div>
           <div className="mt-5 flex flex-col gap-2">
             <button onClick={onClose} className="btn-accent !py-3 text-lg" autoFocus>
-              Snyggt! 🎉
+              Snyggt!
             </button>
             <Link href="/marken" onClick={onClose} className="text-sm font-semibold text-navy hover:underline">
               Se alla mina märken
@@ -168,7 +169,7 @@ export function BadgeDetail({ badge, earnedAt, earned, progress, onClose }: { ba
           </>
         )}
         <div className="mt-5 rounded-2xl bg-gold-light/60 p-4 text-left">
-          <p className="text-xs font-bold uppercase tracking-wider text-gold-ink">💡 Visste du att…</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-gold-ink"><Icon name="problemlosning" size={16} className="mr-1 inline-block align-[-3px]" /> Visste du att…</p>
           <p className="mt-1 text-sm">{badge.funFact}</p>
         </div>
         {earned && (

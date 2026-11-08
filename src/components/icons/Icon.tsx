@@ -106,15 +106,6 @@ const ICONS = {
       </g>
     </>
   ),
-  adminReglage: (
-    <>
-      <rect x={3} y={3} width={18} height={18} rx={4} {...filled(W)} />
-      <path d="M7.5 7v10M12 7v10M16.5 7v10" {...line} strokeOpacity={0.35} />
-      <rect x={5.5} y={12} width={4} height={3} rx={1.5} {...filled(F)} />
-      <rect x={10} y={8} width={4} height={3} rx={1.5} {...filled(A)} />
-      <rect x={14.5} y={13.5} width={4} height={3} rx={1.5} {...filled(F)} />
-    </>
-  ),
   kursplan: (
     <>
       <path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5z" {...filled(F)} />
@@ -225,6 +216,51 @@ const ICONS = {
   ),
 
   /* ---------- Övrigt ---------- */
+  mal: (
+    <>
+      <circle cx={11} cy={13} r={8} {...filled(W)} />
+      <circle cx={11} cy={13} r={5} {...filled(F)} />
+      <circle cx={11} cy={13} r={1.8} fill={A} />
+      <path d="m11 13 8.5-8.5M16.5 4.5h3v3" {...line} />
+    </>
+  ),
+  prat: (
+    <>
+      <path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-9l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 16V7A1.5 1.5 0 0 1 4 5.5z" {...filled(F)} />
+      <circle cx={8} cy={11.5} r={1.1} fill={S} />
+      <circle cx={12} cy={11.5} r={1.1} fill={S} />
+      <circle cx={16} cy={11.5} r={1.1} fill={A} />
+    </>
+  ),
+  kalender: (
+    <>
+      <rect x={3} y={5} width={18} height={16} rx={2.5} {...filled(W)} />
+      <path d="M3 10h18" {...line} />
+      <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h13A2.5 2.5 0 0 1 21 7.5V10H3z" fill={A} stroke={S} strokeWidth={1.8} strokeLinejoin="round" />
+      <path d="M8 3v4M16 3v4" {...line} />
+      <rect x={7} y={13} width={3} height={3} rx={0.8} fill={F} stroke={S} strokeWidth={1.2} />
+    </>
+  ),
+  plus: (
+    <>
+      <circle cx={12} cy={12} r={9} {...filled(F)} />
+      <path d="M12 8v8M8 12h8" {...line} strokeWidth={2.2} />
+    </>
+  ),
+  brev: (
+    <>
+      <rect x={3} y={6} width={18} height={13} rx={2} {...filled(F)} />
+      <path d="m3.5 7 8.5 6.5L20.5 7" {...line} />
+      <circle cx={19} cy={6} r={2.6} fill={A} stroke={S} strokeWidth={1.4} />
+    </>
+  ),
+  elev: (
+    <>
+      <path d="M6 21v-2.5A5.5 5.5 0 0 1 11.5 13h1a5.5 5.5 0 0 1 5.5 5.5V21" {...filled(A)} />
+      <circle cx={12} cy={8} r={4} {...filled(F)} />
+      <path d="M8 6.5c1-2.5 6-3.5 8 0" stroke={S} strokeWidth={1.8} strokeLinecap="round" fill="none" />
+    </>
+  ),
   aktuellt: (
     <>
       <path d="M9 3.5h6l-1 5 3 3v1.5H7v-1.5l3-3z" {...filled(A)} />

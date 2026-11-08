@@ -2,6 +2,8 @@
 // Allt innehåll här är PLATSHÅLLARE. Riktigt innehåll läggs in av våra lärare
 // (i fas 2 via databasen i stället för den här filen).
 
+import type { IconName } from "@/components/icons/Icon";
+
 export type Grade = 4 | 5 | 6;
 export const GRADES: Grade[] = [4, 5, 6];
 
@@ -52,6 +54,7 @@ export interface Area {
   id: string;
   title: string;
   emoji: string;
+  icon: IconName;
   color: string;
   topics: string[];
 }
@@ -59,6 +62,7 @@ export interface Area {
 export const AREAS: Area[] = [
   {
     id: "taluppfattning",
+    icon: "taluppfattning",
     title: "Taluppfattning och tals användning",
     emoji: "🔢",
     color: "#1f3a68",
@@ -75,6 +79,7 @@ export const AREAS: Area[] = [
   },
   {
     id: "algebra",
+    icon: "algebra",
     title: "Algebra",
     emoji: "🧩",
     color: "#7a1f2b",
@@ -87,6 +92,7 @@ export const AREAS: Area[] = [
   },
   {
     id: "geometri",
+    icon: "geometri",
     title: "Geometri",
     emoji: "📐",
     color: "#2f6b4f",
@@ -100,6 +106,7 @@ export const AREAS: Area[] = [
   },
   {
     id: "sannolikhet",
+    icon: "sannolikhet",
     title: "Sannolikhet och statistik",
     emoji: "🎲",
     color: "#8a6a12",
@@ -112,6 +119,7 @@ export const AREAS: Area[] = [
   },
   {
     id: "samband",
+    icon: "samband",
     title: "Samband och förändring",
     emoji: "📈",
     color: "#5b3a7a",
@@ -123,6 +131,7 @@ export const AREAS: Area[] = [
   },
   {
     id: "problemlosning",
+    icon: "problemlosning",
     title: "Problemlösning",
     emoji: "💡",
     color: "#a2471c",
@@ -262,6 +271,13 @@ export const STEP_LABELS: Record<StepType, string> = {
   ovning: "Övning",
   quiz: "Quiz",
   screening: "Screening",
+};
+
+export const STEP_ICON: Record<StepType, IconName> = {
+  video: "video",
+  ovning: "ovning",
+  quiz: "quiz",
+  screening: "screening",
 };
 
 export const STEP_ICONS: Record<StepType, string> = {

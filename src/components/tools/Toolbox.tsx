@@ -3,17 +3,11 @@
 import { useState } from "react";
 import { TOOL_LABELS, ToolId } from "@/lib/curriculum";
 import { useStore } from "@/lib/store";
+import Icon from "@/components/icons/Icon";
 import Calculator from "./Calculator";
 import Draggable, { Protractor, Ruler } from "./Draggable";
 import { CoordinateSystem, NumberLine } from "./Graphs";
 
-const ICONS: Record<ToolId, string> = {
-  kalkylator: "🧮",
-  linjal: "📏",
-  gradskiva: "📐",
-  koordinatsystem: "📈",
-  tallinje: "↔️",
-};
 
 /** Hjälpmedel som våra lärare slår på per uppgift (Step.tools). */
 export default function Toolbox({ tools }: { tools: ToolId[] }) {
@@ -40,7 +34,7 @@ export default function Toolbox({ tools }: { tools: ToolId[] }) {
                 open.includes(t) ? "border-navy bg-navy text-white" : "border-line bg-paper text-navy hover:bg-gold-light"
               }`}
             >
-              <span aria-hidden>{ICONS[t]}</span>
+              <Icon name={t} size={20} className={open.includes(t) ? "icon-invert" : ""} />
               {TOOL_LABELS[t]}
             </button>
           ))}

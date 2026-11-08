@@ -1,16 +1,17 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import { useState } from "react";
-import { AREAS, CHAPTERS, GRADES, Grade, STEP_ICONS, STEP_LABELS, StepType, TOOL_LABELS, ToolId, chaptersFor } from "@/lib/curriculum";
+import { AREAS, CHAPTERS, GRADES, Grade, STEP_ICON, STEP_LABELS, StepType, TOOL_LABELS, ToolId, chaptersFor } from "@/lib/curriculum";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS } from "@/lib/tiers";
 import { Placeholder } from "./ui";
 
 const TABS = [
-  { id: "oversikt", label: "Översikt", icon: "📋" },
-  { id: "innehall", label: "Innehåll", icon: "📚" },
-  { id: "nytt", label: "Lägg upp nytt", icon: "➕" },
-  { id: "kunder", label: "Kunder", icon: "👥" },
+  { id: "oversikt", label: "Översikt", icon: "hem" },
+  { id: "innehall", label: "Innehåll", icon: "kursplan" },
+  { id: "nytt", label: "Lägg upp nytt", icon: "plus" },
+  { id: "kunder", label: "Kunder", icon: "foraldraportal" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -19,7 +20,7 @@ export default function AdminPanel() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="page-title">🛠️ Administration</h1>
+        <h1 className="page-title flex items-center gap-3"><Icon name="admin" size={40} /> Administration</h1>
         <p className="mt-1 text-muted">Här lägger ni upp nytt innehåll varje månad och har koll på kunderna.</p>
       </div>
       <div className="flex flex-wrap gap-1 rounded-xl bg-paper p-1 shadow-sm sm:inline-flex" role="tablist">
@@ -29,9 +30,9 @@ export default function AdminPanel() {
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${tab === t.id ? "bg-navy text-white" : "text-navy hover:bg-cream"}`}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${tab === t.id ? "bg-navy text-white" : "text-navy hover:bg-cream"}`}
           >
-            {t.icon} {t.label}
+            <Icon name={t.icon} size={18} className={tab === t.id ? "icon-invert" : ""} /> {t.label}
           </button>
         ))}
       </div>
@@ -68,7 +69,7 @@ function Overview({ goTo }: { goTo: (t: TabId) => void }) {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="card">
-          <h2 className="text-lg font-bold">🗓️ Månadens uppdatering ({thisMonth})</h2>
+          <h2 className="flex items-center gap-2 text-lg font-bold"><Icon name="kalender" size={24} /> Månadens uppdatering ({thisMonth})</h2>
           <p className="mt-1 text-sm text-muted">Checklista för att publicera nytt material varje månad.</p>
           <ul className="mt-3 space-y-2 text-sm">
             {["Spela in och ladda upp nya videolektioner", "Skriv övningar till de nya kapitlen", "Skapa nya quizfrågor", "Kontrollera hjälpmedel per uppgift", "Publicera"].map((t) => (
@@ -82,14 +83,14 @@ function Overview({ goTo }: { goTo: (t: TabId) => void }) {
         <div className="card flex flex-col">
           <h2 className="text-lg font-bold">Snabbval</h2>
           <div className="mt-3 grid flex-1 gap-2">
-            <button onClick={() => goTo("nytt")} className="btn-accent">
-              ➕ Lägg upp nytt innehåll
+            <button onClick={() => goTo("nytt")} className="btn-accent icon-invert">
+              <Icon name="plus" size={20} /> Lägg upp nytt innehåll
             </button>
             <button onClick={() => goTo("innehall")} className="btn-ghost">
-              📚 Se allt innehåll
+              <Icon name="kursplan" size={20} /> Se allt innehåll
             </button>
             <button onClick={() => goTo("kunder")} className="btn-ghost">
-              👥 Se kunder
+              <Icon name="foraldraportal" size={20} /> Se kunder
             </button>
           </div>
         </div>
@@ -127,9 +128,9 @@ function ContentList() {
           <tbody>
             {chaptersFor(grade).map((c) => (
               <tr key={c.id} className="border-t border-line">
-                <td className="py-2">{AREAS.find((a) => a.id === c.areaId)?.emoji}</td>
+                <td className="py-2"><Icon name={AREAS.find((a) => a.id === c.areaId)!.icon} size={22} /></td>
                 <td className="py-2 font-medium text-navy">{c.title}</td>
-                <td className="py-2">{c.steps.map((s) => STEP_ICONS[s.type]).join(" ")}</td>
+                <td className="py-2"><span className="flex gap-1">{c.steps.map((s) => <Icon key={s.id} name={STEP_ICON[s.type]} size={18} />)}</span></td>
                 <td className="py-2 text-muted">{c.steps[1].tools.map((t) => TOOL_LABELS[t]).join(", ") || "–"}</td>
                 <td className="py-2 text-muted">{c.steps[0].publishedMonth}</td>
                 <td className="py-2">
@@ -166,7 +167,7 @@ function NewContent() {
         <div className="flex flex-wrap gap-2">
           {(["video", "ovning", "quiz"] as StepType[]).map((t) => (
             <button type="button" key={t} onClick={() => setType(t)} className={type === t ? "btn-primary !py-1.5 text-sm" : "btn-ghost !py-1.5 text-sm"}>
-              {STEP_ICONS[t]} {STEP_LABELS[t]}
+              <Icon name={STEP_ICON[t]} size={18} className={type === t ? "icon-invert" : ""} /> {STEP_LABELS[t]}
             </button>
           ))}
         </div>
@@ -210,7 +211,7 @@ function NewContent() {
 
       {type === "video" && (
         <div className="rounded-xl border-2 border-dashed border-line p-8 text-center text-sm text-muted">
-          <p className="text-3xl">🎬</p>
+          <Icon name="video" size={44} className="mx-auto" />
           <p className="mt-2">Dra hit en videofil eller klistra in en länk</p>
           <input className="input mx-auto mt-3 max-w-md" placeholder="https://…" />
         </div>

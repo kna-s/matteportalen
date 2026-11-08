@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { useState } from "react";
 import { GRADES, Grade, chaptersFor, getChapter } from "@/lib/curriculum";
@@ -13,7 +14,7 @@ export default function ParentPortal() {
   return (
     <div>
       <PageHeader
-        icon="👨‍👩‍👧"
+        icon="foraldraportal"
         title="Föräldraportal"
         intro="Skapa konton åt dina barn, välj vad som är aktuellt för dem, följ hur det går och få en veckorapport."
       />
@@ -120,7 +121,7 @@ function Content() {
               <AktuelltPicker student={st} />
 
               <div className="rounded-xl bg-cream p-3 text-sm">
-                <p className="font-semibold text-navy">📬 Veckorapport</p>
+                <p className="flex items-center gap-2 font-semibold text-navy"><Icon name="brev" size={20} /> Veckorapport</p>
                 <p>
                   Den här veckan har {st.name} gjort <b>{weekSteps}</b> steg
                   {tierAtLeast(tier, "plus") && (

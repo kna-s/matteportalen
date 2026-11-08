@@ -1,8 +1,9 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
 import { useState } from "react";
-import { AREAS, GRADES, Grade, STEP_ICONS, StepType, chaptersFor } from "@/lib/curriculum";
+import { AREAS, GRADES, Grade, STEP_ICON, StepType, chaptersFor } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
 import { emptyProgress, latestQuizPerChapter, useStore } from "@/lib/store";
 import { TIERS, canAccess, requiredTier } from "@/lib/tiers";
@@ -40,7 +41,8 @@ export default function StepTypeList({ type }: { type: StepType }) {
         {areas.map((a) => (
           <section key={a.id}>
             <h2 className="mb-3 text-xl font-bold">
-              {a.emoji} {a.title}
+              <Icon name={a.icon} size={28} className="mr-2 inline-block align-[-6px]" />
+              {a.title}
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {chaptersFor(grade, a.id).map((c) => {
@@ -56,13 +58,13 @@ export default function StepTypeList({ type }: { type: StepType }) {
                   >
                     {type === "video" && (
                       <div className="grid aspect-video place-items-center text-4xl text-white" style={{ background: `linear-gradient(135deg, ${a.color}, var(--color-navy))` }}>
-                        {open ? "▶" : "🔒"}
+                        {open ? "▶" : <Icon name="las" size={36} className="icon-invert" />}
                       </div>
                     )}
                     <div className="flex flex-1 flex-col p-4">
                       <div className="flex items-start justify-between gap-2">
                         <b className="text-navy">
-                          {type !== "video" && <span className="mr-1">{open ? STEP_ICONS[type] : "🔒"}</span>}
+                          {type !== "video" && <Icon name={open ? STEP_ICON[type] : "las"} size={20} className="mr-1.5 inline-block align-[-4px]" />}
                           {c.title}
                         </b>
                         {!open && <TierChip tier={requiredTier(s, c.id)} />}

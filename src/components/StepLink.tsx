@@ -1,7 +1,8 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
-import { Chapter, STEP_ICONS, STEP_LABELS, Step } from "@/lib/curriculum";
+import { Chapter, STEP_ICON, STEP_LABELS, Step } from "@/lib/curriculum";
 import { stepHref } from "@/lib/flow";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, requiredTier } from "@/lib/tiers";
@@ -19,7 +20,7 @@ export function StepPill({ chapter, step }: { chapter: Chapter; step: Step }) {
       }`}
       title={open ? STEP_LABELS[step.type] : `Ingår i ${TIERS[requiredTier(step, chapter.id)].name}`}
     >
-      <span aria-hidden>{open ? STEP_ICONS[step.type] : "🔒"}</span>
+      <Icon name={open ? STEP_ICON[step.type] : "las"} size={18} />
       {STEP_LABELS[step.type]}
       {done && <span aria-label="klar">✓</span>}
     </Link>

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { AREAS, STEP_ICONS, STEP_LABELS } from "@/lib/curriculum";
+import { AREAS, STEP_ICON, STEP_LABELS } from "@/lib/curriculum";
+import Icon, { IconName } from "./icons/Icon";
 import { TIERS, TIER_ORDER } from "@/lib/tiers";
 import { ReadAloud } from "./ui";
 
@@ -39,10 +40,10 @@ function AppPreview() {
           <span className="ml-3 text-xs text-muted">matteportalen.se</span>
         </div>
         <div className="space-y-4 p-5">
-          <p className="font-serif text-xl font-bold text-navy">Hej Leo! 👋</p>
+          <p className="font-serif text-xl font-bold text-navy">Hej Leo!</p>
           <div className="rounded-2xl bg-navy p-4 text-white">
             <p className="text-xs uppercase tracking-wide text-gold">Nästa steg</p>
-            <p className="mt-1 font-semibold">🎥 Skala vid förstoring</p>
+            <p className="icon-invert mt-1 flex items-center gap-2 font-semibold"><Icon name="video" size={22} /> Skala vid förstoring</p>
             <span className="mt-3 inline-block rounded-lg bg-gold px-3 py-1.5 text-sm font-semibold text-navy">Fortsätt →</span>
           </div>
           <div className="flex items-center justify-between px-2">
@@ -66,8 +67,8 @@ function AppPreview() {
       </div>
       <div className="absolute -bottom-6 -left-4 hidden rounded-2xl border border-line bg-paper p-3 shadow-lg sm:block">
         <p className="text-xs text-muted">Screening: Geometri</p>
-        <p className="text-sm font-semibold text-good">💪 Stark på omkrets</p>
-        <p className="text-sm font-semibold text-wine">🎯 Öva mer på skala</p>
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-good"><Icon name="stjarna" size={16} /> Stark på omkrets</p>
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-wine"><Icon name="mal" size={16} /> Öva mer på skala</p>
       </div>
     </div>
   );
@@ -128,13 +129,13 @@ export default function Landing() {
       <div className="border-y border-line bg-paper px-4 py-6">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 text-center text-sm sm:grid-cols-4">
           {[
-            ["📘", "Följer Skolverkets kursplan"],
-            ["🧑‍🏫", "Skapat av behöriga lärare"],
-            ["🗓️", "Nytt material varje månad"],
-            ["👨‍👩‍👧", "Föräldraportal ingår"],
+            ["kursplan", "Följer Skolverkets kursplan"],
+            ["arskurs", "Skapat av behöriga lärare"],
+            ["kalender", "Nytt material varje månad"],
+            ["foraldraportal", "Föräldraportal ingår"],
           ].map(([i, t]) => (
-            <div key={t} className="flex flex-col items-center gap-1 text-navy">
-              <span className="text-2xl">{i}</span>
+            <div key={t} className="flex flex-col items-center gap-1.5 text-navy">
+              <Icon name={i as IconName} size={36} />
               <span className="font-medium">{t}</span>
             </div>
           ))}
@@ -164,7 +165,7 @@ export default function Landing() {
           {(["video", "ovning", "quiz", "screening"] as const).map((t, i) => (
             <li key={t} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-3xl">{STEP_ICONS[t]}</span>
+                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-white/10 icon-invert"><Icon name={STEP_ICON[t]} size={36} /></span>
                 <span className="font-serif text-4xl font-bold text-white/15">{i + 1}</span>
               </div>
               <h3 className="mt-4 text-xl font-bold !text-white">{STEP_LABELS[t]}</h3>
@@ -187,7 +188,7 @@ export default function Landing() {
       <Section>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="card !p-8">
-            <span className="text-4xl">🧒</span>
+            <Icon name="elev" size={52} />
             <h3 className="mt-3 text-2xl font-bold">För eleven</h3>
             <ul className="mt-4 space-y-2 text-muted">
               <li>✓ Alltid tydligt vad nästa steg är</li>
@@ -197,7 +198,7 @@ export default function Landing() {
             </ul>
           </div>
           <div className="card !p-8">
-            <span className="text-4xl">👨‍👩‍👧</span>
+            <Icon name="foraldraportal" size={52} />
             <h3 className="mt-3 text-2xl font-bold">För dig som förälder</h3>
             <ul className="mt-4 space-y-2 text-muted">
               <li>✓ Se hur det går och vad som behöver övas</li>
@@ -218,8 +219,8 @@ export default function Landing() {
           {AREAS.map((a) => (
             <div key={a.id} className="rounded-2xl border border-line bg-cream p-5">
               <div className="flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-xl text-2xl" style={{ background: `${a.color}18` }}>
-                  {a.emoji}
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl" style={{ background: `${a.color}18` }}>
+                  <Icon name={a.icon} size={32} />
                 </span>
                 <h3 className="font-bold">{a.title}</h3>
               </div>

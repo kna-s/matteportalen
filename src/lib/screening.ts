@@ -1,4 +1,4 @@
-import { AREAS, Grade, chaptersFor, getChapter } from "./curriculum";
+import { AREAS, Area, Grade, chaptersFor, getChapter } from "./curriculum";
 import { QuizResult, StudentProgress, latestQuizPerChapter } from "./store";
 
 export const WEAK_THRESHOLD = 0.6;
@@ -47,6 +47,7 @@ export interface AreaSummary {
   areaId: string;
   title: string;
   emoji: string;
+  icon: Area["icon"];
   ratio: number | null;
   level: Level;
   chapters: { id: string; title: string; ratio: number | null; level: Level }[];
@@ -69,7 +70,7 @@ export function gradeOverview(p: StudentProgress, grade: Grade): { areas: AreaSu
       sum += ratio;
       n++;
     }
-    return { areaId: a.id, title: a.title, emoji: a.emoji, ratio, level: levelOf(ratio), chapters: chs };
+    return { areaId: a.id, title: a.title, emoji: a.emoji, icon: a.icon, ratio, level: levelOf(ratio), chapters: chs };
   });
   return { areas, overall: n ? sum / n : null };
 }

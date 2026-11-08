@@ -1,7 +1,8 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import Link from "next/link";
-import { STEP_ICONS, StepType } from "@/lib/curriculum";
+import { STEP_ICON, StepType } from "@/lib/curriculum";
 import { TIERS, TIER_ORDER, Tier } from "@/lib/tiers";
 
 const ROWS: { label: string; tiers: Tier[] }[] = [
@@ -57,7 +58,7 @@ export default function PricingPage() {
               <td className="p-4 text-sm text-muted">Flöde i varje kapitel</td>
               {TIER_ORDER.map((t) => (
                 <td key={t} className={`p-4 text-center text-sm ${t === "premium" ? "bg-gold-light/30" : ""}`}>
-                  {t === "gratis" ? "2 smakprov" : FLOW[t].map((s) => STEP_ICONS[s]).join(" → ")}
+                  {t === "gratis" ? "2 smakprov" : <span className="inline-flex items-center gap-1">{FLOW[t].map((s, i) => <span key={s} className="inline-flex items-center gap-1">{i > 0 && <span className="text-muted">→</span>}<Icon name={STEP_ICON[s]} size={20} /></span>)}</span>}
                 </td>
               ))}
             </tr>

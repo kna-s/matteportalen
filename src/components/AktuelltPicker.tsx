@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import { useState } from "react";
 import { AREAS, chaptersFor, getChapter } from "@/lib/curriculum";
 import { Student, useStore } from "@/lib/store";
@@ -20,7 +21,7 @@ export default function AktuelltPicker({ student }: { student: Student }) {
   return (
     <div className="rounded-xl border border-wine/20 bg-wine/5 p-3 text-sm">
       <div className="flex items-center justify-between gap-2">
-        <p className="font-semibold text-navy">📌 Aktuellt för {student.name}</p>
+        <p className="flex items-center gap-2 font-semibold text-navy"><Icon name="aktuellt" size={20} /> Aktuellt för {student.name}</p>
         <button onClick={() => setOpen((o) => !o)} className="font-semibold text-wine hover:underline" aria-expanded={open}>
           {open ? "Klar" : "Ändra"}
         </button>
@@ -47,7 +48,7 @@ export default function AktuelltPicker({ student }: { student: Student }) {
           <select className="input !py-1.5 text-sm" value={areaId} onChange={(e) => setAreaId(e.target.value)} aria-label="Område">
             {AREAS.map((a) => (
               <option key={a.id} value={a.id}>
-                {a.emoji} {a.title}
+                {a.title}
               </option>
             ))}
           </select>

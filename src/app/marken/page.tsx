@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import { useState } from "react";
 import { BADGES, BadgeCategory, CATEGORY_INFO } from "@/lib/badges";
 import { emptyProgress, useStore } from "@/lib/store";
@@ -32,7 +33,7 @@ function Content() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="page-title">🏅 {isStudent ? "Mina märken" : `${currentStudent.name}s märken`}</h1>
+          <h1 className="page-title flex items-center gap-3"><Icon name="marken" size={40} /> {isStudent ? "Mina märken" : `${currentStudent.name}s märken`}</h1>
           <p className="mt-1 text-muted">Årskurs {currentStudent.grade} · Klicka på ett märke för att läsa mer.</p>
         </div>
         <div className="rounded-2xl bg-paper px-5 py-3 text-center shadow-sm ring-1 ring-line">

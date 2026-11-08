@@ -1,6 +1,7 @@
 "use client";
 
-import { STEP_ICONS } from "@/lib/curriculum";
+import Icon from "@/components/icons/Icon";
+import { STEP_ICON } from "@/lib/curriculum";
 import { useStore } from "@/lib/store";
 import { TIERS, TIER_ORDER, Tier } from "@/lib/tiers";
 import { PageHeader, RequireLogin } from "@/components/ui";
@@ -15,7 +16,7 @@ const FLOW: Record<Tier, string[]> = {
 export default function SubscriptionPage() {
   return (
     <div>
-      <PageHeader icon="💳" title="Mitt abonnemang" intro="Välj den nivå som passar er. Abonnemanget betalas månadsvis och gäller för alla barn på kontot. Du kan byta eller säga upp när du vill." />
+      <PageHeader icon="abonnemang" title="Mitt abonnemang" intro="Välj den nivå som passar er. Abonnemanget betalas månadsvis och gäller för alla barn på kontot. Du kan byta eller säga upp när du vill." />
       <RequireLogin roles={["foralder"]}>
         <Content />
       </RequireLogin>
@@ -46,7 +47,7 @@ function Content() {
                 ))}
               </ul>
               <p className="mt-3 text-xs text-muted">
-                Flöde: {FLOW[t].map((s) => STEP_ICONS[s as keyof typeof STEP_ICONS]).join(" → ")}
+                <span className="inline-flex items-center gap-1">Flöde: {FLOW[t].map((s, i) => <span key={s} className="inline-flex items-center gap-1">{i > 0 && "→"}<Icon name={STEP_ICON[s as keyof typeof STEP_ICON]} size={18} /></span>)}</span>
               </p>
               <button
                 disabled={current}

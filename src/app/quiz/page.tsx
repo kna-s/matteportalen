@@ -5,7 +5,7 @@ export default function Quizzes() {
   return (
     <div>
       <PageHeader
-        icon="🏆"
+        icon="quiz"
         title="Quiz och utmaningar"
         intro="Självrättande quiz som visar direkt hur det gick. Försök slå ditt eget rekord! Nya quiz kommer varje månad."
       />

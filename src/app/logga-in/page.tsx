@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/icons/Icon";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
@@ -21,7 +22,7 @@ export default function LoginPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <div className="card flex flex-col">
-          <div className="text-3xl">🧒</div>
+          <Icon name="elev" size={44} />
           <h2 className="mt-2 text-xl font-bold">Elev</h2>
           <p className="flex-1 text-sm text-muted">Logga in med användarnamnet som din förälder skapade.</p>
           <div className="mt-3 flex flex-col gap-2">
@@ -40,7 +41,7 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="card flex flex-col">
-          <div className="text-3xl">👨‍👩‍👧</div>
+          <Icon name="foraldraportal" size={44} />
           <h2 className="mt-2 text-xl font-bold">Förälder</h2>
           <p className="flex-1 text-sm text-muted">Hantera barnens konton, följ deras resultat och sköt abonnemanget.</p>
           <button
@@ -54,7 +55,7 @@ export default function LoginPage() {
           </button>
         </div>
         <div className="card flex flex-col">
-          <div className="text-3xl">🛠️</div>
+          <Icon name="admin" size={44} />
           <h2 className="mt-2 text-xl font-bold">Admin</h2>
           <p className="flex-1 text-sm text-muted">För oss som driver sajten: lägg upp nytt innehåll och hantera kunder.</p>
           <button
