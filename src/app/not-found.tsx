@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="mx-auto max-w-md py-12 text-center">
       <div className="flex justify-center">
-        <Mascot mood="tanker" size={140} />
+        <Mascot mood="forvanad" size={140} />
       </div>
       <p className="mt-2 font-serif text-6xl font-bold text-navy">404</p>
       <h1 className="mt-1 text-2xl font-bold">Hoppsan, sidan finns inte</h1>

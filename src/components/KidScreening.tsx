@@ -62,7 +62,7 @@ export default function KidScreening({ p, grade }: { p: StudentProgress; grade: 
 
   return (
     <div className="space-y-6">
-      <MascotSays mood={pile.kan.length ? "hurra" : "glad"} size={72}>
+      <MascotSays mood="laser" size={72}>
         {message}
       </MascotSays>
 

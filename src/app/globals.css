@@ -281,6 +281,74 @@ h3 {
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(-10deg); }
 }
+/* Nickar: uppmuntrande nickningar */
+.mascot-nickar .m-head {
+  animation: m-nod 2.4s ease-in-out infinite;
+}
+@keyframes m-nod {
+  0%, 40%, 100% { transform: rotate(0deg) translateY(0); }
+  10% { transform: rotate(4deg) translateY(1.5px); }
+  20% { transform: rotate(0deg) translateY(0); }
+  30% { transform: rotate(4deg) translateY(1.5px); }
+}
+/* Pekar: pekar och "knackar" mot innehållet */
+.mascot-pekar .m-arm-point {
+  animation: m-point 1.6s ease-in-out infinite;
+}
+@keyframes m-point {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-8deg) translateX(1.5px); }
+}
+.mascot-pekar .m-head {
+  animation: m-look 3s ease-in-out infinite;
+}
+@keyframes m-look {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+}
+/* Dansar: gungar från sida till sida */
+.mascot-dansar .m-body {
+  transform-origin: 50px 96px;
+  animation: m-dance 0.9s ease-in-out infinite alternate;
+}
+@keyframes m-dance {
+  from { transform: rotate(-7deg) translateX(-2px); }
+  to { transform: rotate(7deg) translateX(2px); }
+}
+.mascot-dansar .m-arm-l {
+  animation: m-cheer-l 0.45s ease-in-out infinite alternate;
+}
+.mascot-dansar .m-arm-r {
+  animation: m-cheer-r 0.45s ease-in-out infinite alternate-reverse;
+}
+/* Förvånad: litet hopp och armarna upp */
+.mascot-forvanad .m-body {
+  animation: m-surprise 2s cubic-bezier(0.3, 0, 0.4, 1) infinite;
+}
+@keyframes m-surprise {
+  0%, 60%, 100% { transform: translateY(0) scale(1, 1); }
+  10% { transform: translateY(-6px) scale(0.97, 1.04); }
+  22% { transform: translateY(0) scale(1.04, 0.96); }
+}
+/* Läser: boken guppar och huvudet nickar sakta */
+.mascot-laser .m-book {
+  animation: m-book 2.8s ease-in-out infinite;
+}
+@keyframes m-book {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-3deg) translateY(-1px); }
+}
+.mascot-laser .m-head {
+  animation: m-read 4s ease-in-out infinite;
+}
+@keyframes m-read {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(3deg); }
+}
+.mascot .m-book,
+.mascot .m-arm-point {
+  transform-box: view-box;
+}
 @media (prefers-reduced-motion: reduce) {
   .mascot *,
   .mascot {

@@ -111,7 +111,7 @@ export function BadgeCelebration({ badge, onClose }: { badge: Badge; onClose: ()
           </h2>
           <p className="mt-1 text-muted">{badge.description}</p>
           <div className="mt-4 flex items-end justify-center gap-2">
-            <Mascot mood="hurra" size={76} />
+            <Mascot mood="forvanad" size={76} />
             <p className="mb-2 rounded-2xl rounded-bl-sm bg-gold-light px-3 py-2 text-sm font-semibold text-gold-ink">{badge.cheer}</p>
           </div>
           <div className="mt-5 flex flex-col gap-2">
@@ -174,7 +174,7 @@ export function BadgeDetail({ badge, earnedAt, earned, progress, onClose }: { ba
         </div>
         {earned && (
           <div className="mt-4 flex items-end justify-center gap-2">
-            <Mascot mood="glad" size={48} />
+            <Mascot mood="nickar" size={48} />
             <p className="mb-2 rounded-2xl rounded-bl-sm bg-cream px-3 py-2 text-sm font-medium">{badge.cheer}</p>
           </div>
         )}

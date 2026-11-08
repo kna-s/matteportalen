@@ -53,7 +53,7 @@ function Wizard() {
         {step === 0 && (
           <div className="text-center">
             <div className="flex justify-center">
-              <Mascot mood="hurra" size={120} />
+              <Mascot mood="glad" size={120} />
             </div>
             <h1 className="mt-2 text-3xl font-bold">Välkommen, {first}!</h1>
             <p className="mx-auto mt-2 max-w-md text-muted">
@@ -186,7 +186,7 @@ function Wizard() {
               ))}
             </ul>
             <div className="mt-5">
-              <MascotSays mood="glad" size={48}>
+              <MascotSays mood="pekar" size={48}>
                 Tips: välj vad som är aktuellt för ditt barn i Föräldraportalen, till exempel det de jobbar med i skolan just nu.
               </MascotSays>
             </div>

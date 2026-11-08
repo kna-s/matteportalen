@@ -12,7 +12,7 @@ import { TIERS, canAccess, quizFeedbackLevel, requiredTier } from "@/lib/tiers";
 import { LevelChip, LockedNotice, ProgressBar, ReadAloud, RequireLogin } from "@/components/ui";
 import Toolbox from "@/components/tools/Toolbox";
 import { MergedStep, monthLabel, useVersions, youtubeId } from "@/lib/content";
-import Mascot, { MascotSays } from "@/components/Mascot";
+import Mascot, { MascotSays, Mood } from "@/components/Mascot";
 import DrawPad from "@/components/DrawPad";
 
 export default function StepPage() {
@@ -28,6 +28,32 @@ const SIGGE_INTRO: Record<Step["type"], string> = {
   ovning: "Här finns inget rätt eller fel. Testa, rita och skriv hur du tänker!",
   quiz: "En fråga i taget. Ta den tid du behöver, du klarar det!",
   screening: "Här ser du vad du redan kan och vad du kan öva lite mer på.",
+};
+
+const INTRO_MOOD: Record<Step["type"], Mood> = { video: "pekar", ovning: "nickar", quiz: "tanker", screening: "laser" };
+
+/** Varierade svar från Sigge så att det inte blir tjatigt. */
+const RIGHT = [
+  { title: "Rätt!", line: "Snyggt räknat!" },
+  { title: "Precis!", line: "Där satt den." },
+  { title: "Ja, rätt!", line: "Du är på gång nu!" },
+  { title: "Helt rätt!", line: "Det där kan du." },
+  { title: "Bra!", line: "Smart tänkt!" },
+  { title: "Rätt svar!", line: "Fortsätt så!" },
+];
+const WRONG = [
+  { title: "Nästan!", line: "Rätt svar är {svar}. Nu vet du till nästa gång." },
+  { title: "Inte riktigt", line: "Det var {svar}. Bra att du testade!" },
+  { title: "Oj, nära!", line: "Svaret är {svar}. Alla gör fel ibland, så lär vi oss." },
+  { title: "Hmm, inte den", line: "Rätt var {svar}. Kika gärna på videon igen sen." },
+  { title: "Nästan där!", line: "Det blir {svar}. Du kommer att fixa den nästa gång." },
+  { title: "Bra försök!", line: "Rätt svar är {svar}. Ta det lugnt, vi tar nästa." },
+];
+const RIGHT_MOODS: Mood[] = ["hurra", "dansar", "forvanad"];
+const WRONG_MOODS: Mood[] = ["tanker", "nickar"];
+const pick = <T,>(list: T[], avoid?: T) => {
+  const options = list.filter((x) => x !== avoid);
+  return options[Math.floor(Math.random() * options.length)];
 };
 
 function StepView() {
@@ -77,7 +103,10 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
   const { next, skipped } = nextAccessible(chapter.grade, tier, step.id);
   const stepIndex = chapter.steps.findIndex((s) => s.id === step.id);
 
+  const ex = step.type === "ovning" ? exerciseProgress(step, (studentId && state.progress[studentId]?.notes) || {}) : null;
+  const blocked = !!ex && open && isStudent && ex.done < ex.total;
   const goNext = () => {
+    if (blocked) return;
     if (open && isStudent && studentId && step.type !== "quiz") completeStep(studentId, step.id);
     router.push(next ? stepHref(next.step.id) : `/arskurs/${chapter.grade}`);
   };
@@ -109,7 +138,7 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
             <Icon name={STEP_ICON[step.type]} size={40} className="shrink-0" />
             {step.title}
           </h1>
-          {open && <MascotSays mood={step.type === "quiz" ? "tanker" : "glad"} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
+          {open && <MascotSays mood={INTRO_MOOD[step.type]} size={56}>{SIGGE_INTRO[step.type]}</MascotSays>}
           {!open ? (
             <LockedNotice need={requiredTier(step, chapter.id)} what={STEP_LABELS[step.type]} />
           ) : step.type === "video" ? (
@@ -160,7 +189,8 @@ function StepInner({ chapter, baseStep }: { chapter: Chapter; baseStep: Step }) 
               </span>
             )}
           </div>
-          <button onClick={goNext} className="btn-primary text-lg">
+          {blocked && <span className="text-sm font-semibold text-wine">Svara på alla uppgifter först ({ex!.done}/{ex!.total})</span>}
+          <button onClick={goNext} disabled={blocked} className="btn-primary text-lg">
             {next ? `Nästa: ${STEP_LABELS[next.step.type]} →` : "Tillbaka till kursplanen"}
           </button>
         </div>
@@ -252,14 +282,22 @@ function VideoStep({ chapter, videoUrl, description }: { chapter: Chapter; video
   );
 }
 
+const isDrawTask = (t: string) => /\brita\b/i.test(t);
+
+/** Hur många uppgifter i en övning som eleven har svarat på. */
+function exerciseProgress(step: Step, notes: Record<string, string>) {
+  const tasks = step.tasks ?? [];
+  const answered = tasks.map((t, i) => !!notes[`${step.id}:svar:${i}`]?.trim() || (isDrawTask(t) && !!notes[`${step.id}:ritning`]));
+  return { answered, done: answered.filter(Boolean).length, total: tasks.length };
+}
+
 function ExerciseStep({ step }: { step: Step }) {
   const { state, update, currentStudent } = useStore();
   const sid = currentStudent?.id;
   const notes = (sid && state.progress[sid]?.notes) || {};
-  const note = notes[step.id] || "";
   const drawing = notes[`${step.id}:ritning`];
-  const done = sid && state.progress[sid]?.completed[step.id];
   const isStudent = state.session?.role === "elev";
+  const { answered, done, total } = exerciseProgress(step, notes);
   const setNote = (key: string, value: string) =>
     sid &&
     update((s) => {
@@ -268,30 +306,44 @@ function ExerciseStep({ step }: { step: Step }) {
     });
   return (
     <div className="space-y-4">
-      <div className="card">
-        <h2 className="text-lg font-bold">Uppgifter</h2>
-        <ol className="mt-3 space-y-3">
-          {step.tasks!.map((t, i) => (
-            <li key={i} className="flex gap-3 rounded-xl bg-cream p-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-navy text-sm font-bold text-white">{i + 1}</span>
-              <span>
-                {t} <ReadAloud text={t} />
-              </span>
-            </li>
+      <div className="flex items-center gap-3">
+        <div className="flex flex-1 gap-1.5">
+          {answered.map((a, i) => (
+            <span key={i} className={`h-2.5 flex-1 rounded-full transition-colors ${a ? "bg-good" : "bg-line"}`} />
           ))}
-        </ol>
+        </div>
+        <span className="text-sm font-semibold text-muted">
+          {done} / {total} klara
+        </span>
       </div>
-      <div className="card">
-        <h2 className="mb-2 text-lg font-bold">Rita här</h2>
-        <DrawPad key={step.id} value={drawing} disabled={!isStudent} onChange={(v) => setNote(`${step.id}:ritning`, v)} />
-      </div>
-      <label className="card block">
-        <span className="text-lg font-bold text-navy">Skriv hur du tänkte</span>
-        <textarea className="input mt-2 min-h-28" placeholder="Jag tänkte att…" value={note} disabled={!isStudent} onChange={(e) => setNote(step.id, e.target.value)} />
-      </label>
-      {done && (
-        <p className="flex items-center gap-2 text-good">
-          <Icon name="klar" size={20} /> Du har gjort den här övningen. Bra kämpat!
+      {step.tasks!.map((t, i) => (
+        <div key={i} className={`card transition-shadow ${answered[i] ? "ring-2 ring-good/40" : ""}`}>
+          <div className="flex gap-3">
+            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-bold text-white ${answered[i] ? "bg-good" : "bg-navy"}`}>
+              {answered[i] ? "✓" : i + 1}
+            </span>
+            <p className="pt-1 font-semibold">
+              {t} <ReadAloud text={t} />
+            </p>
+          </div>
+          {isDrawTask(t) && (
+            <div className="mt-3">
+              <DrawPad key={step.id} value={drawing} disabled={!isStudent} onChange={(v) => setNote(`${step.id}:ritning`, v)} />
+            </div>
+          )}
+          <textarea
+            className="input mt-3 min-h-20"
+            placeholder={isDrawTask(t) ? "Rita ovan eller skriv här…" : "Skriv ditt svar eller hur du tänkte…"}
+            value={notes[`${step.id}:svar:${i}`] ?? ""}
+            disabled={!isStudent}
+            onChange={(e) => setNote(`${step.id}:svar:${i}`, e.target.value)}
+            aria-label={`Svar på uppgift ${i + 1}`}
+          />
+        </div>
+      ))}
+      {done === total && total > 0 && (
+        <p className="pop-in flex items-center gap-2 font-semibold text-good">
+          <Icon name="klar" size={22} /> Alla uppgifter klara! Klicka på Nästa.
         </p>
       )}
     </div>
@@ -315,6 +367,7 @@ function QuizStep({
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => qs.map(() => null));
   const [checked, setChecked] = useState(false);
+  const [reply, setReply] = useState<{ title: string; line: string; mood: Mood } | null>(null);
   const [result, setResult] = useState<QuizResult | null>(null);
   const feedback = quizFeedbackLevel(tier);
   const isStudent = state.session?.role === "elev";
@@ -351,7 +404,7 @@ function QuizStep({
       <div className="pop-in mx-auto max-w-xl overflow-hidden rounded-3xl bg-paper text-center shadow-md ring-1 ring-line">
         <div className="bg-navy px-6 pb-6 pt-6 text-white">
           <div className="flex justify-center">
-            <Mascot size={96} mood={ratio >= 0.6 ? "hurra" : "glad"} />
+            <Mascot size={96} mood={ratio >= 0.85 ? "dansar" : ratio >= 0.6 ? "hurra" : "nickar"} />
           </div>
           <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-gold">{ratio >= 0.85 ? "Superbra!" : ratio >= 0.6 ? "Bra jobbat!" : "Bra kämpat!"}</p>
           <p className="font-serif text-4xl font-bold">
@@ -457,17 +510,22 @@ function QuizStep({
 
         {checked && (
           <div className={`pop-in mt-5 flex items-center gap-3 rounded-2xl p-4 ${isRight ? "bg-good/10" : "bg-gold-light/70"}`}>
-            <Mascot size={56} mood={isRight ? "hurra" : "tanker"} />
+            <Mascot size={56} mood={reply?.mood ?? (isRight ? "hurra" : "tanker")} />
             <div>
-              <p className={`text-lg font-bold ${isRight ? "text-good" : "text-gold-ink"}`}>{isRight ? "Rätt!" : "Nästan!"}</p>
-              <p className="text-sm">{isRight ? ["Snyggt räknat!", "Precis så!", "Du är på gång!"][idx % 3] : `Rätt svar är ${q.options[q.correctIndex]}. Det gör inget, nu vet du!`}</p>
+              <p className={`text-lg font-bold ${isRight ? "text-good" : "text-gold-ink"}`}>{reply?.title}</p>
+              <p className="text-sm">{reply?.line}</p>
             </div>
           </div>
         )}
 
         <div className="mt-6 flex justify-end">
           {!checked ? (
-            <button className="btn-accent !px-8 !py-3 text-lg" disabled={chosen === null} onClick={() => setChecked(true)}>
+            <button className="btn-accent !px-8 !py-3 text-lg" disabled={chosen === null} onClick={() => {
+                const right = chosen === q.correctIndex;
+                const msg = pick(right ? RIGHT : WRONG, reply ? (right ? RIGHT : WRONG).find((m) => m.title === reply.title) : undefined);
+                setReply({ ...msg, line: msg.line.replace("{svar}", q.options[q.correctIndex]), mood: pick(right ? RIGHT_MOODS : WRONG_MOODS) });
+                setChecked(true);
+              }}>
               Kolla svaret
             </button>
           ) : idx < qs.length - 1 ? (

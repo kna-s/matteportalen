@@ -1,5 +1,6 @@
 "use client";
 
+import { BRAND } from "@/lib/brand";
 import Link from "next/link";
 import { useState } from "react";
 import { AREAS, Grade, chaptersFor, getArea } from "@/lib/curriculum";
@@ -77,7 +78,7 @@ export function TreasureMap() {
               )}
               <div className={`flex ${right ? "justify-end" : "justify-start"}`}>
                 <Link
-                  href={`/skattjakt/${i.areaId}`}
+                  href={`/aventyret/${i.areaId}`}
                   className={`island-blob island-bob group relative block w-[min(22rem,90%)] p-5 shadow-lg transition-transform hover:scale-[1.02] ${here ? "ring-4 ring-gold" : ""}`}
                   style={{ background: `linear-gradient(160deg, ${area.color}33, #f6e3b4 55%)`, animationDelay: `${idx * 0.4}s` }}
                 >
@@ -130,8 +131,8 @@ export function IslandView({ areaId }: { areaId: string }) {
   return (
     <div className="ocean relative overflow-hidden rounded-[2rem] px-4 py-8 sm:px-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/skattjakt" className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-navy shadow-sm">
-          ← Skattkartan
+        <Link href="/aventyret" className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-navy shadow-sm">
+          ← {BRAND.adventureMap}
         </Link>
         <span className="flex items-center gap-2 rounded-full bg-paper px-4 py-2 text-sm font-bold text-navy shadow-sm">
           <KeyRow keys={isl.keys} total={isl.total} size={16} />
@@ -166,7 +167,7 @@ export function IslandView({ areaId }: { areaId: string }) {
                     <span className="block font-semibold leading-tight text-navy">{c.title}</span>
                     <span className="text-xs text-muted">{done ? "Nyckel hittad!" : current ? "Du är här" : "Station " + (i + 1)}</span>
                   </span>
-                  {current && <Mascot mood="glad" size={56} />}
+                  {current && <Mascot mood="pekar" size={56} />}
                 </Link>
               </li>
             );
@@ -224,7 +225,7 @@ export function ChestModal({ reward, outfit, onWear, onClose }: { reward: Access
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-wine">Du hittade en skatt!</p>
           <h2 className="mt-1 text-2xl font-bold">{reward.name}</h2>
           <div className="mt-3 flex justify-center">
-            <Mascot mood="hurra" size={120} outfit={preview} />
+            <Mascot mood="dansar" size={120} outfit={preview} />
           </div>
           <div className="mt-4 flex flex-col gap-2">
             {!worn ? (
@@ -259,10 +260,10 @@ export function TreasureTeaser() {
   const isl: IslandState = islands(ctx).find((i) => i.areaId === areaId)!;
   const isOpen = opened.includes(areaId);
   return (
-    <Link href={`/skattjakt/${areaId}`} className="ocean group relative block overflow-hidden rounded-3xl p-5 shadow-sm ring-1 ring-line transition-shadow hover:shadow-md">
+    <Link href={`/aventyret/${areaId}`} className="ocean group relative block overflow-hidden rounded-3xl p-5 shadow-sm ring-1 ring-line transition-shadow hover:shadow-md">
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-xl font-bold">
-          <Icon name="karta" size={28} /> Skattjakten
+          <Icon name="karta" size={28} /> {BRAND.adventure}
         </h2>
         <span className="text-sm font-semibold text-navy group-hover:underline">Till kartan →</span>
       </div>

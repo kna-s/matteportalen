@@ -29,7 +29,7 @@ const ELEV_NAV: NavGroup[] = [
     title: "Lära",
     items: [
       { href: "/", label: "Startsida", icon: "hem", short: "Start" },
-      { href: "/skattjakt", label: "Skattjakten", icon: "karta", short: "Skattjakt" },
+      { href: "/aventyret", label: BRAND.adventure, icon: "karta", short: BRAND.adventure },
       { href: "/videolektioner", label: "Videolektioner", icon: "video", short: "Videor" },
       { href: "/ovningar", label: "Matematikövningar", icon: "ovning", short: "Övningar" },
       { href: "/quiz", label: "Quiz och utmaningar", icon: "quiz", short: "Quiz" },

@@ -7,7 +7,19 @@ import { DEFAULT_OUTFIT, Outfit, getAccessory } from "@/lib/treasure";
  * Maskotar att välja mellan. Alla ritas med paletten (CSS-variabler) så att
  * de alltid matchar sajtens färger. Tre humör: glad, hurra och tänker.
  */
-export type Mood = "glad" | "hurra" | "tanker";
+/**
+ * glad = vinkar, hurra = jublar, tanker = funderar, nickar = nickar uppmuntrande,
+ * pekar = pekar på innehållet, dansar = dansar, forvanad = blir förvånad, laser = läser i en bok.
+ * Sigge har alla; de andra maskotarna använder närmaste av glad/hurra/tanker.
+ */
+export type Mood = "glad" | "hurra" | "tanker" | "nickar" | "pekar" | "dansar" | "forvanad" | "laser";
+export const ALL_MOODS: Mood[] = ["glad", "pekar", "nickar", "laser", "tanker", "forvanad", "hurra", "dansar"];
+
+function baseMood(m: Mood): "glad" | "hurra" | "tanker" {
+  if (m === "hurra" || m === "dansar" || m === "forvanad") return "hurra";
+  if (m === "tanker") return "tanker";
+  return "glad";
+}
 
 const NAVY = "var(--color-navy)";
 const NAVY_L = "var(--color-navy-light)";
@@ -22,33 +34,41 @@ const INK = "#1b2730";
 export function Face({ cx, cy, mood, gap = 9, eye = 4.2, color = INK }: { cx: number; cy: number; mood: Mood; gap?: number; eye?: number; color?: string }) {
   const lx = cx - gap;
   const rx = cx + gap;
+  const closed = mood === "hurra" || mood === "dansar";
+  const big = mood === "forvanad";
+  const look = mood === "laser" ? 1.6 : 0; // tittar ner i boken
+  const r = big ? eye * 1.25 : eye;
   return (
     <g>
       <g className="m-eyes">
-      {mood === "hurra" ? (
-        <>
-          <path d={`M${lx - 4} ${cy + 1} Q${lx} ${cy - 5} ${lx + 4} ${cy + 1}`} stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
-          <path d={`M${rx - 4} ${cy + 1} Q${rx} ${cy - 5} ${rx + 4} ${cy + 1}`} stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
-        </>
-      ) : mood === "tanker" ? (
-        <>
-          <circle cx={lx} cy={cy} r={eye} fill={color} />
-          <path d={`M${rx - 4} ${cy} H${rx + 4}`} stroke={color} strokeWidth={3} strokeLinecap="round" />
-          <circle cx={lx + 1.3} cy={cy - 1.3} r={1.3} fill="#fff" />
-        </>
-      ) : (
-        <>
-          <circle cx={lx} cy={cy} r={eye} fill={color} />
-          <circle cx={rx} cy={cy} r={eye} fill={color} />
-          <circle cx={lx + 1.3} cy={cy - 1.4} r={1.4} fill="#fff" />
-          <circle cx={rx + 1.3} cy={cy - 1.4} r={1.4} fill="#fff" />
-        </>
-      )}
+        {closed ? (
+          <>
+            <path d={`M${lx - 4} ${cy + 1} Q${lx} ${cy - 5} ${lx + 4} ${cy + 1}`} stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
+            <path d={`M${rx - 4} ${cy + 1} Q${rx} ${cy - 5} ${rx + 4} ${cy + 1}`} stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
+          </>
+        ) : mood === "tanker" ? (
+          <>
+            <circle cx={lx} cy={cy} r={eye} fill={color} />
+            <path d={`M${rx - 4} ${cy} H${rx + 4}`} stroke={color} strokeWidth={3} strokeLinecap="round" />
+            <circle cx={lx + 1.3} cy={cy - 1.3} r={1.3} fill="#fff" />
+          </>
+        ) : (
+          <>
+            <circle cx={lx} cy={cy + look} r={r} fill={color} />
+            <circle cx={rx} cy={cy + look} r={r} fill={color} />
+            <circle cx={lx + 1.3} cy={cy - 1.4 + look} r={big ? 1.8 : 1.4} fill="#fff" />
+            <circle cx={rx + 1.3} cy={cy - 1.4 + look} r={big ? 1.8 : 1.4} fill="#fff" />
+          </>
+        )}
       </g>
       {mood === "tanker" ? (
         <path d={`M${cx - 3} ${cy + 10} Q${cx + 2} ${cy + 8} ${cx + 5} ${cy + 10}`} stroke={color} strokeWidth={2.6} fill="none" strokeLinecap="round" />
-      ) : mood === "hurra" ? (
+      ) : mood === "forvanad" ? (
+        <ellipse cx={cx} cy={cy + 10} rx={3} ry={3.8} fill={color} />
+      ) : closed ? (
         <path d={`M${cx - 6} ${cy + 7} Q${cx} ${cy + 16} ${cx + 6} ${cy + 7} Z`} fill={color} />
+      ) : mood === "laser" ? (
+        <path d={`M${cx - 3} ${cy + 9} Q${cx} ${cy + 11} ${cx + 3} ${cy + 9}`} stroke={color} strokeWidth={2.4} fill="none" strokeLinecap="round" />
       ) : (
         <path d={`M${cx - 5} ${cy + 8} Q${cx} ${cy + 13} ${cx + 5} ${cy + 8}`} stroke={color} strokeWidth={2.6} fill="none" strokeLinecap="round" />
       )}
@@ -141,6 +161,59 @@ function SiggeGlasses({ id }: { id?: string | null }) {
   return null;
 }
 
+/** Sigges armar för varje humör. */
+function SiggeArms({ mood }: { mood: Mood }) {
+  const arm = (d: string) => <path d={d} stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />;
+  switch (mood) {
+    case "hurra":
+    case "dansar":
+      return (
+        <>
+          <g className="m-arm-l" style={{ transformOrigin: "31px 60px" }}>{arm("M31 60 Q20 50 18 38")}</g>
+          <g className="m-arm-r" style={{ transformOrigin: "69px 60px" }}>{arm("M69 60 Q80 50 82 38")}</g>
+        </>
+      );
+    case "tanker":
+      return (
+        <>
+          {arm("M31 62 Q24 70 25 80")}
+          <g className="m-arm-chin" style={{ transformOrigin: "69px 64px" }}>{arm("M69 64 Q74 56 64 50")}</g>
+        </>
+      );
+    case "pekar":
+      return (
+        <>
+          {arm("M31 62 Q24 70 25 80")}
+          <g className="m-arm-point" style={{ transformOrigin: "69px 61px" }}>
+            {arm("M69 61 Q80 60 90 54")}
+            <circle cx={92} cy={53} r={3.6} fill={MINT_D} />
+          </g>
+        </>
+      );
+    case "forvanad":
+      return (
+        <>
+          <g className="m-arm-l" style={{ transformOrigin: "31px 60px" }}>{arm("M31 60 Q20 56 21 45")}</g>
+          <g className="m-arm-r" style={{ transformOrigin: "69px 60px" }}>{arm("M69 60 Q80 56 79 45")}</g>
+        </>
+      );
+    case "laser":
+      return (
+        <>
+          {arm("M31 62 Q28 70 34 73")}
+          {arm("M69 62 Q72 70 66 73")}
+        </>
+      );
+    default:
+      return (
+        <>
+          {arm("M31 62 Q24 70 25 80")}
+          <g className={mood === "glad" ? "m-arm-wave" : ""} style={{ transformOrigin: "69px 62px" }}>{arm("M69 62 Q76 70 75 80")}</g>
+        </>
+      );
+  }
+}
+
 function Sigge({ mood, outfit }: { mood: Mood; outfit?: Outfit }) {
   const scarf = getAccessory(outfit?.halsduk)?.color ?? ACCENT;
   return (
@@ -152,33 +225,19 @@ function Sigge({ mood, outfit }: { mood: Mood; outfit?: Outfit }) {
       <ellipse cx={39} cy={93} rx={8} ry={5} fill={MINT_D} />
       <ellipse cx={61} cy={93} rx={8} ry={5} fill={MINT_D} />
       {/* armar */}
-      {mood === "hurra" ? (
-        <>
-          <g className="m-arm-l" style={{ transformOrigin: "31px 60px" }}>
-            <path d="M31 60 Q20 50 18 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          </g>
-          <g className="m-arm-r" style={{ transformOrigin: "69px 60px" }}>
-            <path d="M69 60 Q80 50 82 38" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          </g>
-        </>
-      ) : mood === "tanker" ? (
-        <>
-          <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          <g className="m-arm-chin" style={{ transformOrigin: "69px 64px" }}>
-            <path d="M69 64 Q74 56 64 50" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          </g>
-        </>
-      ) : (
-        <>
-          <path d="M31 62 Q24 70 25 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          <g className="m-arm-wave" style={{ transformOrigin: "69px 62px" }}>
-            <path d="M69 62 Q76 70 75 80" stroke={MINT_D} strokeWidth={7} strokeLinecap="round" fill="none" />
-          </g>
-        </>
-      )}
+      <SiggeArms mood={mood} />
       {/* mage */}
       <rect x={34} y={52} width={32} height={38} rx={15} style={{ fill: GOLD_L, stroke: GOLD }} strokeWidth={2} />
       <path d="M36 65 H64 M36 77 H64 M50 54 V88" style={{ stroke: GOLD }} strokeWidth={1.6} />
+      {mood === "laser" && (
+        <g className="m-book" style={{ transformOrigin: "50px 72px" }}>
+          <path d="M32 64 L50 68 L68 64 L68 82 L50 86 L32 82 Z" style={{ fill: NAVY }} />
+          <path d="M34 65 L50 69 L50 84 L34 80 Z M66 65 L50 69 L50 84 L66 80 Z" fill="#fffdf6" />
+          <path d="M37 70 L47 72.5 M37 74 L47 76.5 M53 72.5 L63 70 M53 76.5 L63 74" stroke="#c9c2ad" strokeWidth={1.2} />
+          <circle cx={34} cy={73} r={4} fill={MINT_D} />
+          <circle cx={66} cy={73} r={4} fill={MINT_D} />
+        </g>
+      )}
       {/* halsduk */}
       <path d="M34 49 Q50 56 66 49 L64 55 Q50 62 36 55 Z" style={{ fill: scarf }} />
       <g className="m-scarf" style={{ transformOrigin: "60px 54px" }}>
@@ -342,12 +401,12 @@ export default function Mascot({
       width={size}
       height={size}
       viewBox="0 0 100 100"
-      className={`${animate ? `mascot mascot-${mood}` : ""} overflow-visible ${className}`}
+      className={`${animate ? `mascot mascot-${id === "sigge" ? mood : baseMood(mood)}` : ""} overflow-visible ${className}`}
       role="img"
       aria-label={`Maskoten ${id}`}
     >
       <g className="m-body">
-        <Figure mood={mood} outfit={wear} />
+        <Figure mood={id === "sigge" ? mood : baseMood(mood)} outfit={wear} />
       </g>
     </svg>
   );

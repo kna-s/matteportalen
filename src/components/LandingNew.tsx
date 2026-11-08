@@ -198,11 +198,11 @@ function TryQuestion() {
 /* ------------------------------------------------------------------ */
 
 const PATH_STEPS: { icon: IconName; title: string; text: string; mood: Mood }[] = [
-  { icon: "video", title: "Titta på en kort video", text: "En av våra lärare förklarar ett delmoment i taget. Pausa och titta igen så många gånger du vill.", mood: "glad" },
-  { icon: "ovning", title: "Öva i lugn och ro", text: "Uppgifter att göra efter videon, med hjälpmedel som linjal, kalkylator och en rityta.", mood: "tanker" },
-  { icon: "quiz", title: "Testa dig själv", text: "En fråga i taget, med direkt och snäll återkoppling. Inget rött kryss, bara ”nästan, testa igen”.", mood: "glad" },
-  { icon: "screening", title: "Se vad du kan", text: "Screeningen visar vad som sitter och vad som behöver lite mer träning, både för eleven och föräldern.", mood: "tanker" },
-  { icon: "marken", title: "Samla märken", text: "Varje steg framåt syns. Märken, stjärnor och en stig som fylls i gör att man vill fortsätta.", mood: "hurra" },
+  { icon: "video", title: "Titta på en kort video", text: "En av våra lärare förklarar ett delmoment i taget. Pausa och titta igen så många gånger du vill.", mood: "pekar" },
+  { icon: "ovning", title: "Öva i lugn och ro", text: "Uppgifter att göra efter videon, med hjälpmedel som linjal, kalkylator och en rityta.", mood: "nickar" },
+  { icon: "quiz", title: "Testa dig själv", text: "En fråga i taget, med direkt och snäll återkoppling. Inget rött kryss, bara ”nästan, testa igen”.", mood: "tanker" },
+  { icon: "screening", title: "Se vad du kan", text: "Screeningen visar vad som sitter och vad som behöver lite mer träning, både för eleven och föräldern.", mood: "laser" },
+  { icon: "marken", title: "Samla märken", text: "Varje steg framåt syns. Märken, stjärnor och en stig som fylls i gör att man vill fortsätta.", mood: "dansar" },
 ];
 
 function PathSection() {

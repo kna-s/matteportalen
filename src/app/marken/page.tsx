@@ -46,7 +46,7 @@ function Content() {
       </div>
 
       {isStudent && (
-        <MascotSays mood={earnedCount > 0 ? "hurra" : "glad"}>
+        <MascotSays mood={earnedCount > 0 ? "dansar" : "glad"}>
           {earnedCount === 0
             ? "Här samlar du märken när du klarar saker. Det första är närmare än du tror!"
             : earnedCount < 6

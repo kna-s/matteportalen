@@ -53,7 +53,7 @@ export default function StudentResults({ student, p }: { student: Student; p: St
 
   return (
     <div className="space-y-6">
-      <MascotSays mood={weekSteps > 0 ? "hurra" : "glad"} size={64}>
+      <MascotSays mood={weekSteps > 0 ? "dansar" : "nickar"} size={64}>
         {message}
       </MascotSays>
 
