@@ -60,7 +60,7 @@ export function BadgeMedal({ badge, earned, size = 72, progress }: { badge: Badg
   );
 }
 
-function Confetti() {
+export function Confetti() {
   const pieces = useMemo(
     () =>
       Array.from({ length: 36 }, (_, i) => ({

@@ -65,6 +65,12 @@ export interface AppState {
   seenBadges: Record<string, Record<string, string>>;
   /** Demo: märke som visas som notis direkt (för att testa). */
   demoBadge?: string | null;
+  /** Maskotens kläder per elev. */
+  outfits: Record<string, { hatt?: string | null; halsduk?: string | null; glasogon?: string | null }>;
+  /** Skattkistor som eleven har öppnat (områdes-id) per elev. */
+  openedChests: Record<string, string[]>;
+  /** Demo: lås upp alla kistor och föremål. */
+  demoUnlockAll?: boolean;
 }
 
 const KEY = "matteportalen-demo-v3";
@@ -117,6 +123,9 @@ export function defaultState(): AppState {
     mascot: "sigge",
     seenBadges: {},
     demoBadge: null,
+    outfits: {},
+    openedChests: {},
+    demoUnlockAll: false,
   };
 }
 

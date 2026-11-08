@@ -216,6 +216,45 @@ const ICONS = {
   ),
 
   /* ---------- Övrigt ---------- */
+  karta: (
+    <>
+      <path d="M3 6.5 8.5 4l7 2.5L21 4v13.5L15.5 20l-7-2.5L3 20z" {...filled(F)} />
+      <path d="M8.5 4v13.5M15.5 6.5V20" {...line} strokeWidth={1.4} />
+      <path d="M10.5 10.5c1.5 1 2.5 1 4 0" stroke={S} strokeWidth={1.4} strokeDasharray="1.2 1.6" fill="none" strokeLinecap="round" />
+      <path d="m16 9.5 2 2M18 9.5l-2 2" stroke={A} strokeWidth={1.8} strokeLinecap="round" />
+    </>
+  ),
+  nyckel: (
+    <>
+      <circle cx={8} cy={12} r={4.5} {...filled(F)} />
+      <circle cx={8} cy={12} r={1.6} fill={W} stroke={S} strokeWidth={1.2} />
+      <path d="M12.5 12H21M17.5 12v3M20.5 12v2.5" {...line} strokeWidth={2} />
+    </>
+  ),
+  kista: (
+    <>
+      <path d="M3.5 11h17v8a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z" {...filled(F)} />
+      <path d="M3.5 11V9a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v2z" {...filled(A)} />
+      <path d="M8 4.5V11M16 4.5V11M8 11v9.5M16 11v9.5" {...line} strokeWidth={1.4} />
+      <rect x={10.3} y={10} width={3.4} height={4} rx={0.8} fill={W} stroke={S} strokeWidth={1.3} />
+    </>
+  ),
+  kistaOppen: (
+    <>
+      <path d="M3.5 12h17v7a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z" {...filled(F)} />
+      <path d="M4 12 2.5 5.5a4.5 4.5 0 0 1 4.3-2.2h10.4a4.5 4.5 0 0 1 4.3 2.2L20 12" {...filled(A)} />
+      <path d="M6 12c1.5-2.5 10.5-2.5 12 0" stroke={F} strokeWidth={2.4} fill="none" />
+      <path d="m12 6.5.6 1.3 1.4.2-1 1 .2 1.4-1.2-.7-1.2.7.2-1.4-1-1 1.4-.2z" fill={W} />
+      <path d="M8 12v8.5M16 12v8.5" {...line} strokeWidth={1.4} />
+    </>
+  ),
+  hatt: (
+    <>
+      <path d="M6 16.5 9 5h6l3 11.5" {...filled(F)} />
+      <path d="M7.4 11.5h9.2" stroke={A} strokeWidth={2.4} />
+      <ellipse cx={12} cy={17.5} rx={9.5} ry={2.5} {...filled(F)} />
+    </>
+  ),
   mal: (
     <>
       <circle cx={11} cy={13} r={8} {...filled(W)} />

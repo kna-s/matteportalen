@@ -320,3 +320,51 @@ h3 {
   .float-sym { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* ---------- Skattjakt ---------- */
+.ocean {
+  background-color: #d7f0f2;
+  background-image: radial-gradient(circle at 20px 20px, rgba(255, 255, 255, 0.55) 2px, transparent 3px), radial-gradient(circle at 60px 50px, rgba(14, 79, 97, 0.06) 14px, transparent 15px);
+  background-size: 80px 70px;
+}
+.island-blob {
+  border-radius: 58% 42% 55% 45% / 52% 60% 40% 48%;
+}
+@keyframes island-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.island-bob {
+  animation: island-bob 4s ease-in-out infinite;
+}
+@keyframes chest-wiggle {
+  0%, 80%, 100% { transform: rotate(0); }
+  84% { transform: rotate(-8deg); }
+  88% { transform: rotate(8deg); }
+  92% { transform: rotate(-6deg); }
+  96% { transform: rotate(4deg); }
+}
+.chest-ready {
+  animation: chest-wiggle 2.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.9));
+}
+@keyframes chest-open {
+  0% { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+  50% { transform: scale(1.15) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+.chest-open {
+  animation: chest-open 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+@keyframes rays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.rays {
+  background: repeating-conic-gradient(from 0deg, rgba(255, 209, 102, 0.35) 0deg 10deg, transparent 10deg 20deg);
+  border-radius: 9999px;
+  animation: rays 12s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .island-bob, .chest-ready, .rays { animation: none; }
+}

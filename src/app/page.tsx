@@ -6,8 +6,9 @@ import { AREAS, STEP_ICON, STEP_LABELS, chaptersFor, getArea, getChapter } from 
 import { continuePoint, stepHref } from "@/lib/flow";
 import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
-import { TIERS, canAccess, tierAtLeast } from "@/lib/tiers";
+import { TIERS, tierAtLeast } from "@/lib/tiers";
 import Landing from "@/components/LandingNew";
+import { TreasureTeaser } from "@/components/Treasure";
 import AdminPanel from "@/components/AdminPanel";
 import Mascot, { MascotSays } from "@/components/Mascot";
 import { BadgeMedal } from "@/components/Badges";
@@ -31,7 +32,6 @@ function StudentHome() {
   const p = state.progress[currentStudent.id] ?? emptyProgress();
   const cont = continuePoint(currentStudent.grade, tier, p);
   const aktuellt = (state.aktuellt[currentStudent.id] ?? []).map(getChapter).filter((c) => !!c);
-  const chapterDone = (id: string) => getChapter(id)!.steps.filter((s) => canAccess(tier, s, id)).every((s) => p.completed[s.id]);
   const ctx = { p, grade: currentStudent.grade, tier };
   const earned = BADGES.filter((b) => b.earned(ctx));
   const locked = BADGES.filter((b) => !b.earned(ctx))
@@ -44,10 +44,7 @@ function StudentHome() {
   const showcase = [...recent.slice(0, 4), ...locked].slice(0, 6);
   const next = locked[0];
 
-  // Stigen visar området där eleven är just nu.
-  const areaId = cont?.chapter.areaId ?? AREAS[0].id;
-  const area = getArea(areaId);
-  const areaChapters = chaptersFor(currentStudent.grade, areaId);
+  const area = getArea(cont?.chapter.areaId ?? AREAS[0].id);
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -98,46 +95,7 @@ function StudentHome() {
         </section>
       )}
 
-      {/* Stigen */}
-      <section>
-        <div className="mb-4 flex items-end justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-xl font-bold">
-            <Icon name={area.icon} size={30} /> {area.title}
-          </h2>
-          <Link href={`/arskurs/${currentStudent.grade}`} className="shrink-0 whitespace-nowrap text-sm text-muted hover:text-navy">
-            Hela årskursen →
-          </Link>
-        </div>
-        <ol className="relative space-y-3 pl-2">
-          <span className="absolute bottom-6 left-[1.85rem] top-6 w-1 rounded bg-line" aria-hidden />
-          {areaChapters.map((c, i) => {
-            const done = chapterDone(c.id);
-            const current = cont?.chapter.id === c.id;
-            return (
-              <li key={c.id} className="relative">
-                <Link
-                  href={stepHref(c.steps[0].id)}
-                  className={`flex items-center gap-4 rounded-2xl p-3 transition-colors ${current ? "bg-gold-light/60" : "hover:bg-paper"}`}
-                >
-                  <span
-                    className={`relative z-10 grid h-11 w-11 shrink-0 place-items-center rounded-full text-base font-bold ${
-                      done ? "bg-good text-white" : current ? "bg-gold text-navy ring-4 ring-gold/30" : "border-2 border-line bg-paper text-muted"
-                    }`}
-                  >
-                    {done ? "✓" : i + 1}
-                  </span>
-                  <span className="min-w-0">
-                    <span className={`block font-semibold ${done || current ? "text-navy" : "text-muted"}`}>{c.title}</span>
-                    {current && <span className="text-sm text-wine">Du är här</span>}
-                    {done && <span className="text-sm text-good">Klart!</span>}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-
+      <TreasureTeaser />
 
       {/* Märken */}
       <section className="rounded-3xl bg-paper p-5 ring-1 ring-line">

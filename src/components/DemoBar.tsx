@@ -89,6 +89,20 @@ export default function DemoBar() {
             Slumpa ett märke
           </button>
         </div>
+        <div className="border-t border-line pt-2.5">
+          <label className="flex items-center justify-between gap-3">
+            <span className="font-semibold text-navy">Lås upp alla skattkistor</span>
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-wine"
+              checked={!!state.demoUnlockAll}
+              onChange={(e) => update((s) => ({ ...s, demoUnlockAll: e.target.checked }))}
+            />
+          </label>
+          <button onClick={() => update((s) => ({ ...s, openedChests: {}, outfits: {} }))} className="mt-1.5 text-wine underline">
+            Stäng kistorna och nollställ Sigges kläder
+          </button>
+        </div>
         <div className="flex gap-3 border-t border-line pt-2.5">
           <Link href="/designval" className="font-semibold text-navy underline">
             Jämför färger
