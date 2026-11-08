@@ -16,7 +16,6 @@ export default function ScreeningPage() {
       <PageHeader
         icon="screening"
         title="Screening"
-        intro="Screeningen kartlägger vad du är stark på och vad du kan öva mer på, både inom varje kapitel och för hela årskursen. Den bygger på hur dina quiz har gått."
       />
       <RequireLogin>
         <StudentPicker />

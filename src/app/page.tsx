@@ -7,7 +7,7 @@ import { continuePoint, stepHref } from "@/lib/flow";
 import { trainingPlan } from "@/lib/screening";
 import { emptyProgress, useStore } from "@/lib/store";
 import { TIERS, canAccess, tierAtLeast } from "@/lib/tiers";
-import Landing from "@/components/Landing";
+import Landing from "@/components/LandingNew";
 import AdminPanel from "@/components/AdminPanel";
 import Mascot, { MascotSays } from "@/components/Mascot";
 import { BadgeMedal } from "@/components/Badges";

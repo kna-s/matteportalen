@@ -15,8 +15,7 @@ export default function ParentPortal() {
     <div>
       <PageHeader
         icon="foraldraportal"
-        title="Föräldraportal"
-        intro="Skapa konton åt dina barn, välj vad som är aktuellt för dem, följ hur det går och få en veckorapport."
+        title="Föräldraportal" intro="Lägg till barn, välj vad som är aktuellt och följ veckan."
       />
       <RequireLogin roles={["foralder"]}>
         <Content />

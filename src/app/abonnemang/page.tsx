@@ -16,7 +16,7 @@ const FLOW: Record<Tier, string[]> = {
 export default function SubscriptionPage() {
   return (
     <div>
-      <PageHeader icon="abonnemang" title="Mitt abonnemang" intro="Välj den nivå som passar er. Abonnemanget betalas månadsvis och gäller för alla barn på kontot. Du kan byta eller säga upp när du vill." />
+      <PageHeader icon="abonnemang" title="Mitt abonnemang" intro="Betalas månadsvis och gäller alla barn på kontot." />
       <RequireLogin roles={["foralder"]}>
         <Content />
       </RequireLogin>

@@ -10,7 +10,6 @@ import Icon, { IconName } from "./icons/Icon";
 import Mascot, { Mood } from "./Mascot";
 import { BadgeMedal } from "./Badges";
 import { BADGES } from "@/lib/badges";
-import { FAQ } from "./Landing";
 
 /* ------------------------------------------------------------------ */
 /* Hjälpkomponenter                                                     */
@@ -268,6 +267,33 @@ function PathSection() {
 /* Sidan                                                                */
 /* ------------------------------------------------------------------ */
 
+const FAQ = [
+  {
+    q: `Ersätter ${BRAND.name} skolans undervisning?`,
+    a: "Nej. Vi är ett extra stöd vid sidan av skolan, som läxhjälp hemma. Eleven kan repetera det som gås igenom i klassrummet, öva mer på det som är svårt och komma ikapp i egen takt.",
+  },
+  {
+    q: `Vilka årskurser passar ${BRAND.name} för?`,
+    a: "Årskurs 4, 5 och 6. Allt innehåll följer Skolverkets centrala innehåll för matematik på mellanstadiet.",
+  },
+  {
+    q: "Vem har gjort innehållet?",
+    a: "Alla videolektioner, övningar och quiz är gjorda av våra egna lärare. Nytt material läggs upp varje månad.",
+  },
+  {
+    q: "Behöver mitt barn en egen e-postadress?",
+    a: "Nej. Du skapar ett föräldrakonto och lägger sedan till dina barn. De loggar in med ett användarnamn som du väljer.",
+  },
+  {
+    q: "Kan vi prova innan vi betalar?",
+    a: "Ja. Gratiskontot ger tillgång till två videolektioner och två övningar, så att ni kan känna efter om det passar.",
+  },
+  {
+    q: "Kan jag byta eller säga upp abonnemanget?",
+    a: "Ja, när som helst. Abonnemanget betalas månadsvis och gäller för alla barn på kontot.",
+  },
+];
+
 const AREA_TEXT: Record<string, string> = {
   taluppfattning: "Bråk, decimaler, procent och huvudräkning",
   algebra: "Likheter, mönster och enkla ekvationer",
@@ -325,8 +351,7 @@ export default function LandingNew() {
       <section className="px-4 py-14 sm:py-20">
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
           <Reveal>
-            <p className="text-sm font-bold uppercase tracking-wider text-wine">Känner du igen dig?</p>
-            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">När läxan tar stopp och ingen riktigt vet varför</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl">När läxan tar stopp och ingen riktigt vet varför</h2>
             <p className="mt-4 text-lg text-muted">
               Många barn tappar tråden i matten på mellanstadiet. Det är sällan allt som är svårt, oftast är det ett par delmoment som skaver. {BRAND.name} hjälper er att hitta
               just dem och öva i lugn och ro hemma.
@@ -380,9 +405,7 @@ export default function LandingNew() {
       <section id="sa-funkar-det" className="relative scroll-mt-16 bg-navy px-4 py-14 text-white sm:py-20">
         <FloatingSymbols color="rgba(255,255,255,0.06)" />
         <div className="relative mx-auto max-w-6xl text-center">
-          <p className="text-sm font-bold uppercase tracking-wider text-gold">Så funkar det</p>
-          <h2 className="mt-2 text-3xl font-bold !text-white sm:text-4xl">Ett steg i taget</h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/75">Varje kapitel följer samma enkla stig. Eleven klickar bara på ”Nästa” så leder sidan vidare.</p>
+          <h2 className="text-3xl font-bold !text-white sm:text-4xl">Ett steg i taget</h2>
         </div>
         <div className="relative">
           <PathSection />
@@ -394,9 +417,7 @@ export default function LandingNew() {
       <section id="kursplan" className="scroll-mt-16 bg-paper px-4 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal className="text-center">
-            <p className="text-sm font-bold uppercase tracking-wider text-wine">Kursplan</p>
-            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Allt som ska läras i åk 4–6</h2>
-            <p className="mx-auto mt-3 max-w-xl text-muted">Samma sex områden som i Skolverkets kursplan, med nytt material varje månad.</p>
+            <h2 className="text-3xl font-bold sm:text-4xl">Allt som ska läras i åk 4–6</h2>
           </Reveal>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {AREAS.map((a, i) => (
@@ -456,8 +477,7 @@ export default function LandingNew() {
             </div>
           </Reveal>
           <Reveal delay={150}>
-            <p className="text-sm font-bold uppercase tracking-wider text-wine">För dig som förälder</p>
-            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Du ser vad som händer, utan att behöva tjata</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl">Du ser vad som händer, utan att behöva tjata</h2>
             <ul className="mt-6 space-y-3 text-lg">
               {[
                 ["brev", "Veckorapport i inkorgen varje söndag"],
@@ -482,7 +502,6 @@ export default function LandingNew() {
         <div className="mx-auto max-w-6xl">
           <Reveal className="text-center">
             <h2 className="text-3xl font-bold sm:text-4xl">Vad familjer säger</h2>
-            <p className="mt-2 text-sm italic text-muted">Exempel, byts mot riktiga omdömen</p>
           </Reveal>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {QUOTES.map((q, i) => (
@@ -490,7 +509,7 @@ export default function LandingNew() {
                 <figure className={`h-full rounded-3xl bg-paper p-6 shadow-sm ring-1 ring-line ${i === 1 ? "md:-translate-y-4" : ""}`}>
                   <span className="font-serif text-5xl leading-none text-gold">”</span>
                   <blockquote className="mt-1 text-lg">{q.text}</blockquote>
-                  <figcaption className="mt-4 text-sm font-semibold text-muted">{q.who}</figcaption>
+                  <figcaption className="mt-4 text-sm font-semibold text-muted">{q.who} <span className="font-normal italic">(exempel)</span></figcaption>
                 </figure>
               </Reveal>
             ))}
@@ -502,8 +521,7 @@ export default function LandingNew() {
       <section id="priser" className="scroll-mt-16 bg-paper px-4 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal className="text-center">
-            <p className="text-sm font-bold uppercase tracking-wider text-wine">Priser</p>
-            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Börja gratis, uppgradera när ni vill</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl">Börja gratis, uppgradera när ni vill</h2>
           </Reveal>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TIER_ORDER.map((t, i) => (

@@ -15,7 +15,7 @@ export default function GradePicker() {
   const { currentStudent } = useStore();
   return (
     <div>
-      <PageHeader icon="arskurs" title="Välj årskurs" intro="Välj den årskurs du går i, så visar vi rätt kapitel. Du kan alltid titta på andra årskurser om du vill repetera eller utmana dig." />
+      <PageHeader icon="arskurs" title="Välj årskurs" />
       <div className="grid gap-4 sm:grid-cols-3">
         {GRADES.map((g) => (
           <Link

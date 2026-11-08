@@ -13,7 +13,7 @@ export default function ResultsPage() {
       <PageHeader
         icon="resultat"
         title={isStudent ? "Mina resultat" : "Resultat"}
-        intro={isStudent ? "Här ser du hur det har gått den här veckan." : "Se hur långt ditt barn har kommit, hur quizen har gått och vad som gjorts senast."}
+        intro={isStudent ? undefined : "Hur långt barnet har kommit och hur quizen har gått."}
       />
       <RequireLogin>
         <StudentPicker />

@@ -150,7 +150,7 @@ const MARKETING_NAV = [
 function MarketingShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
-  const isHome = path === "/" || path === "/startsida-ny";
+  const isHome = path === "/";
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b border-line bg-cream/90 backdrop-blur">

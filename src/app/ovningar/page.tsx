@@ -6,8 +6,7 @@ export default function Exercises() {
     <div>
       <PageHeader
         icon="ovning"
-        title="Matematikövningar"
-        intro="Övningar att göra efter varje kapitel. Här finns inget rätt eller fel, det viktiga är att du provar, ritar och skriver hur du tänker."
+        title="Matematikövningar" intro="Inget rätt eller fel här, bara testa."
       />
       <StepTypeList type="ovning" />
     </div>

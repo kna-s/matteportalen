@@ -49,7 +49,7 @@ export default function GradePage() {
       <Link href="/arskurs" className="text-sm text-muted hover:text-navy">
         ← Alla årskurser
       </Link>
-      <PageHeader icon="arskurs" title={`Årskurs ${grade}`} intro="Välj ett område för att se kapitlen. Ringen visar hur mycket du har klarat." />
+      <PageHeader icon="arskurs" title={`Årskurs ${grade}`} />
 
       <div className="grid gap-4 md:grid-cols-2">
         {AREAS.map((a) => {
